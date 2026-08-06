@@ -13,6 +13,7 @@ import {
   SaveStatusIcon,
   SettingsIcon,
 } from "../components/common/icons";
+import { useProjectStore } from "../store/ProjectStoreContext";
 import styles from "./Toolbar.module.css";
 
 interface ToolbarAction {
@@ -34,6 +35,7 @@ const TOOLBAR_ACTIONS: ToolbarAction[] = [
 
 function Toolbar() {
   const disabledHintId = useId();
+  const { activeProject } = useProjectStore();
 
   return (
     <div className={styles.toolbar}>
@@ -44,6 +46,7 @@ function Toolbar() {
           <p className={styles.subtitle}>DEV PLAYGROUND</p>
         </div>
       </div>
+      <p className={styles.projectTitle}>{activeProject.title}</p>
       <div className={styles.actions}>
         {TOOLBAR_ACTIONS.map(({ name, Icon }) => (
           <button

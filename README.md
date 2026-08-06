@@ -2,7 +2,12 @@
 
 A browser-based code experimentation environment for HTML, CSS/SCSS, and JavaScript/TypeScript, inspired by the workflow of CodePen. Fully client-side, no backend, no accounts, no telemetry.
 
-See [`glacier-dev-playground-specification-v2.md`](./glacier-dev-playground-specification-v2.md) for the full product specification and [`glacier-dev-playground-implementation-milestones.md`](./glacier-dev-playground-implementation-milestones.md) for the implementation plan.
+See [`specification/glacier-dev-playground-specification-v2.md`](./specification/glacier-dev-playground-specification-v2.md) for the full product specification and [`specification/glacier-dev-playground-implementation-milestones.md`](./specification/glacier-dev-playground-implementation-milestones.md) for the implementation plan.
+
+## Architecture
+
+- `src/models/` — domain types (`PlaygroundProject` and its schema, versioned from `PROJECT_SCHEMA_VERSION`), project title validation, and pure project template factories. No React or persistence dependencies.
+- `src/store/` — in-memory project store: a plain reducer (`projectReducer.ts`) plus a thin React context/provider (`ProjectStoreContext.tsx`) exposing `useProjectStore()` for reading the active project and dispatching project actions (create, rename, duplicate, delete, switch, reset, source/settings updates).
 
 ## Requirements
 

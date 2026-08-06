@@ -39,6 +39,16 @@
   color: var(--glacier-text-muted);
 }
 
+.projectTitle {
+  margin: 0;
+  font-family: var(--glacier-font-body);
+  font-size: 0.8125rem;
+  color: var(--glacier-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .actions {
   display: flex;
   align-items: center;

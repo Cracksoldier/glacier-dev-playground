@@ -76,4 +76,9 @@ describe("AppShell", () => {
       screen.queryByRole("button", { name: /theme/i }),
     ).not.toBeInTheDocument();
   });
+
+  it("shows the active project's title from the project store", () => {
+    render(<AppShell />);
+    expect(screen.getByText("Basic HTML Example")).toBeInTheDocument();
+  });
 });
