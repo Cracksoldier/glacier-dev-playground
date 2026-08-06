@@ -19,6 +19,12 @@ dist-base-path-check
 /blob-report/
 /playwright/.cache/
 
+# graphify scratch/cache (machine-specific paths, regenerable cache, local usage log)
+graphify-out/cache/
+graphify-out/cost.json
+graphify-out/.graphify_python
+graphify-out/.graphify_root
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

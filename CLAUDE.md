@@ -59,3 +59,13 @@ CI (`.github/workflows/ci.yml`) runs on every PR: `check` → `test` → `build`
 - Add or update tests in the same change as the implementation. Remove debug code, dead code, and abandoned feature flags before finishing.
 - Don't leave placeholder/non-functional controls unless the milestone explicitly calls for a disabled shell control (see the `aria-disabled` pattern above).
 - Before finishing any milestone-sized change, run `npm run check`, `npm run test`, `npm run build`, and `npm run test:e2e`.
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
