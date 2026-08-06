@@ -3,10 +3,12 @@ import { describe, expect, it } from "vitest";
 import App from "./App";
 
 describe("App", () => {
-  it("renders the Glacier DEV Playground heading", () => {
+  it("renders the Glacier brand lockup inside the header landmark", () => {
     render(<App />);
+    expect(screen.getByRole("banner")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Glacier DEV Playground" }),
+      screen.getByRole("heading", { level: 1, name: "GLACIER" }),
     ).toBeInTheDocument();
+    expect(screen.getByText("DEV PLAYGROUND")).toBeInTheDocument();
   });
 });

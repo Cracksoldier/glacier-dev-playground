@@ -1,0 +1,66 @@
+:root {
+  /* Backgrounds */
+  --glacier-bg-base: #0a0f1a;
+  --glacier-bg-raised: #0f1626;
+  --glacier-bg-sunken: #060a12;
+
+  /* Frosted / glassmorphism panel surfaces */
+  --glacier-panel-bg: rgb(20 30 48 / 65%);
+  --glacier-panel-border: rgb(120 170 220 / 16%);
+  --glacier-panel-blur: blur(6px);
+
+  /* Text */
+  --glacier-text-primary: #e8f1fb;
+  --glacier-text-secondary: #9fb3c8;
+  --glacier-text-muted: #64778c;
+  --glacier-text-disabled: #445264;
+
+  /* Accents */
+  --glacier-accent-cyan: #4fd8f2;
+  --glacier-accent-cyan-strong: #7ee8fa;
+  --glacier-accent-violet: #9b8cf2;
+  --glacier-accent-mint: #6fe3b4;
+
+  /* Status */
+  --glacier-status-success: #6fe3b4;
+  --glacier-status-warning: #f2c86f;
+  --glacier-status-danger: #f2708a;
+  --glacier-status-info: #4fd8f2;
+
+  /* Shape */
+  --glacier-radius-sm: 4px;
+  --glacier-radius-md: 8px;
+  --glacier-radius-lg: 14px;
+
+  /* Elevation */
+  --glacier-shadow-panel: 0 8px 24px rgb(0 0 0 / 35%);
+  --glacier-shadow-raised: 0 2px 8px rgb(0 0 0 / 45%);
+
+  /* Focus ring */
+  --glacier-focus-ring:
+    0 0 0 2px var(--glacier-bg-base), 0 0 0 4px var(--glacier-accent-cyan);
+
+  /* Spacing scale */
+  --glacier-space-1: 4px;
+  --glacier-space-2: 8px;
+  --glacier-space-3: 12px;
+  --glacier-space-4: 16px;
+  --glacier-space-5: 24px;
+  --glacier-space-6: 32px;
+
+  /* Fonts */
+  --glacier-font-display: "Chakra Petch", sans-serif;
+  --glacier-font-body: "IBM Plex Sans", sans-serif;
+  --glacier-font-mono: "JetBrains Mono", monospace;
+
+  /* Motion */
+  --glacier-transition-fast: 120ms ease;
+  --glacier-transition-base: 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --glacier-transition-fast: 0ms;
+    --glacier-transition-base: 0ms;
+  }
+}

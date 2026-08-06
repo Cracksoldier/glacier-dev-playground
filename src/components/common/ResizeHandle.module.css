@@ -1,0 +1,25 @@
+.handle {
+  position: relative;
+  flex-shrink: 0;
+  background: transparent;
+  transition: background-color var(--glacier-transition-fast);
+}
+
+.handle[aria-orientation="horizontal"] {
+  width: 6px;
+  cursor: col-resize;
+}
+
+.handle[aria-orientation="vertical"] {
+  height: 6px;
+  cursor: row-resize;
+}
+
+.handle:hover,
+.handle:focus-visible {
+  background: var(--glacier-accent-cyan);
+}
+
+.handle[aria-disabled="true"] {
+  cursor: not-allowed;
+}
