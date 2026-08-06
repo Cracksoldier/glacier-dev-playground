@@ -3,17 +3,16 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import AppShell from "./AppShell";
 
-const TOOLBAR_ACTION_NAMES = [
-  "Switch project",
-  "New project",
+const DISABLED_TOOLBAR_ACTION_NAMES = [
   "Run",
   "Auto-run",
   "Resources",
   "Import",
   "Export",
-  "Reset",
   "Settings",
 ];
+
+const ENABLED_TOOLBAR_ACTION_NAMES = ["Switch project", "New project", "Reset"];
 
 describe("AppShell", () => {
   it("exposes header and main landmarks", () => {
@@ -24,7 +23,7 @@ describe("AppShell", () => {
 
   it("renders disabled toolbar actions with accessible names and explanations", () => {
     render(<AppShell />);
-    for (const name of TOOLBAR_ACTION_NAMES) {
+    for (const name of DISABLED_TOOLBAR_ACTION_NAMES) {
       const button = screen.getByRole("button", { name });
       expect(button).toHaveAttribute("aria-disabled", "true");
       const describedById = button.getAttribute("aria-describedby");
@@ -32,6 +31,14 @@ describe("AppShell", () => {
       expect(
         document.getElementById(describedById as string),
       ).toHaveTextContent("Coming in a later milestone");
+    }
+  });
+
+  it("renders the project management toolbar actions as real controls", () => {
+    render(<AppShell />);
+    for (const name of ENABLED_TOOLBAR_ACTION_NAMES) {
+      const button = screen.getByRole("button", { name });
+      expect(button).not.toHaveAttribute("aria-disabled");
     }
   });
 

@@ -1,15 +1,26 @@
-import { useState } from "react";
-import { Group, type Layout, Panel } from "react-resizable-panels";
+import { Group, Panel, useDefaultLayout } from "react-resizable-panels";
 import ResizeHandle from "../components/common/ResizeHandle";
 import ConsolePanel from "../components/console/ConsolePanel";
 import EditorPanelPlaceholder from "../components/editors/EditorPanelPlaceholder";
 import PreviewPanelPlaceholder from "../components/preview/PreviewPanelPlaceholder";
 import { ProjectStoreProvider } from "../store/ProjectStoreContext";
 import styles from "./AppShell.module.css";
+import PersistenceNotice from "./PersistenceNotice";
 import Toolbar from "./Toolbar";
 
+const WORKSPACE_PANEL_IDS = [
+  "html-editor",
+  "css-editor",
+  "js-editor",
+  "preview",
+];
+
 function AppShell() {
-  const [, setLayout] = useState<Layout | undefined>(undefined);
+  const { defaultLayout, onLayoutChanged } = useDefaultLayout({
+    id: "glacier:workspace-layout:v1",
+    panelIds: WORKSPACE_PANEL_IDS,
+    storage: window.localStorage,
+  });
 
   return (
     <ProjectStoreProvider>
@@ -17,11 +28,13 @@ function AppShell() {
         <header>
           <Toolbar />
         </header>
+        <PersistenceNotice />
         <main className={styles.main}>
           <Group
             orientation="horizontal"
             className={styles.group}
-            onLayoutChanged={setLayout}
+            defaultLayout={defaultLayout}
+            onLayoutChanged={onLayoutChanged}
           >
             <Panel
               id="html-editor"

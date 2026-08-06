@@ -40,7 +40,12 @@ export type ProjectStoreAction =
   | {
       type: "project/updateSettings";
       payload: { projectId: ProjectId; settings: Partial<ProjectSettings> };
-    };
+    }
+  | {
+      type: "project/hydrate";
+      payload: { projects: PlaygroundProject[]; activeProjectId: ProjectId };
+    }
+  | { type: "project/markSaved"; payload: { revision: number } };
 
 export function createInitialProjectStoreState(): ProjectStoreState {
   const starter = PROJECT_TEMPLATES[DEFAULT_STARTER_TEMPLATE_ID].create();
@@ -211,6 +216,45 @@ export function projectReducer(
       };
 
       return { ...state, projects, revision: state.revision + 1 };
+    }
+
+    case "project/hydrate": {
+      const { projects, activeProjectId } = action.payload;
+
+      if (projects.length === 0) {
+        const starter = createStarterProject();
+        return {
+          ...state,
+          projects: [starter],
+          activeProjectId: starter.id,
+          revision: 0,
+          lastPersistedRevision: 0,
+        };
+      }
+
+      const resolvedActiveProjectId = projects.some(
+        (p) => p.id === activeProjectId,
+      )
+        ? activeProjectId
+        : projects[0].id;
+
+      return {
+        ...state,
+        projects,
+        activeProjectId: resolvedActiveProjectId,
+        revision: 0,
+        lastPersistedRevision: 0,
+      };
+    }
+
+    case "project/markSaved": {
+      return {
+        ...state,
+        lastPersistedRevision: Math.max(
+          state.lastPersistedRevision,
+          action.payload.revision,
+        ),
+      };
     }
 
     default: {

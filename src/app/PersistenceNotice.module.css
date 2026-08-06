@@ -1,0 +1,39 @@
+.notice {
+  display: flex;
+  align-items: center;
+  gap: var(--glacier-space-3);
+  padding: var(--glacier-space-2) var(--glacier-space-4);
+  background: rgb(242 200 111 / 12%);
+  border-bottom: 1px solid var(--glacier-status-warning);
+  color: var(--glacier-status-warning);
+}
+
+.message {
+  flex: 1;
+  margin: 0;
+  font-family: var(--glacier-font-body);
+  font-size: 0.8125rem;
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--glacier-space-3);
+}
+
+.resetButton,
+.dismissButton {
+  padding: var(--glacier-space-1) var(--glacier-space-3);
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: var(--glacier-radius-sm);
+  color: inherit;
+  font-family: var(--glacier-font-body);
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.resetButton:hover,
+.dismissButton:hover {
+  background: rgb(242 200 111 / 18%);
+}

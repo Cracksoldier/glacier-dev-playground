@@ -1,4 +1,4 @@
-import { type ReactElement, useId } from "react";
+import { type ReactElement, useId, useRef, useState } from "react";
 import GlacierMark from "../components/common/GlacierMark";
 import {
   AutoRunIcon,
@@ -12,7 +12,12 @@ import {
   RunIcon,
   SaveStatusIcon,
   SettingsIcon,
+  WarningIcon,
 } from "../components/common/icons";
+import NewProjectDialog from "../components/projects/NewProjectDialog";
+import ProjectSwitcherPopover from "../components/projects/ProjectSwitcherPopover";
+import ResetProjectDialog from "../components/projects/ResetProjectDialog";
+import type { SaveStatus } from "../models/saveStatus";
 import { useProjectStore } from "../store/ProjectStoreContext";
 import styles from "./Toolbar.module.css";
 
@@ -21,21 +26,31 @@ interface ToolbarAction {
   Icon: (props: IconProps) => ReactElement;
 }
 
-const TOOLBAR_ACTIONS: ToolbarAction[] = [
-  { name: "Switch project", Icon: ProjectSwitcherIcon },
-  { name: "New project", Icon: NewProjectIcon },
+const MIDDLE_DISABLED_ACTIONS: ToolbarAction[] = [
   { name: "Run", Icon: RunIcon },
   { name: "Auto-run", Icon: AutoRunIcon },
   { name: "Resources", Icon: ResourcesIcon },
   { name: "Import", Icon: ImportIcon },
   { name: "Export", Icon: ExportIcon },
-  { name: "Reset", Icon: ResetIcon },
-  { name: "Settings", Icon: SettingsIcon },
 ];
+
+const SAVE_STATUS_LABEL: Record<SaveStatus, string> = {
+  saving: "Saving…",
+  saved: "Saved",
+  "save-failed": "Save failed",
+  "storage-unavailable": "Storage unavailable",
+};
 
 function Toolbar() {
   const disabledHintId = useId();
-  const { activeProject } = useProjectStore();
+  const { activeProject, saveStatus } = useProjectStore();
+  const switchButtonRef = useRef<HTMLButtonElement>(null);
+  const [isSwitcherOpen, setSwitcherOpen] = useState(false);
+  const [isNewProjectOpen, setNewProjectOpen] = useState(false);
+  const [isResetOpen, setResetOpen] = useState(false);
+
+  const isSaveStatusError =
+    saveStatus === "save-failed" || saveStatus === "storage-unavailable";
 
   return (
     <div className={styles.toolbar}>
@@ -48,7 +63,28 @@ function Toolbar() {
       </div>
       <p className={styles.projectTitle}>{activeProject.title}</p>
       <div className={styles.actions}>
-        {TOOLBAR_ACTIONS.map(({ name, Icon }) => (
+        <button
+          ref={switchButtonRef}
+          type="button"
+          className={styles.button}
+          aria-label="Switch project"
+          aria-haspopup="menu"
+          aria-expanded={isSwitcherOpen}
+          title="Switch project"
+          onClick={() => setSwitcherOpen((open) => !open)}
+        >
+          <ProjectSwitcherIcon />
+        </button>
+        <button
+          type="button"
+          className={styles.button}
+          aria-label="New project"
+          title="New project"
+          onClick={() => setNewProjectOpen(true)}
+        >
+          <NewProjectIcon />
+        </button>
+        {MIDDLE_DISABLED_ACTIONS.map(({ name, Icon }) => (
           <button
             key={name}
             type="button"
@@ -61,14 +97,47 @@ function Toolbar() {
             <Icon />
           </button>
         ))}
+        <button
+          type="button"
+          className={styles.button}
+          aria-label="Reset"
+          title="Reset"
+          onClick={() => setResetOpen(true)}
+        >
+          <ResetIcon />
+        </button>
+        <button
+          type="button"
+          className={styles.button}
+          aria-disabled="true"
+          aria-describedby={disabledHintId}
+          aria-label="Settings"
+          title="Settings"
+        >
+          <SettingsIcon />
+        </button>
         <span id={disabledHintId} hidden>
           Coming in a later milestone
         </span>
       </div>
       <div className={styles.status} role="status">
-        <SaveStatusIcon />
-        Saved
+        {isSaveStatusError ? <WarningIcon /> : <SaveStatusIcon />}
+        {SAVE_STATUS_LABEL[saveStatus]}
       </div>
+      <ProjectSwitcherPopover
+        isOpen={isSwitcherOpen}
+        onClose={() => setSwitcherOpen(false)}
+        anchorRef={switchButtonRef}
+      />
+      <NewProjectDialog
+        isOpen={isNewProjectOpen}
+        onClose={() => setNewProjectOpen(false)}
+      />
+      <ResetProjectDialog
+        isOpen={isResetOpen}
+        projectId={activeProject.id}
+        onClose={() => setResetOpen(false)}
+      />
     </div>
   );
 }

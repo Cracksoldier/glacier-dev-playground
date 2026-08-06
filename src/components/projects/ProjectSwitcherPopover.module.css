@@ -1,0 +1,105 @@
+.popover {
+  min-width: 260px;
+  max-width: 360px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: var(--glacier-space-2);
+  background: var(--glacier-bg-raised);
+  border: 1px solid var(--glacier-panel-border);
+  border-radius: var(--glacier-radius-md);
+  box-shadow: var(--glacier-shadow-panel);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--glacier-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--glacier-space-2);
+  padding: var(--glacier-space-1) var(--glacier-space-2);
+  border-radius: var(--glacier-radius-sm);
+}
+
+.row:hover {
+  background: var(--glacier-panel-bg);
+}
+
+.switchButton {
+  flex: 1;
+  overflow: hidden;
+  padding: var(--glacier-space-1) 0;
+  background: none;
+  border: none;
+  color: var(--glacier-text-primary);
+  font-family: var(--glacier-font-body);
+  font-size: 0.875rem;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.switchButton[aria-current="true"] {
+  color: var(--glacier-accent-cyan);
+  font-weight: 600;
+}
+
+.renameForm {
+  flex: 1;
+}
+
+.renameInput {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--glacier-space-1) var(--glacier-space-2);
+  background: var(--glacier-bg-sunken);
+  border: 1px solid var(--glacier-accent-cyan);
+  border-radius: var(--glacier-radius-sm);
+  color: var(--glacier-text-primary);
+  font-family: var(--glacier-font-body);
+  font-size: 0.875rem;
+}
+
+.renameInput:focus-visible {
+  outline: none;
+  box-shadow: var(--glacier-focus-ring);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.rowActions {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--glacier-space-1);
+}
+
+.rowActionButton {
+  padding: var(--glacier-space-1);
+  background: none;
+  border: none;
+  color: var(--glacier-text-muted);
+  font-family: var(--glacier-font-body);
+  font-size: 0.6875rem;
+  cursor: pointer;
+}
+
+.rowActionButton:hover {
+  color: var(--glacier-text-primary);
+}

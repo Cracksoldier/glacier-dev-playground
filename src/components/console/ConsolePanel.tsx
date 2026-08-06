@@ -1,9 +1,10 @@
-import { useId, useState } from "react";
+import { useId } from "react";
+import { useConsoleVisibility } from "../../app/useConsoleVisibility";
 import { ChevronIcon } from "../common/icons";
 import styles from "./ConsolePanel.module.css";
 
 function ConsolePanel() {
-  const [isOpen, setIsOpen] = useState(true);
+  const { isConsoleVisible, toggleConsoleVisible } = useConsoleVisibility();
   const contentId = useId();
 
   return (
@@ -11,18 +12,20 @@ function ConsolePanel() {
       <button
         type="button"
         className={styles.toggle}
-        aria-expanded={isOpen}
+        aria-expanded={isConsoleVisible}
         aria-controls={contentId}
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={toggleConsoleVisible}
       >
         <ChevronIcon
           className={
-            isOpen ? `${styles.chevron} ${styles.chevronOpen}` : styles.chevron
+            isConsoleVisible
+              ? `${styles.chevron} ${styles.chevronOpen}`
+              : styles.chevron
           }
         />
         Console
       </button>
-      {isOpen && (
+      {isConsoleVisible && (
         <div id={contentId} className={styles.body}>
           The console output arrives in a later milestone.
         </div>

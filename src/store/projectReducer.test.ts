@@ -349,6 +349,99 @@ describe("project/updateSettings", () => {
   });
 });
 
+describe("project/hydrate", () => {
+  it("replaces the project list and zeroes the revision counters", () => {
+    let state = initialState();
+    state = projectReducer(state, {
+      type: "project/rename",
+      payload: { projectId: state.projects[0].id, title: "Dirty" },
+    });
+    expect(state.revision).toBeGreaterThan(0);
+
+    const hydrated = [
+      PROJECT_TEMPLATES.empty.create(),
+      PROJECT_TEMPLATES["js-interaction"].create(),
+    ];
+
+    const next = projectReducer(state, {
+      type: "project/hydrate",
+      payload: { projects: hydrated, activeProjectId: hydrated[1].id },
+    });
+
+    expect(next.projects).toEqual(hydrated);
+    expect(next.activeProjectId).toBe(hydrated[1].id);
+    expect(next.revision).toBe(0);
+    expect(next.lastPersistedRevision).toBe(0);
+  });
+
+  it("seeds a fresh starter project when given an empty payload", () => {
+    const state = initialState();
+
+    const next = projectReducer(state, {
+      type: "project/hydrate",
+      payload: { projects: [], activeProjectId: "irrelevant" },
+    });
+
+    expect(next.projects).toHaveLength(1);
+    expect(next.activeProjectId).toBe(next.projects[0].id);
+    expect(next.revision).toBe(0);
+    expect(next.lastPersistedRevision).toBe(0);
+  });
+
+  it("falls back to the first project when the given active id is not present", () => {
+    const state = initialState();
+    const hydrated = [
+      PROJECT_TEMPLATES.empty.create(),
+      PROJECT_TEMPLATES["js-interaction"].create(),
+    ];
+
+    const next = projectReducer(state, {
+      type: "project/hydrate",
+      payload: { projects: hydrated, activeProjectId: "does-not-exist" },
+    });
+
+    expect(next.activeProjectId).toBe(hydrated[0].id);
+  });
+});
+
+describe("project/markSaved", () => {
+  it("advances lastPersistedRevision to the given revision", () => {
+    let state = initialState();
+    state = projectReducer(state, {
+      type: "project/rename",
+      payload: { projectId: state.projects[0].id, title: "Renamed" },
+    });
+    expect(state.revision).toBe(1);
+
+    const next = projectReducer(state, {
+      type: "project/markSaved",
+      payload: { revision: 1 },
+    });
+
+    expect(next.lastPersistedRevision).toBe(1);
+    expect(isProjectStoreDirty(next)).toBe(false);
+  });
+
+  it("never regresses lastPersistedRevision (guards against out-of-order resolution)", () => {
+    let state = initialState();
+    state = projectReducer(state, {
+      type: "project/rename",
+      payload: { projectId: state.projects[0].id, title: "Renamed" },
+    });
+    state = projectReducer(state, {
+      type: "project/markSaved",
+      payload: { revision: 1 },
+    });
+
+    const next = projectReducer(state, {
+      type: "project/markSaved",
+      payload: { revision: 0 },
+    });
+
+    expect(next.lastPersistedRevision).toBe(1);
+  });
+});
+
 describe("dirty-state derivation", () => {
   it("is dirty after a mutating action and clean before any mutation", () => {
     const state = initialState();

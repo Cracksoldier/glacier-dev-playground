@@ -56,6 +56,11 @@
   /* Motion */
   --glacier-transition-fast: 120ms ease;
   --glacier-transition-base: 200ms ease;
+
+  /* Z-index scale */
+  --glacier-z-popover: 100;
+  --glacier-z-backdrop: 200;
+  --glacier-z-dialog: 210;
 }
 
 @media (prefers-reduced-motion: reduce) {

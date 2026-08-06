@@ -124,6 +124,15 @@ export function ResetIcon(props: IconProps) {
   );
 }
 
+export function WarningIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M12 4l9 16H3l9-16z" />
+      <path d="M12 10v4M12 17.5v.01" />
+    </IconBase>
+  );
+}
+
 export function ChevronIcon(props: IconProps) {
   return (
     <IconBase {...props}>
