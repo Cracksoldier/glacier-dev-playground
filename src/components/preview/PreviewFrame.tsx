@@ -143,6 +143,13 @@ function PreviewFrame({ project, ref }: PreviewFrameProps) {
   }, [project.source, runBuild]);
 
   useEffect(() => {
+    // React StrictMode double-invokes effects in development (mount ->
+    // cleanup -> mount again on the same instance), so disposedRef must be
+    // un-set here, not just set in the cleanup below — otherwise the second
+    // mount permanently sees itself as disposed and every runBuild() call
+    // becomes a silent no-op (only surfaces in dev; production builds only
+    // run effects once).
+    disposedRef.current = false;
     return () => {
       disposedRef.current = true;
       debouncerRef.current?.cancel();
