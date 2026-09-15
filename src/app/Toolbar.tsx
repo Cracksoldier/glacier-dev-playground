@@ -2,6 +2,7 @@ import { type ReactElement, useId, useRef, useState } from "react";
 import GlacierMark from "../components/common/GlacierMark";
 import {
   AutoRunIcon,
+  EditorPreferencesIcon,
   ExportIcon,
   type IconProps,
   ImportIcon,
@@ -18,7 +19,9 @@ import NewProjectDialog from "../components/projects/NewProjectDialog";
 import ProjectSwitcherPopover from "../components/projects/ProjectSwitcherPopover";
 import ResetProjectDialog from "../components/projects/ResetProjectDialog";
 import type { SaveStatus } from "../models/saveStatus";
+import type { EditorPreferences } from "../preferences/editorPreferences";
 import { useProjectStore } from "../store/ProjectStoreContext";
+import EditorPreferencesPopover from "./EditorPreferencesPopover";
 import styles from "./Toolbar.module.css";
 
 interface ToolbarAction {
@@ -41,13 +44,23 @@ const SAVE_STATUS_LABEL: Record<SaveStatus, string> = {
   "storage-unavailable": "Storage unavailable",
 };
 
-function Toolbar() {
+interface ToolbarProps {
+  editorPreferences: EditorPreferences;
+  onUpdateEditorPreferences: (partial: Partial<EditorPreferences>) => void;
+}
+
+function Toolbar({
+  editorPreferences,
+  onUpdateEditorPreferences,
+}: ToolbarProps) {
   const disabledHintId = useId();
   const { activeProject, saveStatus } = useProjectStore();
   const switchButtonRef = useRef<HTMLButtonElement>(null);
+  const editorPreferencesButtonRef = useRef<HTMLButtonElement>(null);
   const [isSwitcherOpen, setSwitcherOpen] = useState(false);
   const [isNewProjectOpen, setNewProjectOpen] = useState(false);
   const [isResetOpen, setResetOpen] = useState(false);
+  const [isEditorPreferencesOpen, setEditorPreferencesOpen] = useState(false);
 
   const isSaveStatusError =
     saveStatus === "save-failed" || saveStatus === "storage-unavailable";
@@ -107,6 +120,18 @@ function Toolbar() {
           <ResetIcon />
         </button>
         <button
+          ref={editorPreferencesButtonRef}
+          type="button"
+          className={styles.button}
+          aria-label="Editor preferences"
+          aria-haspopup="menu"
+          aria-expanded={isEditorPreferencesOpen}
+          title="Editor preferences"
+          onClick={() => setEditorPreferencesOpen((open) => !open)}
+        >
+          <EditorPreferencesIcon />
+        </button>
+        <button
           type="button"
           className={styles.button}
           aria-disabled="true"
@@ -137,6 +162,13 @@ function Toolbar() {
         isOpen={isResetOpen}
         projectId={activeProject.id}
         onClose={() => setResetOpen(false)}
+      />
+      <EditorPreferencesPopover
+        isOpen={isEditorPreferencesOpen}
+        onClose={() => setEditorPreferencesOpen(false)}
+        anchorRef={editorPreferencesButtonRef}
+        preferences={editorPreferences}
+        onUpdatePreferences={onUpdateEditorPreferences}
       />
     </div>
   );

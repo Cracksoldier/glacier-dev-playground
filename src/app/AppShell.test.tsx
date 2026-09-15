@@ -88,4 +88,48 @@ describe("AppShell", () => {
     render(<AppShell />);
     expect(screen.getByText("Basic HTML Example")).toBeInTheDocument();
   });
+
+  it("renders the three CodeMirror editors with accessible names", () => {
+    render(<AppShell />);
+    expect(
+      screen.getByRole("textbox", { name: "HTML source" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("textbox", { name: "Stylesheet source" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("textbox", { name: "Script source" }),
+    ).toBeInTheDocument();
+  });
+
+  it("moves focus into the HTML editor on Alt+1", async () => {
+    const user = userEvent.setup();
+    render(<AppShell />);
+
+    await user.keyboard("{Alt>}1{/Alt}");
+
+    expect(screen.getByRole("textbox", { name: "HTML source" })).toHaveFocus();
+  });
+
+  it("moves focus into the CSS editor on Alt+2", async () => {
+    const user = userEvent.setup();
+    render(<AppShell />);
+
+    await user.keyboard("{Alt>}2{/Alt}");
+
+    expect(
+      screen.getByRole("textbox", { name: "Stylesheet source" }),
+    ).toHaveFocus();
+  });
+
+  it("moves focus into the JS editor on Alt+3", async () => {
+    const user = userEvent.setup();
+    render(<AppShell />);
+
+    await user.keyboard("{Alt>}3{/Alt}");
+
+    expect(
+      screen.getByRole("textbox", { name: "Script source" }),
+    ).toHaveFocus();
+  });
 });

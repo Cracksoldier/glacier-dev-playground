@@ -1,12 +1,24 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useEffect } from "react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { DEFAULT_EDITOR_PREFERENCES } from "../preferences/editorPreferences";
 import {
   ProjectStoreProvider,
   useProjectStore,
 } from "../store/ProjectStoreContext";
 import Toolbar from "./Toolbar";
+
+function renderToolbar() {
+  return render(
+    <ProjectStoreProvider>
+      <Toolbar
+        editorPreferences={DEFAULT_EDITOR_PREFERENCES}
+        onUpdateEditorPreferences={vi.fn()}
+      />
+    </ProjectStoreProvider>,
+  );
+}
 
 function RenameOnMount() {
   const { activeProject, actions } = useProjectStore();
@@ -30,11 +42,7 @@ afterEach(() => {
 
 describe("Toolbar", () => {
   it("renders the active project's title from the store", () => {
-    render(
-      <ProjectStoreProvider>
-        <Toolbar />
-      </ProjectStoreProvider>,
-    );
+    renderToolbar();
 
     expect(screen.getByText("Basic HTML Example")).toBeInTheDocument();
   });
@@ -44,7 +52,10 @@ describe("Toolbar", () => {
       render(
         <ProjectStoreProvider>
           <RenameOnMount />
-          <Toolbar />
+          <Toolbar
+            editorPreferences={DEFAULT_EDITOR_PREFERENCES}
+            onUpdateEditorPreferences={vi.fn()}
+          />
         </ProjectStoreProvider>,
       );
     });
@@ -53,22 +64,14 @@ describe("Toolbar", () => {
   });
 
   it("shows the current save status", () => {
-    render(
-      <ProjectStoreProvider>
-        <Toolbar />
-      </ProjectStoreProvider>,
-    );
+    renderToolbar();
 
     expect(screen.getByRole("status")).toHaveTextContent("Saved");
   });
 
   it("opens the project switcher popover from the toolbar button", async () => {
     const user = userEvent.setup();
-    render(
-      <ProjectStoreProvider>
-        <Toolbar />
-      </ProjectStoreProvider>,
-    );
+    renderToolbar();
 
     await user.click(screen.getByRole("button", { name: "Switch project" }));
 
@@ -77,11 +80,7 @@ describe("Toolbar", () => {
 
   it("opens the new project dialog from the toolbar button", async () => {
     const user = userEvent.setup();
-    render(
-      <ProjectStoreProvider>
-        <Toolbar />
-      </ProjectStoreProvider>,
-    );
+    renderToolbar();
 
     await user.click(screen.getByRole("button", { name: "New project" }));
 
@@ -92,16 +91,23 @@ describe("Toolbar", () => {
 
   it("opens the reset dialog from the toolbar button", async () => {
     const user = userEvent.setup();
-    render(
-      <ProjectStoreProvider>
-        <Toolbar />
-      </ProjectStoreProvider>,
-    );
+    renderToolbar();
 
     await user.click(screen.getByRole("button", { name: "Reset" }));
 
     expect(
       screen.getByRole("dialog", { name: "Reset project" }),
     ).toBeInTheDocument();
+  });
+
+  it("opens the editor preferences popover from the toolbar button", async () => {
+    const user = userEvent.setup();
+    renderToolbar();
+
+    await user.click(
+      screen.getByRole("button", { name: "Editor preferences" }),
+    );
+
+    expect(screen.getByRole("menu")).toBeInTheDocument();
   });
 });

@@ -32,3 +32,33 @@ class ResizeObserverStub {
 }
 
 globalThis.ResizeObserver ??= ResizeObserverStub;
+
+// jsdom has no layout engine, so `Range.getClientRects`/`getBoundingClientRect`
+// are unimplemented; CodeMirror 6's internal measurement pass (run on a
+// requestAnimationFrame callback) calls both and throws otherwise. Stubbed to
+// return empty/zero rects so measurement short-circuits harmlessly — real
+// layout, scrolling, and caret positioning are verified in Playwright e2e.
+function stubDomRect(): DOMRect {
+  return {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    toJSON() {
+      return this;
+    },
+  };
+}
+
+if (typeof Range.prototype.getClientRects !== "function") {
+  Range.prototype.getClientRects = function stubGetClientRects() {
+    return Object.assign([], { item: () => null }) as unknown as DOMRectList;
+  };
+}
+if (typeof Range.prototype.getBoundingClientRect !== "function") {
+  Range.prototype.getBoundingClientRect = stubDomRect;
+}
