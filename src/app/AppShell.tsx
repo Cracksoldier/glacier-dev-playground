@@ -6,7 +6,8 @@ import type { CodeMirrorEditorHandle } from "../components/editors/CodeMirrorEdi
 import CssEditorPanel from "../components/editors/CssEditorPanel";
 import HtmlEditorPanel from "../components/editors/HtmlEditorPanel";
 import JsEditorPanel from "../components/editors/JsEditorPanel";
-import PreviewPanelPlaceholder from "../components/preview/PreviewPanelPlaceholder";
+import type { PreviewRunHandle } from "../components/preview/PreviewFrame";
+import PreviewPanel from "../components/preview/PreviewPanel";
 import { ProjectStoreProvider } from "../store/ProjectStoreContext";
 import styles from "./AppShell.module.css";
 import PersistenceNotice from "./PersistenceNotice";
@@ -31,6 +32,7 @@ function AppShell() {
   const htmlEditorRef = useRef<CodeMirrorEditorHandle>(null);
   const cssEditorRef = useRef<CodeMirrorEditorHandle>(null);
   const jsEditorRef = useRef<CodeMirrorEditorHandle>(null);
+  const previewRunHandleRef = useRef<PreviewRunHandle>(null);
   useEditorFocusShortcuts(htmlEditorRef, cssEditorRef, jsEditorRef);
 
   return (
@@ -40,6 +42,7 @@ function AppShell() {
           <Toolbar
             editorPreferences={preferences}
             onUpdateEditorPreferences={updatePreferences}
+            onRun={() => previewRunHandleRef.current?.runNow()}
           />
         </header>
         <PersistenceNotice />
@@ -83,7 +86,7 @@ function AppShell() {
               minSize={10}
               className={styles.panel}
             >
-              <PreviewPanelPlaceholder />
+              <PreviewPanel ref={previewRunHandleRef} />
             </Panel>
           </Group>
           <ConsolePanel />

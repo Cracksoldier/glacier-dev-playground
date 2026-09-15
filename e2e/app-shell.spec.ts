@@ -11,9 +11,12 @@ test("loads the Glacier application shell", async ({ page }) => {
 
 test("shows disabled toolbar actions", async ({ page }) => {
   await page.goto("/");
-  const runButton = page.getByRole("button", { name: "Run", exact: true });
-  await expect(runButton).toBeVisible();
-  await expect(runButton).toHaveAttribute("aria-disabled", "true");
+  const resourcesButton = page.getByRole("button", {
+    name: "Resources",
+    exact: true,
+  });
+  await expect(resourcesButton).toBeVisible();
+  await expect(resourcesButton).toHaveAttribute("aria-disabled", "true");
 });
 
 test("resizes panels by dragging a separator", async ({ page }) => {

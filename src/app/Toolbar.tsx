@@ -30,8 +30,6 @@ interface ToolbarAction {
 }
 
 const MIDDLE_DISABLED_ACTIONS: ToolbarAction[] = [
-  { name: "Run", Icon: RunIcon },
-  { name: "Auto-run", Icon: AutoRunIcon },
   { name: "Resources", Icon: ResourcesIcon },
   { name: "Import", Icon: ImportIcon },
   { name: "Export", Icon: ExportIcon },
@@ -47,14 +45,16 @@ const SAVE_STATUS_LABEL: Record<SaveStatus, string> = {
 interface ToolbarProps {
   editorPreferences: EditorPreferences;
   onUpdateEditorPreferences: (partial: Partial<EditorPreferences>) => void;
+  onRun: () => void;
 }
 
 function Toolbar({
   editorPreferences,
   onUpdateEditorPreferences,
+  onRun,
 }: ToolbarProps) {
   const disabledHintId = useId();
-  const { activeProject, saveStatus } = useProjectStore();
+  const { activeProject, saveStatus, actions } = useProjectStore();
   const switchButtonRef = useRef<HTMLButtonElement>(null);
   const editorPreferencesButtonRef = useRef<HTMLButtonElement>(null);
   const [isSwitcherOpen, setSwitcherOpen] = useState(false);
@@ -96,6 +96,29 @@ function Toolbar({
           onClick={() => setNewProjectOpen(true)}
         >
           <NewProjectIcon />
+        </button>
+        <button
+          type="button"
+          className={styles.button}
+          aria-label="Run"
+          title="Run"
+          onClick={onRun}
+        >
+          <RunIcon />
+        </button>
+        <button
+          type="button"
+          className={styles.button}
+          aria-label="Auto-run"
+          aria-pressed={activeProject.settings.autoRun}
+          title="Auto-run"
+          onClick={() =>
+            actions.updateProjectSettings(activeProject.id, {
+              autoRun: !activeProject.settings.autoRun,
+            })
+          }
+        >
+          <AutoRunIcon />
         </button>
         {MIDDLE_DISABLED_ACTIONS.map(({ name, Icon }) => (
           <button

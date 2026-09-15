@@ -9,12 +9,13 @@ import {
 } from "../store/ProjectStoreContext";
 import Toolbar from "./Toolbar";
 
-function renderToolbar() {
+function renderToolbar(onRun = vi.fn()) {
   return render(
     <ProjectStoreProvider>
       <Toolbar
         editorPreferences={DEFAULT_EDITOR_PREFERENCES}
         onUpdateEditorPreferences={vi.fn()}
+        onRun={onRun}
       />
     </ProjectStoreProvider>,
   );
@@ -55,6 +56,7 @@ describe("Toolbar", () => {
           <Toolbar
             editorPreferences={DEFAULT_EDITOR_PREFERENCES}
             onUpdateEditorPreferences={vi.fn()}
+            onRun={vi.fn()}
           />
         </ProjectStoreProvider>,
       );
@@ -109,5 +111,29 @@ describe("Toolbar", () => {
     );
 
     expect(screen.getByRole("menu")).toBeInTheDocument();
+  });
+
+  it("fires onRun when the Run button is clicked", async () => {
+    const user = userEvent.setup();
+    const onRun = vi.fn();
+    renderToolbar(onRun);
+
+    await user.click(screen.getByRole("button", { name: "Run" }));
+
+    expect(onRun).toHaveBeenCalledOnce();
+  });
+
+  it("toggles auto-run and reflects the pressed state", async () => {
+    const user = userEvent.setup();
+    renderToolbar();
+
+    const autoRunButton = screen.getByRole("button", { name: "Auto-run" });
+    const initiallyPressed = autoRunButton.getAttribute("aria-pressed");
+
+    await user.click(autoRunButton);
+
+    expect(autoRunButton.getAttribute("aria-pressed")).not.toBe(
+      initiallyPressed,
+    );
   });
 });

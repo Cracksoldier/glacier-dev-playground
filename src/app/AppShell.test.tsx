@@ -4,15 +4,19 @@ import { describe, expect, it, vi } from "vitest";
 import AppShell from "./AppShell";
 
 const DISABLED_TOOLBAR_ACTION_NAMES = [
-  "Run",
-  "Auto-run",
   "Resources",
   "Import",
   "Export",
   "Settings",
 ];
 
-const ENABLED_TOOLBAR_ACTION_NAMES = ["Switch project", "New project", "Reset"];
+const ENABLED_TOOLBAR_ACTION_NAMES = [
+  "Switch project",
+  "New project",
+  "Run",
+  "Auto-run",
+  "Reset",
+];
 
 describe("AppShell", () => {
   it("exposes header and main landmarks", () => {
