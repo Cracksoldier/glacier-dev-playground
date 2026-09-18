@@ -9,7 +9,7 @@ function dispatchKeydown(init: KeyboardEventInit) {
 }
 
 function makeRef(focus: () => void): RefObject<CodeMirrorEditorHandle | null> {
-  return { current: { focus } };
+  return { current: { focus, focusLine: vi.fn() } };
 }
 
 describe("useEditorFocusShortcuts", () => {

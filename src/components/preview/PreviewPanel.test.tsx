@@ -1,6 +1,7 @@
 import { act, render, screen } from "@testing-library/react";
 import { useEffect } from "react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import type { UseConsoleEntriesResult } from "../../app/useConsoleEntries";
 import {
   ProjectStoreProvider,
   useProjectStore,
@@ -8,10 +9,19 @@ import {
 import { createInMemoryProjectRepository } from "../../test/inMemoryProjectRepository";
 import PreviewPanel from "./PreviewPanel";
 
+function createConsoleEntriesStub(): UseConsoleEntriesResult {
+  return {
+    entries: [],
+    startRun: vi.fn(),
+    clear: vi.fn(),
+    append: vi.fn(),
+  };
+}
+
 function renderPreviewPanel() {
   return render(
     <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
-      <PreviewPanel />
+      <PreviewPanel consoleEntries={createConsoleEntriesStub()} />
     </ProjectStoreProvider>,
   );
 }
@@ -45,7 +55,7 @@ describe("PreviewPanel", () => {
       render(
         <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
           <AddRelativeImageOnMount />
-          <PreviewPanel />
+          <PreviewPanel consoleEntries={createConsoleEntriesStub()} />
         </ProjectStoreProvider>,
       );
     });

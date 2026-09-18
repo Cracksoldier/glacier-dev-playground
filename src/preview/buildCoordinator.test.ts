@@ -53,4 +53,13 @@ describe("createPreviewBuildCoordinator", () => {
 
     expect(build.document).not.toContain("mutated after the fact");
   });
+
+  it("embeds the build's own execution ID into the bridge script", () => {
+    const coordinator = createPreviewBuildCoordinator();
+    const project = makeProject();
+
+    const build = coordinator.startBuild(project);
+
+    expect(build.document).toContain(build.executionId);
+  });
 });

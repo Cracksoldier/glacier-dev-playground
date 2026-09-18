@@ -10,6 +10,7 @@ import { buildLanguageExtensions } from "./editorExtensions";
 
 interface CssEditorPanelProps {
   preferences: EditorPreferences;
+  hasError?: boolean;
   ref?: Ref<CodeMirrorEditorHandle>;
 }
 
@@ -17,7 +18,7 @@ function isStylesheetLanguage(value: string): value is StylesheetLanguage {
   return value === "css" || value === "scss";
 }
 
-function CssEditorPanel({ preferences, ref }: CssEditorPanelProps) {
+function CssEditorPanel({ preferences, hasError, ref }: CssEditorPanelProps) {
   const { activeProject, actions } = useProjectStore();
   const { stylesheetLanguage } = activeProject.source;
   // buildLanguageExtensions("css", ...) is identical regardless of variant
@@ -31,7 +32,15 @@ function CssEditorPanel({ preferences, ref }: CssEditorPanelProps) {
   return (
     <section className={styles.panel} aria-label="CSS editor">
       <div className={styles.header}>
-        <span className={styles.label}>Stylesheet</span>
+        <span className={styles.label}>
+          Stylesheet
+          {hasError && (
+            <>
+              <span className={styles.errorBadge} aria-hidden="true" />
+              <span className={styles.srOnly}>Contains an error</span>
+            </>
+          )}
+        </span>
         <div className={styles.selectors}>
           <select
             className={styles.select}

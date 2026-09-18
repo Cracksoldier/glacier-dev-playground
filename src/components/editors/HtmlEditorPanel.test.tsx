@@ -85,4 +85,21 @@ describe("HtmlEditorPanel", () => {
       true,
     );
   });
+
+  it("shows an error badge only when hasError is true", () => {
+    const repository = createInMemoryProjectRepository();
+    const { rerender } = render(
+      <ProjectStoreProvider repository={repository}>
+        <HtmlEditorPanel preferences={DEFAULT_EDITOR_PREFERENCES} />
+      </ProjectStoreProvider>,
+    );
+    expect(screen.queryByText("Contains an error")).not.toBeInTheDocument();
+
+    rerender(
+      <ProjectStoreProvider repository={repository}>
+        <HtmlEditorPanel preferences={DEFAULT_EDITOR_PREFERENCES} hasError />
+      </ProjectStoreProvider>,
+    );
+    expect(screen.getByText("Contains an error")).toBeInTheDocument();
+  });
 });

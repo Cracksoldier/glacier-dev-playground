@@ -130,4 +130,21 @@ describe("JsEditorPanel", () => {
     );
     expect(screen.getByTestId("script-source")).toHaveTextContent("Z");
   });
+
+  it("shows an error badge only when hasError is true", () => {
+    const repository = createInMemoryProjectRepository();
+    const { rerender } = render(
+      <ProjectStoreProvider repository={repository}>
+        <JsEditorPanel preferences={DEFAULT_EDITOR_PREFERENCES} />
+      </ProjectStoreProvider>,
+    );
+    expect(screen.queryByText("Contains an error")).not.toBeInTheDocument();
+
+    rerender(
+      <ProjectStoreProvider repository={repository}>
+        <JsEditorPanel preferences={DEFAULT_EDITOR_PREFERENCES} hasError />
+      </ProjectStoreProvider>,
+    );
+    expect(screen.getByText("Contains an error")).toBeInTheDocument();
+  });
 });

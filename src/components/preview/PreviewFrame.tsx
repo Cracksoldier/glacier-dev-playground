@@ -9,6 +9,10 @@ import type { PlaygroundProject } from "../../models/project";
 import { createDebouncer } from "../../persistence/debounce";
 import { createPreviewBuildCoordinator } from "../../preview/buildCoordinator";
 import {
+  isPreviewMessage,
+  type PreviewMessage,
+} from "../../preview/previewMessage";
+import {
   PREVIEW_IFRAME_ALLOW,
   PREVIEW_IFRAME_REFERRER_POLICY,
   PREVIEW_IFRAME_SANDBOX,
@@ -21,6 +25,10 @@ export interface PreviewRunHandle {
 
 interface PreviewFrameProps {
   project: PlaygroundProject;
+  /** Fires synchronously once a build's iframe candidate starts loading. */
+  onBuildStart?: (executionId: string) => void;
+  /** Fires for every message accepted from the current (non-stale) preview iframe. */
+  onMessage?: (message: PreviewMessage) => void;
   ref?: Ref<PreviewRunHandle>;
 }
 
@@ -46,7 +54,12 @@ function createPreviewIframe(): HTMLIFrameElement {
  * than this component trying to detect and react to project switches
  * itself — see `CodeMirrorEditor.tsx` for the same convention.
  */
-function PreviewFrame({ project, ref }: PreviewFrameProps) {
+function PreviewFrame({
+  project,
+  onBuildStart,
+  onMessage,
+  ref,
+}: PreviewFrameProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const visibleFrameRef = useRef<HTMLIFrameElement | null>(null);
   const pendingCandidateRef = useRef<{
@@ -59,6 +72,11 @@ function PreviewFrame({ project, ref }: PreviewFrameProps) {
   useEffect(() => {
     projectRef.current = project;
   });
+
+  const onBuildStartRef = useRef(onBuildStart);
+  onBuildStartRef.current = onBuildStart;
+  const onMessageRef = useRef(onMessage);
+  onMessageRef.current = onMessage;
 
   const coordinatorRef = useRef<ReturnType<
     typeof createPreviewBuildCoordinator
@@ -75,6 +93,7 @@ function PreviewFrame({ project, ref }: PreviewFrameProps) {
     const { executionId, document: documentHtml } = coordinator.startBuild(
       projectRef.current,
     );
+    onBuildStartRef.current?.(executionId);
 
     const iframe = createPreviewIframe();
     iframe.style.visibility = "hidden";
@@ -158,6 +177,27 @@ function PreviewFrame({ project, ref }: PreviewFrameProps) {
       pendingCandidateRef.current?.iframe.remove();
       pendingCandidateRef.current = null;
     };
+  }, []);
+
+  useEffect(() => {
+    function handleMessage(event: MessageEvent) {
+      const source = event.source;
+      const isFromVisibleFrame =
+        source === visibleFrameRef.current?.contentWindow;
+      const isFromPendingCandidate =
+        source === pendingCandidateRef.current?.iframe.contentWindow;
+      if (!isFromVisibleFrame && !isFromPendingCandidate) return;
+
+      if (!isPreviewMessage(event.data)) return;
+
+      const coordinator = coordinatorRef.current;
+      if (!coordinator || coordinator.isStale(event.data.executionId)) return;
+
+      onMessageRef.current?.(event.data);
+    }
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
   }, []);
 
   return <div ref={hostRef} className={styles.host} />;

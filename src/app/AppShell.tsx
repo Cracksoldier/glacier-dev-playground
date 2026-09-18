@@ -8,10 +8,12 @@ import HtmlEditorPanel from "../components/editors/HtmlEditorPanel";
 import JsEditorPanel from "../components/editors/JsEditorPanel";
 import type { PreviewRunHandle } from "../components/preview/PreviewFrame";
 import PreviewPanel from "../components/preview/PreviewPanel";
+import type { MappedSourceLocation } from "../preview/mapErrorToSource";
 import { ProjectStoreProvider } from "../store/ProjectStoreContext";
 import styles from "./AppShell.module.css";
 import PersistenceNotice from "./PersistenceNotice";
 import Toolbar from "./Toolbar";
+import { useConsoleEntries } from "./useConsoleEntries";
 import { useEditorFocusShortcuts } from "./useEditorFocusShortcuts";
 import { useEditorPreferences } from "./useEditorPreferences";
 
@@ -34,6 +36,31 @@ function AppShell() {
   const jsEditorRef = useRef<CodeMirrorEditorHandle>(null);
   const previewRunHandleRef = useRef<PreviewRunHandle>(null);
   useEditorFocusShortcuts(htmlEditorRef, cssEditorRef, jsEditorRef);
+
+  const consoleEntries = useConsoleEntries();
+
+  function handleFocusSource(location: MappedSourceLocation) {
+    const editorRef = {
+      html: htmlEditorRef,
+      style: cssEditorRef,
+      script: jsEditorRef,
+    }[location.panel];
+    editorRef.current?.focusLine(location.line);
+  }
+
+  const hasHtmlError = consoleEntries.entries.some(
+    (entry) =>
+      entry.type === "runtime-error" && entry.mappedLocation?.panel === "html",
+  );
+  const hasCssError = consoleEntries.entries.some(
+    (entry) =>
+      entry.type === "runtime-error" && entry.mappedLocation?.panel === "style",
+  );
+  const hasJsError = consoleEntries.entries.some(
+    (entry) =>
+      entry.type === "runtime-error" &&
+      entry.mappedLocation?.panel === "script",
+  );
 
   return (
     <ProjectStoreProvider>
@@ -59,7 +86,11 @@ function AppShell() {
               minSize={10}
               className={styles.panel}
             >
-              <HtmlEditorPanel preferences={preferences} ref={htmlEditorRef} />
+              <HtmlEditorPanel
+                preferences={preferences}
+                hasError={hasHtmlError}
+                ref={htmlEditorRef}
+              />
             </Panel>
             <ResizeHandle label="Resize HTML and CSS editor panels" />
             <Panel
@@ -68,7 +99,11 @@ function AppShell() {
               minSize={10}
               className={styles.panel}
             >
-              <CssEditorPanel preferences={preferences} ref={cssEditorRef} />
+              <CssEditorPanel
+                preferences={preferences}
+                hasError={hasCssError}
+                ref={cssEditorRef}
+              />
             </Panel>
             <ResizeHandle label="Resize CSS and JavaScript editor panels" />
             <Panel
@@ -77,7 +112,11 @@ function AppShell() {
               minSize={10}
               className={styles.panel}
             >
-              <JsEditorPanel preferences={preferences} ref={jsEditorRef} />
+              <JsEditorPanel
+                preferences={preferences}
+                hasError={hasJsError}
+                ref={jsEditorRef}
+              />
             </Panel>
             <ResizeHandle label="Resize JavaScript editor and preview panels" />
             <Panel
@@ -86,10 +125,17 @@ function AppShell() {
               minSize={10}
               className={styles.panel}
             >
-              <PreviewPanel ref={previewRunHandleRef} />
+              <PreviewPanel
+                ref={previewRunHandleRef}
+                consoleEntries={consoleEntries}
+              />
             </Panel>
           </Group>
-          <ConsolePanel />
+          <ConsolePanel
+            entries={consoleEntries.entries}
+            onClear={consoleEntries.clear}
+            onFocusSource={handleFocusSource}
+          />
         </main>
         <div id="dialog-root" />
       </div>

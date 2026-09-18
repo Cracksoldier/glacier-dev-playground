@@ -3,20 +3,43 @@ import { createRef } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { PlaygroundProject } from "../../models/project";
 import { PROJECT_TEMPLATES } from "../../models/templates";
+import {
+  PREVIEW_MESSAGE_PROTOCOL,
+  PREVIEW_MESSAGE_VERSION,
+} from "../../preview/previewMessage";
 import PreviewFrame, { type PreviewRunHandle } from "./PreviewFrame";
 
-const startBuildMock = vi.fn(() => ({
-  compilationId: "compilation-1",
-  executionId: "execution-1",
-  document: "<html></html>",
-}));
+let executionCounter = 0;
+const startBuildMock = vi.fn(() => {
+  executionCounter += 1;
+  return {
+    compilationId: `compilation-${executionCounter}`,
+    executionId: `execution-${executionCounter}`,
+    document: "<html></html>",
+  };
+});
+
+let staleExecutionId: string | null = null;
+const isStaleMock = vi.fn(
+  (executionId: string) => executionId === staleExecutionId,
+);
 
 vi.mock("../../preview/buildCoordinator", () => ({
   createPreviewBuildCoordinator: () => ({
     startBuild: startBuildMock,
-    isStale: () => false,
+    isStale: isStaleMock,
   }),
 }));
+
+function makeReadyMessage(executionId: string) {
+  return {
+    protocol: PREVIEW_MESSAGE_PROTOCOL,
+    version: PREVIEW_MESSAGE_VERSION,
+    executionId,
+    type: "ready" as const,
+    payload: { timestampMs: 0 },
+  };
+}
 
 function makeProject(
   overrides: Partial<PlaygroundProject["settings"]> = {},
@@ -30,6 +53,9 @@ function makeProject(
 
 beforeEach(() => {
   startBuildMock.mockClear();
+  isStaleMock.mockClear();
+  executionCounter = 0;
+  staleExecutionId = null;
   vi.useFakeTimers();
 });
 
@@ -137,5 +163,118 @@ describe("PreviewFrame", () => {
 
     vi.advanceTimersByTime(400);
     expect(startBuildMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("calls onBuildStart with the new execution ID as soon as a build starts", () => {
+    const ref = createRef<PreviewRunHandle>();
+    const onBuildStart = vi.fn();
+    render(
+      <PreviewFrame
+        project={makeProject({ autoRun: false })}
+        onBuildStart={onBuildStart}
+        ref={ref}
+      />,
+    );
+
+    ref.current?.runNow();
+
+    expect(onBuildStart).toHaveBeenCalledExactlyOnceWith("execution-1");
+  });
+
+  it("forwards a valid message from the current build's iframe to onMessage", () => {
+    const ref = createRef<PreviewRunHandle>();
+    const onMessage = vi.fn();
+    const { container } = render(
+      <PreviewFrame
+        project={makeProject({ autoRun: false })}
+        onMessage={onMessage}
+        ref={ref}
+      />,
+    );
+
+    ref.current?.runNow();
+    const iframe = container.querySelector("iframe");
+    const message = makeReadyMessage("execution-1");
+
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: message,
+        source: iframe?.contentWindow,
+      }),
+    );
+
+    expect(onMessage).toHaveBeenCalledExactlyOnceWith(message);
+  });
+
+  it("ignores a message whose source is not the current build's iframe", () => {
+    const ref = createRef<PreviewRunHandle>();
+    const onMessage = vi.fn();
+    render(
+      <PreviewFrame
+        project={makeProject({ autoRun: false })}
+        onMessage={onMessage}
+        ref={ref}
+      />,
+    );
+
+    ref.current?.runNow();
+
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: makeReadyMessage("execution-1"),
+        source: null,
+      }),
+    );
+
+    expect(onMessage).not.toHaveBeenCalled();
+  });
+
+  it("ignores a message that does not match the preview protocol shape", () => {
+    const ref = createRef<PreviewRunHandle>();
+    const onMessage = vi.fn();
+    const { container } = render(
+      <PreviewFrame
+        project={makeProject({ autoRun: false })}
+        onMessage={onMessage}
+        ref={ref}
+      />,
+    );
+
+    ref.current?.runNow();
+    const iframe = container.querySelector("iframe");
+
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: { not: "a preview message" },
+        source: iframe?.contentWindow,
+      }),
+    );
+
+    expect(onMessage).not.toHaveBeenCalled();
+  });
+
+  it("ignores a message whose execution ID the coordinator considers stale", () => {
+    const ref = createRef<PreviewRunHandle>();
+    const onMessage = vi.fn();
+    const { container } = render(
+      <PreviewFrame
+        project={makeProject({ autoRun: false })}
+        onMessage={onMessage}
+        ref={ref}
+      />,
+    );
+
+    ref.current?.runNow();
+    const iframe = container.querySelector("iframe");
+    staleExecutionId = "execution-1";
+
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: makeReadyMessage("execution-1"),
+        source: iframe?.contentWindow,
+      }),
+    );
+
+    expect(onMessage).not.toHaveBeenCalled();
   });
 });

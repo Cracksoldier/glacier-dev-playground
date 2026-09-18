@@ -39,7 +39,7 @@ export function createPreviewBuildCoordinator(): PreviewBuildCoordinator {
       return {
         compilationId,
         executionId,
-        document: buildPreviewDocument(snapshot.source),
+        document: buildPreviewDocument(snapshot.source, executionId),
       };
     },
     isStale(executionId) {

@@ -16,6 +16,8 @@ import { glacierEditorTheme } from "./editorTheme";
 
 export interface CodeMirrorEditorHandle {
   focus: () => void;
+  /** Moves the cursor to the start of `line` (1-indexed, clamped to the document's line range), scrolls it into view, and focuses the editor. */
+  focusLine: (line: number) => void;
 }
 
 /**
@@ -78,6 +80,17 @@ function CodeMirrorEditor({
     ref,
     () => ({
       focus: () => viewRef.current?.focus(),
+      focusLine: (line) => {
+        const view = viewRef.current;
+        if (!view) return;
+        const clampedLine = Math.min(Math.max(line, 1), view.state.doc.lines);
+        const pos = view.state.doc.line(clampedLine).from;
+        view.dispatch({
+          selection: { anchor: pos },
+          effects: EditorView.scrollIntoView(pos, { y: "center" }),
+        });
+        view.focus();
+      },
     }),
     [],
   );

@@ -9,10 +9,11 @@ import { buildLanguageExtensions } from "./editorExtensions";
 
 interface HtmlEditorPanelProps {
   preferences: EditorPreferences;
+  hasError?: boolean;
   ref?: Ref<CodeMirrorEditorHandle>;
 }
 
-function HtmlEditorPanel({ preferences, ref }: HtmlEditorPanelProps) {
+function HtmlEditorPanel({ preferences, hasError, ref }: HtmlEditorPanelProps) {
   const { activeProject, actions } = useProjectStore();
   const languageExtensions = useMemo(
     () => buildLanguageExtensions("html", {}),
@@ -22,7 +23,15 @@ function HtmlEditorPanel({ preferences, ref }: HtmlEditorPanelProps) {
   return (
     <section className={styles.panel} aria-label="HTML editor">
       <div className={styles.header}>
-        <span className={styles.label}>HTML</span>
+        <span className={styles.label}>
+          HTML
+          {hasError && (
+            <>
+              <span className={styles.errorBadge} aria-hidden="true" />
+              <span className={styles.srOnly}>Contains an error</span>
+            </>
+          )}
+        </span>
       </div>
       <div className={styles.body}>
         <CodeMirrorEditor

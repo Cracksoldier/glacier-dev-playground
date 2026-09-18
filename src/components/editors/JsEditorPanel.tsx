@@ -10,6 +10,7 @@ import { buildLanguageExtensions } from "./editorExtensions";
 
 interface JsEditorPanelProps {
   preferences: EditorPreferences;
+  hasError?: boolean;
   ref?: Ref<CodeMirrorEditorHandle>;
 }
 
@@ -21,7 +22,7 @@ function isExecutionMode(value: string): value is ExecutionMode {
   return value === "classic" || value === "module";
 }
 
-function JsEditorPanel({ preferences, ref }: JsEditorPanelProps) {
+function JsEditorPanel({ preferences, hasError, ref }: JsEditorPanelProps) {
   const { activeProject, actions } = useProjectStore();
   const { scriptLanguage, executionMode } = activeProject.source;
   const languageExtensions = useMemo(
@@ -32,7 +33,15 @@ function JsEditorPanel({ preferences, ref }: JsEditorPanelProps) {
   return (
     <section className={styles.panel} aria-label="JavaScript editor">
       <div className={styles.header}>
-        <span className={styles.label}>Script</span>
+        <span className={styles.label}>
+          Script
+          {hasError && (
+            <>
+              <span className={styles.errorBadge} aria-hidden="true" />
+              <span className={styles.srOnly}>Contains an error</span>
+            </>
+          )}
+        </span>
         <div className={styles.selectors}>
           <select
             className={styles.select}

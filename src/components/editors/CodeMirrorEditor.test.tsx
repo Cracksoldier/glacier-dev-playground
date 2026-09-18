@@ -158,4 +158,30 @@ describe("CodeMirrorEditor", () => {
 
     expect(textbox).toHaveFocus();
   });
+
+  it("focusLine() moves the cursor to the start of the given line and focuses the editor", () => {
+    const ref = createRef<CodeMirrorEditorHandle>();
+    renderEditor({ value: "one\ntwo\nthree", ref });
+
+    const textbox = screen.getByRole("textbox", { name: "HTML source" });
+    expect(textbox).not.toHaveFocus();
+
+    ref.current?.focusLine(2);
+
+    expect(textbox).toHaveFocus();
+  });
+
+  it("focusLine() clamps a line number below the document's range to line 1", () => {
+    const ref = createRef<CodeMirrorEditorHandle>();
+    renderEditor({ value: "one\ntwo\nthree", ref });
+
+    expect(() => ref.current?.focusLine(0)).not.toThrow();
+  });
+
+  it("focusLine() clamps a line number past the document's range to the last line", () => {
+    const ref = createRef<CodeMirrorEditorHandle>();
+    renderEditor({ value: "one\ntwo\nthree", ref });
+
+    expect(() => ref.current?.focusLine(999)).not.toThrow();
+  });
 });
