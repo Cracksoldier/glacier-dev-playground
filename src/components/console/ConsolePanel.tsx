@@ -19,7 +19,11 @@ function formatRelativeTime(relativeMs: number): string {
 }
 
 function entrySeverityClass(entry: ConsoleEntry): string {
-  if (entry.type === "runtime-error" || entry.type === "unhandled-rejection") {
+  if (
+    entry.type === "runtime-error" ||
+    entry.type === "unhandled-rejection" ||
+    entry.type === "scss-compile-error"
+  ) {
     return styles.severityError;
   }
   switch (entry.level) {
@@ -44,6 +48,8 @@ function entryMessage(entry: ConsoleEntry): string {
       return "Preview ready";
     case "resource-error":
       return entry.message ?? "Resource error";
+    case "scss-compile-error":
+      return entry.message ?? "SCSS compilation failed";
     default:
       return "";
   }
@@ -56,8 +62,12 @@ function ConsoleEntryRow({
   entry: ConsoleEntry;
   onFocusSource: (location: MappedSourceLocation) => void;
 }) {
-  const isClickable =
-    entry.type === "runtime-error" && entry.mappedLocation != null;
+  const focusLocation: MappedSourceLocation | null =
+    entry.type === "runtime-error" && entry.mappedLocation
+      ? entry.mappedLocation
+      : entry.type === "scss-compile-error" && entry.scssLocation
+        ? { panel: "style", line: entry.scssLocation.line }
+        : null;
 
   const content = (
     <>
@@ -83,14 +93,13 @@ function ConsoleEntryRow({
     </>
   );
 
-  if (isClickable && entry.mappedLocation) {
-    const location = entry.mappedLocation;
+  if (focusLocation) {
     return (
       <li className={`${styles.entry} ${entrySeverityClass(entry)}`}>
         <button
           type="button"
           className={styles.entryButton}
-          onClick={() => onFocusSource(location)}
+          onClick={() => onFocusSource(focusLocation)}
         >
           {content}
         </button>
@@ -112,7 +121,8 @@ function ConsolePanel({ entries, onClear, onFocusSource }: ConsolePanelProps) {
   const preserveLogsId = useId();
 
   const errorCount = entries.filter(
-    (entry) => entry.type === "runtime-error",
+    (entry) =>
+      entry.type === "runtime-error" || entry.type === "scss-compile-error",
   ).length;
 
   return (

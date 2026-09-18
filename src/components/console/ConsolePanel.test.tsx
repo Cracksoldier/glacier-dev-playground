@@ -75,6 +75,19 @@ describe("ConsolePanel", () => {
     expect(screen.getByText("2")).toBeInTheDocument();
   });
 
+  it("includes scss-compile-error entries in the error badge count", () => {
+    renderConsolePanel([
+      makeEntry({ id: "e1", type: "runtime-error", message: "boom" }),
+      makeEntry({
+        id: "e2",
+        type: "scss-compile-error",
+        message: "bad scss",
+      }),
+      makeEntry({ id: "e3" }),
+    ]);
+    expect(screen.getByText("2")).toBeInTheDocument();
+  });
+
   it("shows an empty state message when there are no entries", () => {
     renderConsolePanel([]);
     expect(screen.getByText("No console output yet.")).toBeInTheDocument();
@@ -154,5 +167,46 @@ describe("ConsolePanel", () => {
     await user.click(screen.getByRole("button", { name: /Mapped error/ }));
 
     expect(onFocusSource).toHaveBeenCalledWith(location);
+  });
+
+  it("renders a scss-compile-error entry's message and severity styling", () => {
+    renderConsolePanel([
+      makeEntry({
+        type: "scss-compile-error",
+        args: undefined,
+        message: "Undefined variable.",
+      }),
+    ]);
+    expect(screen.getByText("Undefined variable.")).toBeInTheDocument();
+  });
+
+  it("is not clickable for a scss-compile-error entry without a scssLocation", () => {
+    renderConsolePanel([
+      makeEntry({
+        type: "scss-compile-error",
+        args: undefined,
+        message: "Unmapped scss error",
+        scssLocation: null,
+      }),
+    ]);
+    expect(
+      screen.queryByRole("button", { name: /Unmapped scss error/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("is clickable for a scss-compile-error entry with a scssLocation, and calls onFocusSource with a style-panel location", async () => {
+    const user = userEvent.setup();
+    const { onFocusSource } = renderConsolePanel([
+      makeEntry({
+        type: "scss-compile-error",
+        args: undefined,
+        message: "Mapped scss error",
+        scssLocation: { line: 5, column: 3 },
+      }),
+    ]);
+
+    await user.click(screen.getByRole("button", { name: /Mapped scss error/ }));
+
+    expect(onFocusSource).toHaveBeenCalledWith({ panel: "style", line: 5 });
   });
 });

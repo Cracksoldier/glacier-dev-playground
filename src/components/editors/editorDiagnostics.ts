@@ -1,13 +1,11 @@
 import type { Diagnostic } from "@codemirror/lint";
+import type { Text } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
 
 /**
- * Re-exported so later milestones (M7/M8 compiler workers) can depend on
- * this module for the diagnostic shape without importing `@codemirror/lint`
- * directly. Each `CodeMirrorEditor` reserves an empty `Compartment` that a
- * later milestone can reconfigure with a `linter(...)` extension or manual
- * `setDiagnostics(view, diagnostics)` calls built from this type — no
- * diagnostics producer exists yet, so nothing is wired up behaviorally here.
+ * Re-exported so compiler-worker milestones (M7 SCSS, M8 TypeScript) can
+ * depend on this module for the diagnostic shape without importing
+ * `@codemirror/lint` directly.
  */
 export type { Diagnostic };
 
@@ -19,4 +17,28 @@ export function focusSourcePosition(view: EditorView, position: number): void {
     scrollIntoView: true,
   });
   view.focus();
+}
+
+/**
+ * Converts a compiler error (1-indexed `line`/`column`, e.g. from
+ * `ScssCompileError`) into a CodeMirror `Diagnostic` positioned at that
+ * line. `line`/`column` are clamped into the document's actual bounds so an
+ * out-of-range report (e.g. a stale error against now-shorter source) still
+ * renders at the nearest valid position instead of throwing. Diagnostics
+ * without a `line` fall back to the document start.
+ */
+export function buildDiagnosticFromError(
+  doc: Text,
+  error: { message: string; line?: number; column?: number },
+): Diagnostic {
+  const lineNumber = Math.max(1, Math.min(error.line ?? 1, doc.lines));
+  const docLine = doc.line(lineNumber);
+  const column = Math.max(0, Math.min((error.column ?? 1) - 1, docLine.length));
+  const from = docLine.from + column;
+  return {
+    from,
+    to: docLine.to,
+    severity: "error",
+    message: error.message,
+  };
 }

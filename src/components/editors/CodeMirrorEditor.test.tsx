@@ -26,6 +26,8 @@ function renderEditor(
       preferences={props.preferences ?? PREFERENCES}
       ariaLabel={props.ariaLabel ?? "HTML source"}
       ref={props.ref}
+      diagnosticError={props.diagnosticError}
+      readOnly={props.readOnly}
     />,
   );
   return { onChange, ...utils };
@@ -183,5 +185,63 @@ describe("CodeMirrorEditor", () => {
     renderEditor({ value: "one\ntwo\nthree", ref });
 
     expect(() => ref.current?.focusLine(999)).not.toThrow();
+  });
+
+  it("renders no diagnostic marker when diagnosticError is null", () => {
+    const { container } = renderEditor({
+      value: ".a {}",
+      diagnosticError: null,
+    });
+
+    expect(container.querySelector(".cm-lintRange-error")).toBeNull();
+  });
+
+  it("renders a diagnostic marker at the reported line when diagnosticError is set", () => {
+    const { container } = renderEditor({
+      value: ".a {\n  color: red\n}",
+      diagnosticError: { message: "missing semicolon", line: 2, column: 1 },
+    });
+
+    expect(container.querySelector(".cm-lintRange-error")).not.toBeNull();
+  });
+
+  it("clears a previously rendered diagnostic marker when diagnosticError becomes null", () => {
+    const onChange = vi.fn();
+    const { container, rerender } = render(
+      <CodeMirrorEditor
+        value=".a {}"
+        onChange={onChange}
+        languageExtensions={buildLanguageExtensions("html", {})}
+        preferences={PREFERENCES}
+        ariaLabel="Stylesheet source"
+        diagnosticError={{ message: "boom", line: 1 }}
+      />,
+    );
+    expect(container.querySelector(".cm-lintRange-error")).not.toBeNull();
+
+    rerender(
+      <CodeMirrorEditor
+        value=".a {}"
+        onChange={onChange}
+        languageExtensions={buildLanguageExtensions("html", {})}
+        preferences={PREFERENCES}
+        ariaLabel="Stylesheet source"
+        diagnosticError={null}
+      />,
+    );
+
+    expect(container.querySelector(".cm-lintRange-error")).toBeNull();
+  });
+
+  it("renders as read-only and does not call onChange when the user types, when readOnly is true", async () => {
+    const user = userEvent.setup();
+    const { onChange } = renderEditor({ value: "fixed", readOnly: true });
+
+    const textbox = screen.getByRole("textbox", { name: "HTML source" });
+    await user.click(textbox);
+    await user.keyboard("more text");
+
+    expect(onChange).not.toHaveBeenCalled();
+    expect(textbox).toHaveTextContent("fixed");
   });
 });

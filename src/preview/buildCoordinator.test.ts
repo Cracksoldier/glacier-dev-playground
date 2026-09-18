@@ -11,8 +11,8 @@ describe("createPreviewBuildCoordinator", () => {
     const coordinator = createPreviewBuildCoordinator();
     const project = makeProject();
 
-    const first = coordinator.startBuild(project);
-    const second = coordinator.startBuild(project);
+    const first = coordinator.beginBuild(project);
+    const second = coordinator.beginBuild(project);
 
     expect(first.compilationId).not.toBe(second.compilationId);
     expect(first.executionId).not.toBe(second.executionId);
@@ -22,10 +22,10 @@ describe("createPreviewBuildCoordinator", () => {
     const coordinator = createPreviewBuildCoordinator();
     const project = makeProject();
 
-    const first = coordinator.startBuild(project);
+    const first = coordinator.beginBuild(project);
     expect(coordinator.isStale(first.executionId)).toBe(false);
 
-    const second = coordinator.startBuild(project);
+    const second = coordinator.beginBuild(project);
     expect(coordinator.isStale(first.executionId)).toBe(true);
     expect(coordinator.isStale(second.executionId)).toBe(false);
   });
@@ -39,27 +39,47 @@ describe("createPreviewBuildCoordinator", () => {
     const coordinator = createPreviewBuildCoordinator();
     const project = makeProject();
 
-    const build = coordinator.startBuild(project);
+    const build = coordinator.beginBuild(project);
+    const document = coordinator.buildDocument(build.source, build.executionId);
 
-    expect(build.document).toContain(project.source.html);
+    expect(document).toContain(project.source.html);
   });
 
-  it("is not affected by mutating the source project after startBuild returns", () => {
+  it("is not affected by mutating the source project after beginBuild returns", () => {
     const coordinator = createPreviewBuildCoordinator();
     const project = makeProject();
 
-    const build = coordinator.startBuild(project);
+    const build = coordinator.beginBuild(project);
     project.source.html = "<p>mutated after the fact</p>";
+    const document = coordinator.buildDocument(build.source, build.executionId);
 
-    expect(build.document).not.toContain("mutated after the fact");
+    expect(document).not.toContain("mutated after the fact");
   });
 
   it("embeds the build's own execution ID into the bridge script", () => {
     const coordinator = createPreviewBuildCoordinator();
     const project = makeProject();
 
-    const build = coordinator.startBuild(project);
+    const build = coordinator.beginBuild(project);
+    const document = coordinator.buildDocument(build.source, build.executionId);
 
-    expect(build.document).toContain(build.executionId);
+    expect(document).toContain(build.executionId);
+  });
+
+  it("buildDocument reflects a resolvedSource that differs from the snapshot (e.g. compiled CSS substituted in)", () => {
+    const coordinator = createPreviewBuildCoordinator();
+    const project = makeProject();
+
+    const build = coordinator.beginBuild(project);
+    const resolvedSource = {
+      ...build.source,
+      stylesheet: ".compiled { color: red; }",
+    };
+    const document = coordinator.buildDocument(
+      resolvedSource,
+      build.executionId,
+    );
+
+    expect(document).toContain(".compiled { color: red; }");
   });
 });

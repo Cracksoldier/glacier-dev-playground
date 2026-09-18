@@ -22,10 +22,13 @@ interface DocumentSegment {
  * from silently drifting out of sync as the document's shape evolves.
  *
  * `stylesheetLanguage`/`scriptLanguage` are intentionally not branched on
- * here — per the milestone's "raw CSS and JavaScript for the initial
- * implementation" scope, SCSS/TypeScript source is injected verbatim as-is.
- * It will fail to parse/execute correctly in the browser until M7/M8 insert
- * a compile stage in front of this builder; that's expected, not a bug.
+ * here — this builder always injects `source.stylesheet`/`source.script`
+ * verbatim. For SCSS-mode projects, the caller (`PreviewFrame`, via
+ * `PreviewBuildCoordinator.beginBuild`/`buildDocument`) is responsible for
+ * substituting already-compiled CSS into `source.stylesheet` before calling
+ * `buildPreviewDocument`/`computePreviewLineOffsets` — this module has no
+ * SCSS-compilation awareness of its own. TypeScript source is still injected
+ * verbatim as-is pending M8.
  */
 function buildDocumentSegments(
   source: ProjectSource,

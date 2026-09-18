@@ -69,4 +69,19 @@ describe("PreviewPanel", () => {
     const { container } = renderPreviewPanel();
     expect(container.querySelector("iframe")).toBeInTheDocument();
   });
+
+  it("does not show the SCSS-stale banner by default", () => {
+    renderPreviewPanel();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("shows the SCSS-stale banner when isScssStale is true", () => {
+    render(
+      <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+        <PreviewPanel consoleEntries={createConsoleEntriesStub()} isScssStale />
+      </ProjectStoreProvider>,
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent("SCSS compile failed");
+  });
 });

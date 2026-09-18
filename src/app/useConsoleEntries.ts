@@ -8,7 +8,7 @@ import type {
 
 export interface ConsoleEntry {
   id: string;
-  type: PreviewMessage["type"];
+  type: PreviewMessage["type"] | "scss-compile-error";
   level?: ConsoleLevel;
   timestampMs: number;
   relativeMs: number;
@@ -16,6 +16,8 @@ export interface ConsoleEntry {
   message?: string;
   stack?: string;
   mappedLocation?: MappedSourceLocation | null;
+  /** Set only on `scss-compile-error` entries — the Sass-reported source position, already 1-indexed. */
+  scssLocation?: { line: number; column?: number } | null;
 }
 
 export type ConsoleEntryInput = Omit<ConsoleEntry, "id" | "relativeMs">;

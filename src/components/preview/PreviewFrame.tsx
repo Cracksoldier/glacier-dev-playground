@@ -5,7 +5,7 @@ import {
   useImperativeHandle,
   useRef,
 } from "react";
-import type { PlaygroundProject } from "../../models/project";
+import type { PlaygroundProject, ProjectSource } from "../../models/project";
 import { createDebouncer } from "../../persistence/debounce";
 import { createPreviewBuildCoordinator } from "../../preview/buildCoordinator";
 import {
@@ -17,6 +17,8 @@ import {
   PREVIEW_IFRAME_REFERRER_POLICY,
   PREVIEW_IFRAME_SANDBOX,
 } from "../../preview/previewSandbox";
+import { createScssCompilerClient } from "../../preview/scssCompilerClient";
+import type { ScssCompileError } from "../../preview/scssWorkerProtocol";
 import styles from "./PreviewFrame.module.css";
 
 export interface PreviewRunHandle {
@@ -27,8 +29,18 @@ interface PreviewFrameProps {
   project: PlaygroundProject;
   /** Fires synchronously once a build's iframe candidate starts loading. */
   onBuildStart?: (executionId: string) => void;
-  /** Fires for every message accepted from the current (non-stale) preview iframe. */
-  onMessage?: (message: PreviewMessage) => void;
+  /**
+   * Fires for every message accepted from the current (non-stale) preview
+   * iframe, alongside the resolved source (compiled CSS already substituted
+   * in for SCSS-mode projects) that was used to build the emitting iframe —
+   * callers need this, not the raw project source, to correctly map a
+   * `runtime-error` line back to a source panel/line.
+   */
+  onMessage?: (message: PreviewMessage, resolvedSource: ProjectSource) => void;
+  /** Fires when an SCSS compile fails; no candidate iframe is built for that build, so the previously-visible preview stays up. */
+  onScssCompileError?: (error: ScssCompileError, compilationId: string) => void;
+  /** Fires when an SCSS compile succeeds, with the compiled CSS. */
+  onScssCompileSuccess?: (css: string, compilationId: string) => void;
   ref?: Ref<PreviewRunHandle>;
 }
 
@@ -58,13 +70,17 @@ function PreviewFrame({
   project,
   onBuildStart,
   onMessage,
+  onScssCompileError,
+  onScssCompileSuccess,
   ref,
 }: PreviewFrameProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const visibleFrameRef = useRef<HTMLIFrameElement | null>(null);
+  const visibleResolvedSourceRef = useRef<ProjectSource | null>(null);
   const pendingCandidateRef = useRef<{
     executionId: string;
     iframe: HTMLIFrameElement;
+    resolvedSource: ProjectSource;
   } | null>(null);
   const disposedRef = useRef(false);
 
@@ -77,6 +93,10 @@ function PreviewFrame({
   onBuildStartRef.current = onBuildStart;
   const onMessageRef = useRef(onMessage);
   onMessageRef.current = onMessage;
+  const onScssCompileErrorRef = useRef(onScssCompileError);
+  onScssCompileErrorRef.current = onScssCompileError;
+  const onScssCompileSuccessRef = useRef(onScssCompileSuccess);
+  onScssCompileSuccessRef.current = onScssCompileSuccess;
 
   const coordinatorRef = useRef<ReturnType<
     typeof createPreviewBuildCoordinator
@@ -85,15 +105,50 @@ function PreviewFrame({
     coordinatorRef.current = createPreviewBuildCoordinator();
   }
 
-  const runBuild = useCallback(() => {
+  // Created lazily on the first SCSS-mode build (avoids spawning a Worker
+  // for CSS-mode projects, which never need it) and reused for this
+  // component instance's lifetime; torn down in the unmount cleanup effect
+  // below.
+  const scssClientRef = useRef<ReturnType<
+    typeof createScssCompilerClient
+  > | null>(null);
+
+  const runBuild = useCallback(async () => {
     const host = hostRef.current;
     const coordinator = coordinatorRef.current;
     if (!host || !coordinator || disposedRef.current) return;
 
-    const { executionId, document: documentHtml } = coordinator.startBuild(
+    const { compilationId, executionId, source } = coordinator.beginBuild(
       projectRef.current,
     );
     onBuildStartRef.current?.(executionId);
+
+    let resolvedStylesheet = source.stylesheet;
+    if (source.stylesheetLanguage === "scss") {
+      if (!scssClientRef.current) {
+        scssClientRef.current = createScssCompilerClient();
+      }
+      const result = await scssClientRef.current.compile(
+        source.stylesheet,
+        compilationId,
+      );
+      // Re-check after the await: a newer build may have started (or this
+      // instance may have unmounted) while the compile was in flight.
+      if (disposedRef.current || coordinator.isStale(executionId)) return;
+
+      if (result.type === "failure") {
+        onScssCompileErrorRef.current?.(result.error, compilationId);
+        return;
+      }
+      onScssCompileSuccessRef.current?.(result.css, compilationId);
+      resolvedStylesheet = result.css;
+    }
+
+    const resolvedSource: ProjectSource = {
+      ...source,
+      stylesheet: resolvedStylesheet,
+    };
+    const documentHtml = coordinator.buildDocument(resolvedSource, executionId);
 
     const iframe = createPreviewIframe();
     iframe.style.visibility = "hidden";
@@ -114,12 +169,13 @@ function PreviewFrame({
       iframe.style.visibility = "visible";
       const previous = visibleFrameRef.current;
       visibleFrameRef.current = iframe;
+      visibleResolvedSourceRef.current = resolvedSource;
       pendingCandidateRef.current = null;
       previous?.remove();
     }
 
     iframe.addEventListener("load", handleLoad);
-    pendingCandidateRef.current = { executionId, iframe };
+    pendingCandidateRef.current = { executionId, iframe, resolvedSource };
     host.appendChild(iframe);
     iframe.srcdoc = documentHtml;
   }, []);
@@ -174,8 +230,11 @@ function PreviewFrame({
       debouncerRef.current?.cancel();
       visibleFrameRef.current?.remove();
       visibleFrameRef.current = null;
+      visibleResolvedSourceRef.current = null;
       pendingCandidateRef.current?.iframe.remove();
       pendingCandidateRef.current = null;
+      scssClientRef.current?.dispose();
+      scssClientRef.current = null;
     };
   }, []);
 
@@ -193,7 +252,12 @@ function PreviewFrame({
       const coordinator = coordinatorRef.current;
       if (!coordinator || coordinator.isStale(event.data.executionId)) return;
 
-      onMessageRef.current?.(event.data);
+      const resolvedSource = isFromVisibleFrame
+        ? visibleResolvedSourceRef.current
+        : pendingCandidateRef.current?.resolvedSource;
+      if (!resolvedSource) return;
+
+      onMessageRef.current?.(event.data, resolvedSource);
     }
 
     window.addEventListener("message", handleMessage);

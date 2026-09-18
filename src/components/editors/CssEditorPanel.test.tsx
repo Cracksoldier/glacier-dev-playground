@@ -45,6 +45,17 @@ function renderHarness() {
   );
 }
 
+function StaleHarness({ isStale }: { isStale: boolean }) {
+  return (
+    <div>
+      <CssEditorPanel
+        preferences={DEFAULT_EDITOR_PREFERENCES}
+        isStale={isStale}
+      />
+    </div>
+  );
+}
+
 describe("CssEditorPanel", () => {
   it("editing the source updates the active project's stylesheet", async () => {
     const user = userEvent.setup();
@@ -120,5 +131,83 @@ describe("CssEditorPanel", () => {
       </ProjectStoreProvider>,
     );
     expect(screen.getByText("Contains an error")).toBeInTheDocument();
+  });
+
+  it("does not show a Source/Compiled toggle in CSS mode", () => {
+    renderHarness();
+    expect(
+      screen.queryByRole("button", { name: "Compiled" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows a Source/Compiled toggle in SCSS mode, defaulting to Source", async () => {
+    const user = userEvent.setup();
+    renderHarness();
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Stylesheet language" }),
+      "scss",
+    );
+
+    expect(screen.getByRole("button", { name: "Source" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByRole("button", { name: "Compiled" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+    expect(
+      screen.getByRole("textbox", { name: "Stylesheet source" }),
+    ).toBeInTheDocument();
+  });
+
+  it("switches to a read-only Compiled CSS view showing compiledCss", async () => {
+    const user = userEvent.setup();
+    render(
+      <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+        <Harness />
+      </ProjectStoreProvider>,
+    );
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Stylesheet language" }),
+      "scss",
+    );
+    await user.click(screen.getByRole("button", { name: "Compiled" }));
+
+    const compiledView = screen.getByRole("textbox", {
+      name: "Compiled CSS output",
+    });
+    expect(compiledView).toBeInTheDocument();
+    expect(
+      screen.queryByRole("textbox", { name: "Stylesheet source" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not show a stale notice when isStale is false", () => {
+    render(
+      <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+        <StaleHarness isStale={false} />
+      </ProjectStoreProvider>,
+    );
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("shows a stale notice in SCSS mode when isStale is true", async () => {
+    const user = userEvent.setup();
+    render(
+      <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+        <StaleHarness isStale />
+      </ProjectStoreProvider>,
+    );
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Stylesheet language" }),
+      "scss",
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent("SCSS compile failed");
   });
 });

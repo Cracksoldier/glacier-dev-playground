@@ -1,29 +1,33 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { UseConsoleEntriesResult } from "../../app/useConsoleEntries";
+import type { ProjectSource } from "../../models/project";
+import { computePreviewLineOffsets } from "../../preview/previewDocument";
 import {
   PREVIEW_MESSAGE_PROTOCOL,
   PREVIEW_MESSAGE_VERSION,
   type PreviewMessage,
 } from "../../preview/previewMessage";
+import type { ScssCompileError } from "../../preview/scssWorkerProtocol";
 import { ProjectStoreProvider } from "../../store/ProjectStoreContext";
 import { createInMemoryProjectRepository } from "../../test/inMemoryProjectRepository";
 import PreviewPanel from "./PreviewPanel";
 
+interface PreviewFrameMockProps {
+  onBuildStart?: () => void;
+  onMessage?: (message: PreviewMessage, resolvedSource: ProjectSource) => void;
+  onScssCompileError?: (error: ScssCompileError, compilationId: string) => void;
+  onScssCompileSuccess?: (css: string, compilationId: string) => void;
+}
+
 const { previewFrameProps } = vi.hoisted(() => ({
   previewFrameProps: {
-    current: null as {
-      onBuildStart?: () => void;
-      onMessage?: (message: PreviewMessage) => void;
-    } | null,
+    current: null as PreviewFrameMockProps | null,
   },
 }));
 
 vi.mock("./PreviewFrame", () => ({
-  default: (props: {
-    onBuildStart?: () => void;
-    onMessage?: (message: PreviewMessage) => void;
-  }) => {
+  default: (props: PreviewFrameMockProps) => {
     previewFrameProps.current = props;
     return null;
   },
@@ -38,10 +42,19 @@ function createConsoleEntriesStub(): UseConsoleEntriesResult {
   };
 }
 
-function renderPreviewPanel(consoleEntries: UseConsoleEntriesResult) {
+function renderPreviewPanel(
+  consoleEntries: UseConsoleEntriesResult,
+  overrides: {
+    onScssCompileError?: (
+      error: ScssCompileError,
+      compilationId: string,
+    ) => void;
+    onScssCompileSuccess?: (css: string, compilationId: string) => void;
+  } = {},
+) {
   return render(
     <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
-      <PreviewPanel consoleEntries={consoleEntries} />
+      <PreviewPanel consoleEntries={consoleEntries} {...overrides} />
     </ProjectStoreProvider>,
   );
 }
@@ -56,6 +69,16 @@ function makeMessage(
     ...message,
   } as PreviewMessage;
 }
+
+const resolvedSource: ProjectSource = {
+  html: "<p>hi</p>",
+  stylesheet: "p { color: red; }",
+  stylesheetLanguage: "css",
+  script: "console.log('hi');",
+  scriptLanguage: "javascript",
+  executionMode: "classic",
+  headContent: "",
+};
 
 describe("PreviewPanel console wiring", () => {
   it("starts a new run and clears entries on build start by default (preserveConsole is false)", () => {
@@ -74,6 +97,7 @@ describe("PreviewPanel console wiring", () => {
 
     previewFrameProps.current?.onMessage?.(
       makeMessage({ type: "ready", payload: { timestampMs: 0 } }),
+      resolvedSource,
     );
 
     expect(consoleEntries.append).not.toHaveBeenCalled();
@@ -92,6 +116,7 @@ describe("PreviewPanel console wiring", () => {
           timestampMs: 10,
         },
       }),
+      resolvedSource,
     );
 
     expect(consoleEntries.append).toHaveBeenCalledWith({
@@ -111,6 +136,7 @@ describe("PreviewPanel console wiring", () => {
         type: "console",
         payload: { level: "clear", args: [], timestampMs: 10 },
       }),
+      resolvedSource,
     );
 
     expect(consoleEntries.clear).toHaveBeenCalledTimes(1);
@@ -136,6 +162,7 @@ describe("PreviewPanel console wiring", () => {
           timestampMs: 20,
         },
       }),
+      resolvedSource,
     );
 
     expect(consoleEntries.append).toHaveBeenCalledWith({
@@ -156,6 +183,7 @@ describe("PreviewPanel console wiring", () => {
         type: "runtime-error",
         payload: { message: "boom", timestampMs: 20 },
       }),
+      resolvedSource,
     );
 
     expect(consoleEntries.append).toHaveBeenCalledWith({
@@ -179,6 +207,7 @@ describe("PreviewPanel console wiring", () => {
           timestampMs: 30,
         },
       }),
+      resolvedSource,
     );
 
     expect(consoleEntries.append).toHaveBeenCalledWith({
@@ -201,6 +230,7 @@ describe("PreviewPanel console wiring", () => {
           timestampMs: 40,
         },
       }),
+      resolvedSource,
     );
 
     expect(consoleEntries.append).toHaveBeenCalledWith({
@@ -208,5 +238,102 @@ describe("PreviewPanel console wiring", () => {
       message: "Failed to load resource",
       timestampMs: 40,
     });
+  });
+
+  it("appends a scss-compile-error entry with a scssLocation and forwards to onScssCompileError", () => {
+    const consoleEntries = createConsoleEntriesStub();
+    const onScssCompileError = vi.fn();
+    renderPreviewPanel(consoleEntries, { onScssCompileError });
+
+    const error: ScssCompileError = {
+      message: "Undefined variable.",
+      line: 3,
+      column: 5,
+    };
+    previewFrameProps.current?.onScssCompileError?.(error, "compilation-1");
+
+    expect(consoleEntries.append).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "scss-compile-error",
+        message: "Undefined variable.",
+        scssLocation: { line: 3, column: 5 },
+      }),
+    );
+    expect(onScssCompileError).toHaveBeenCalledWith(error, "compilation-1");
+  });
+
+  it("appends a scss-compile-error entry with a null scssLocation when no line is reported", () => {
+    const consoleEntries = createConsoleEntriesStub();
+    renderPreviewPanel(consoleEntries);
+
+    previewFrameProps.current?.onScssCompileError?.(
+      { message: "boom" },
+      "compilation-1",
+    );
+
+    expect(consoleEntries.append).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "scss-compile-error",
+        message: "boom",
+        scssLocation: null,
+      }),
+    );
+  });
+
+  it("forwards a successful scss compile to onScssCompileSuccess without appending a console entry", () => {
+    const consoleEntries = createConsoleEntriesStub();
+    const onScssCompileSuccess = vi.fn();
+    renderPreviewPanel(consoleEntries, { onScssCompileSuccess });
+
+    previewFrameProps.current?.onScssCompileSuccess?.(
+      ".a { color: red; }",
+      "compilation-1",
+    );
+
+    expect(onScssCompileSuccess).toHaveBeenCalledWith(
+      ".a { color: red; }",
+      "compilation-1",
+    );
+    expect(consoleEntries.append).not.toHaveBeenCalled();
+  });
+
+  it("maps a runtime-error line against the resolved (compiled-CSS) source, not the raw project source", () => {
+    const consoleEntries = createConsoleEntriesStub();
+    renderPreviewPanel(consoleEntries);
+
+    // A stylesheet much longer than the default starter project's raw CSS —
+    // simulates the compiled-CSS-substituted source an SCSS-mode build
+    // produces. If PreviewPanel mapped against the raw (uncompiled) project
+    // source instead of this resolved one, the script block's offset (and
+    // thus this mappedLocation) would come out wrong.
+    const scssResolvedSource: ProjectSource = {
+      ...resolvedSource,
+      stylesheet: Array.from(
+        { length: 20 },
+        (_, i) => `.rule-${i} { color: red; }`,
+      ).join("\n"),
+    };
+    const documentLine =
+      computePreviewLineOffsets(scssResolvedSource).script.start;
+
+    previewFrameProps.current?.onMessage?.(
+      makeMessage({
+        type: "runtime-error",
+        payload: {
+          message: "boom",
+          line: documentLine,
+          stack: "Error: boom",
+          timestampMs: 50,
+        },
+      }),
+      scssResolvedSource,
+    );
+
+    expect(consoleEntries.append).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "runtime-error",
+        mappedLocation: { panel: "script", line: 1 },
+      }),
+    );
   });
 });

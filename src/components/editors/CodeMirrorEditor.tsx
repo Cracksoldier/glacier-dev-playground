@@ -1,3 +1,4 @@
+import { setDiagnostics } from "@codemirror/lint";
 import {
   Annotation,
   Compartment,
@@ -7,6 +8,7 @@ import {
 import { EditorView } from "@codemirror/view";
 import { type Ref, useEffect, useImperativeHandle, useRef } from "react";
 import styles from "./EditorPanel.module.css";
+import { buildDiagnosticFromError } from "./editorDiagnostics";
 import {
   buildPreferencesExtensions,
   buildSharedExtensions,
@@ -31,6 +33,12 @@ export interface CodeMirrorEditorHandle {
  */
 const externalChange = Annotation.define<boolean>();
 
+export interface CodeMirrorEditorDiagnosticError {
+  message: string;
+  line?: number;
+  column?: number;
+}
+
 interface CodeMirrorEditorProps {
   value: string;
   onChange: (value: string) => void;
@@ -38,6 +46,10 @@ interface CodeMirrorEditorProps {
   preferences: EditorPreferences;
   ariaLabel: string;
   ref?: Ref<CodeMirrorEditorHandle>;
+  /** A single compiler-reported error to surface as a CodeMirror diagnostic, or `null`/omitted to clear it. */
+  diagnosticError?: CodeMirrorEditorDiagnosticError | null;
+  /** Fixed for this instance's lifetime — not reconfigured after mount (see the Compiled CSS view, a separate always-read-only instance). */
+  readOnly?: boolean;
 }
 
 /**
@@ -59,6 +71,8 @@ function CodeMirrorEditor({
   preferences,
   ariaLabel,
   ref,
+  diagnosticError = null,
+  readOnly = false,
 }: CodeMirrorEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
@@ -95,7 +109,7 @@ function CodeMirrorEditor({
     [],
   );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only by design; value/preferences/languageExtensions/ariaLabel are handled by dedicated effects below or are immutable for this instance's lifetime.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only by design; value/preferences/languageExtensions/diagnosticError are handled by dedicated effects below; ariaLabel/readOnly are immutable for this instance's lifetime.
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
@@ -122,6 +136,9 @@ function CodeMirrorEditor({
             lastEmittedRef.current = next;
             onChangeRef.current(next);
           }),
+          ...(readOnly
+            ? [EditorView.editable.of(false), EditorState.readOnly.of(true)]
+            : []),
         ],
       }),
       parent: host,
@@ -177,6 +194,20 @@ function CodeMirrorEditor({
       effects: languageCompartment.current.reconfigure(languageExtensions),
     });
   }, [languageExtensions]);
+
+  useEffect(() => {
+    const view = viewRef.current;
+    if (!view) return;
+
+    view.dispatch(
+      setDiagnostics(
+        view.state,
+        diagnosticError
+          ? [buildDiagnosticFromError(view.state.doc, diagnosticError)]
+          : [],
+      ),
+    );
+  }, [diagnosticError]);
 
   return <div ref={hostRef} className={styles.codeMirrorHost} />;
 }

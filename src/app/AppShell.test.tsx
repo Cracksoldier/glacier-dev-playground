@@ -1,7 +1,30 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import type { ProjectSource } from "../models/project";
+import type { PreviewMessage } from "../preview/previewMessage";
+import type { ScssCompileError } from "../preview/scssWorkerProtocol";
 import AppShell from "./AppShell";
+
+interface PreviewFrameMockProps {
+  onBuildStart?: () => void;
+  onMessage?: (message: PreviewMessage, resolvedSource: ProjectSource) => void;
+  onScssCompileError?: (error: ScssCompileError, compilationId: string) => void;
+  onScssCompileSuccess?: (css: string, compilationId: string) => void;
+}
+
+const { previewFrameProps } = vi.hoisted(() => ({
+  previewFrameProps: {
+    current: null as PreviewFrameMockProps | null,
+  },
+}));
+
+vi.mock("../components/preview/PreviewFrame", () => ({
+  default: (props: PreviewFrameMockProps) => {
+    previewFrameProps.current = props;
+    return null;
+  },
+}));
 
 const DISABLED_TOOLBAR_ACTION_NAMES = [
   "Resources",
@@ -135,5 +158,56 @@ describe("AppShell", () => {
     expect(
       screen.getByRole("textbox", { name: "Script source" }),
     ).toHaveFocus();
+  });
+
+  it("wires an SCSS compile error into the CSS editor error badge and the preview stale banner", async () => {
+    const user = userEvent.setup();
+    render(<AppShell />);
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Stylesheet language" }),
+      "scss",
+    );
+
+    act(() => {
+      previewFrameProps.current?.onScssCompileError?.(
+        { message: "Undefined variable.", line: 2 },
+        "compilation-1",
+      );
+    });
+
+    expect(screen.getByText("Contains an error")).toBeInTheDocument();
+    expect(screen.getAllByText(/SCSS compile failed/).length).toBeGreaterThan(
+      0,
+    );
+  });
+
+  it("clears the SCSS-stale state once a subsequent compile succeeds", async () => {
+    const user = userEvent.setup();
+    render(<AppShell />);
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Stylesheet language" }),
+      "scss",
+    );
+
+    act(() => {
+      previewFrameProps.current?.onScssCompileError?.(
+        { message: "Undefined variable." },
+        "compilation-1",
+      );
+    });
+    expect(screen.getAllByText(/SCSS compile failed/).length).toBeGreaterThan(
+      0,
+    );
+
+    act(() => {
+      previewFrameProps.current?.onScssCompileSuccess?.(
+        ".a { color: red; }",
+        "compilation-2",
+      );
+    });
+
+    expect(screen.queryByText(/SCSS compile failed/)).not.toBeInTheDocument();
   });
 });
