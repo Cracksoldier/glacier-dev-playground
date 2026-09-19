@@ -27,8 +27,10 @@ interface DocumentSegment {
  * `PreviewBuildCoordinator.beginBuild`/`buildDocument`) is responsible for
  * substituting already-compiled CSS into `source.stylesheet` before calling
  * `buildPreviewDocument`/`computePreviewLineOffsets` — this module has no
- * SCSS-compilation awareness of its own. TypeScript source is still injected
- * verbatim as-is pending M8.
+ * SCSS-compilation awareness of its own. Likewise, for TypeScript-mode
+ * projects the caller substitutes the TS compiler's emitted JS into
+ * `source.script` beforehand — this module has no TS-compilation awareness
+ * of its own either.
  */
 function buildDocumentSegments(
   source: ProjectSource,

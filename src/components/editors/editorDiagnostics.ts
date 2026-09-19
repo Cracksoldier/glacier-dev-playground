@@ -20,25 +20,61 @@ export function focusSourcePosition(view: EditorView, position: number): void {
 }
 
 /**
+ * Clamps a 1-indexed `line`/`column` into the document's actual bounds so an
+ * out-of-range report (e.g. a stale error against now-shorter source) still
+ * resolves to the nearest valid position instead of throwing, and returns
+ * the resulting `[from, to)` span (start of the clamped column through the
+ * end of its line). Shared by both diagnostic builders below.
+ */
+function clampErrorPosition(
+  doc: Text,
+  line?: number,
+  column?: number,
+): { from: number; to: number } {
+  const lineNumber = Math.max(1, Math.min(line ?? 1, doc.lines));
+  const docLine = doc.line(lineNumber);
+  const clampedColumn = Math.max(
+    0,
+    Math.min((column ?? 1) - 1, docLine.length),
+  );
+  return { from: docLine.from + clampedColumn, to: docLine.to };
+}
+
+/**
  * Converts a compiler error (1-indexed `line`/`column`, e.g. from
  * `ScssCompileError`) into a CodeMirror `Diagnostic` positioned at that
- * line. `line`/`column` are clamped into the document's actual bounds so an
- * out-of-range report (e.g. a stale error against now-shorter source) still
- * renders at the nearest valid position instead of throwing. Diagnostics
- * without a `line` fall back to the document start.
+ * line. Diagnostics without a `line` fall back to the document start.
  */
 export function buildDiagnosticFromError(
   doc: Text,
   error: { message: string; line?: number; column?: number },
 ): Diagnostic {
-  const lineNumber = Math.max(1, Math.min(error.line ?? 1, doc.lines));
-  const docLine = doc.line(lineNumber);
-  const column = Math.max(0, Math.min((error.column ?? 1) - 1, docLine.length));
-  const from = docLine.from + column;
-  return {
-    from,
-    to: docLine.to,
-    severity: "error",
-    message: error.message,
-  };
+  const { from, to } = clampErrorPosition(doc, error.line, error.column);
+  return { from, to, severity: "error", message: error.message };
+}
+
+/**
+ * Plural counterpart to `buildDiagnosticFromError`, for compilers (e.g. the
+ * M8 TypeScript/JavaScript worker) that can report many diagnostics per
+ * file. Each error's own `severity` is honored (defaulting to `"error"`)
+ * instead of always being an error.
+ */
+export function buildDiagnosticsFromErrors(
+  doc: Text,
+  errors: {
+    message: string;
+    line?: number;
+    column?: number;
+    severity?: "error" | "warning";
+  }[],
+): Diagnostic[] {
+  return errors.map((error) => {
+    const { from, to } = clampErrorPosition(doc, error.line, error.column);
+    return {
+      from,
+      to,
+      severity: error.severity ?? "error",
+      message: error.message,
+    };
+  });
 }

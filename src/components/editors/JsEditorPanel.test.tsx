@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { describe, expect, it } from "vitest";
 import { DEFAULT_EDITOR_PREFERENCES } from "../../preferences/editorPreferences";
 import {
@@ -8,6 +8,7 @@ import {
   useProjectStore,
 } from "../../store/ProjectStoreContext";
 import { createInMemoryProjectRepository } from "../../test/inMemoryProjectRepository";
+import type { CodeMirrorEditorDiagnostic } from "./CodeMirrorEditor";
 import JsEditorPanel from "./JsEditorPanel";
 
 function Harness() {
@@ -41,6 +42,29 @@ function renderHarness() {
     <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
       <Harness />
     </ProjectStoreProvider>,
+  );
+}
+
+// diagnosticErrors is applied via a CodeMirror effect keyed on the prop
+// reference, not on doc content — this toggle lets a test type content into
+// the (initially empty) script first, then apply diagnostics against the
+// resulting non-empty doc, matching how a real compile-after-edit occurs.
+function DiagnosticsHarness({
+  diagnosticErrors,
+}: {
+  diagnosticErrors: CodeMirrorEditorDiagnostic[];
+}) {
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
+  return (
+    <div>
+      <button type="button" onClick={() => setShowDiagnostics(true)}>
+        Show diagnostics
+      </button>
+      <JsEditorPanel
+        preferences={DEFAULT_EDITOR_PREFERENCES}
+        diagnosticErrors={showDiagnostics ? diagnosticErrors : null}
+      />
+    </div>
   );
 }
 
@@ -146,5 +170,56 @@ describe("JsEditorPanel", () => {
       </ProjectStoreProvider>,
     );
     expect(screen.getByText("Contains an error")).toBeInTheDocument();
+  });
+
+  it("does not show a stale notice when isStale is false", () => {
+    render(
+      <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+        <JsEditorPanel
+          preferences={DEFAULT_EDITOR_PREFERENCES}
+          isStale={false}
+        />
+      </ProjectStoreProvider>,
+    );
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("shows a stale notice naming the active script language when isStale is true", async () => {
+    const user = userEvent.setup();
+    render(
+      <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+        <JsEditorPanel preferences={DEFAULT_EDITOR_PREFERENCES} isStale />
+      </ProjectStoreProvider>,
+    );
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "JavaScript compile failed",
+    );
+
+    await user.selectOptions(
+      screen.getByRole("combobox", { name: "Script language" }),
+      "typescript",
+    );
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "TypeScript compile failed",
+    );
+  });
+
+  it("renders a diagnostic marker for each entry in diagnosticErrors", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+        <DiagnosticsHarness
+          diagnosticErrors={[
+            { message: "Type error", line: 1, severity: "error" },
+          ]}
+        />
+      </ProjectStoreProvider>,
+    );
+
+    await user.click(screen.getByRole("textbox", { name: "Script source" }));
+    await user.keyboard("const a = 1;");
+    await user.click(screen.getByRole("button", { name: "Show diagnostics" }));
+
+    expect(container.querySelector(".cm-lintRange-error")).not.toBeNull();
   });
 });

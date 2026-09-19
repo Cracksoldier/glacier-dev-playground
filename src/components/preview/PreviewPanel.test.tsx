@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { useEffect } from "react";
 import { describe, expect, it, vi } from "vitest";
 import type { UseConsoleEntriesResult } from "../../app/useConsoleEntries";
@@ -8,6 +8,20 @@ import {
 } from "../../store/ProjectStoreContext";
 import { createInMemoryProjectRepository } from "../../test/inMemoryProjectRepository";
 import PreviewPanel from "./PreviewPanel";
+
+// jsdom has no Worker; PreviewFrame's build pipeline now unconditionally runs
+// a TS/JS compile (unlike SCSS, which only creates its worker for scss
+// sources), so this always-real-PreviewFrame test suite must stub it out.
+vi.mock("../../preview/tsCompilerClient", () => ({
+  createTsCompilerClient: () => ({
+    compile: async (source: string) => ({
+      diagnostics: [],
+      emittedJs: source,
+      lineMap: null,
+    }),
+    dispose: () => {},
+  }),
+}));
 
 function createConsoleEntriesStub(): UseConsoleEntriesResult {
   return {
@@ -65,9 +79,11 @@ describe("PreviewPanel", () => {
     );
   });
 
-  it("renders a preview iframe", () => {
+  it("renders a preview iframe", async () => {
     const { container } = renderPreviewPanel();
-    expect(container.querySelector("iframe")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(container.querySelector("iframe")).toBeInTheDocument(),
+    );
   });
 
   it("does not show the SCSS-stale banner by default", () => {
@@ -83,5 +99,25 @@ describe("PreviewPanel", () => {
     );
 
     expect(screen.getByRole("status")).toHaveTextContent("SCSS compile failed");
+  });
+
+  it("does not show the script-stale banner by default", () => {
+    renderPreviewPanel();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("shows the script-stale banner when isScriptStale is true, naming the active script language", () => {
+    render(
+      <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+        <PreviewPanel
+          consoleEntries={createConsoleEntriesStub()}
+          isScriptStale
+        />
+      </ProjectStoreProvider>,
+    );
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "JavaScript compile failed",
+    );
   });
 });

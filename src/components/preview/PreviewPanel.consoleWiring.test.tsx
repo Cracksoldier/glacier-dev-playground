@@ -9,15 +9,24 @@ import {
   type PreviewMessage,
 } from "../../preview/previewMessage";
 import type { ScssCompileError } from "../../preview/scssWorkerProtocol";
+import type { TsDiagnostic } from "../../preview/tsWorkerProtocol";
 import { ProjectStoreProvider } from "../../store/ProjectStoreContext";
 import { createInMemoryProjectRepository } from "../../test/inMemoryProjectRepository";
+import type { ResolvedPreviewBuild } from "./PreviewFrame";
 import PreviewPanel from "./PreviewPanel";
 
 interface PreviewFrameMockProps {
   onBuildStart?: () => void;
-  onMessage?: (message: PreviewMessage, resolvedSource: ProjectSource) => void;
+  onMessage?: (
+    message: PreviewMessage,
+    resolvedBuild: ResolvedPreviewBuild,
+  ) => void;
   onScssCompileError?: (error: ScssCompileError, compilationId: string) => void;
   onScssCompileSuccess?: (css: string, compilationId: string) => void;
+  onScriptDiagnostics?: (
+    diagnostics: TsDiagnostic[],
+    compilationId: string,
+  ) => void;
 }
 
 const { previewFrameProps } = vi.hoisted(() => ({
@@ -50,6 +59,10 @@ function renderPreviewPanel(
       compilationId: string,
     ) => void;
     onScssCompileSuccess?: (css: string, compilationId: string) => void;
+    onScriptDiagnostics?: (
+      diagnostics: TsDiagnostic[],
+      compilationId: string,
+    ) => void;
   } = {},
 ) {
   return render(
@@ -79,6 +92,10 @@ const resolvedSource: ProjectSource = {
   executionMode: "classic",
   headContent: "",
 };
+const resolvedBuild: ResolvedPreviewBuild = {
+  resolvedSource,
+  scriptLineMap: null,
+};
 
 describe("PreviewPanel console wiring", () => {
   it("starts a new run and clears entries on build start by default (preserveConsole is false)", () => {
@@ -97,7 +114,7 @@ describe("PreviewPanel console wiring", () => {
 
     previewFrameProps.current?.onMessage?.(
       makeMessage({ type: "ready", payload: { timestampMs: 0 } }),
-      resolvedSource,
+      resolvedBuild,
     );
 
     expect(consoleEntries.append).not.toHaveBeenCalled();
@@ -116,7 +133,7 @@ describe("PreviewPanel console wiring", () => {
           timestampMs: 10,
         },
       }),
-      resolvedSource,
+      resolvedBuild,
     );
 
     expect(consoleEntries.append).toHaveBeenCalledWith({
@@ -136,7 +153,7 @@ describe("PreviewPanel console wiring", () => {
         type: "console",
         payload: { level: "clear", args: [], timestampMs: 10 },
       }),
-      resolvedSource,
+      resolvedBuild,
     );
 
     expect(consoleEntries.clear).toHaveBeenCalledTimes(1);
@@ -162,7 +179,7 @@ describe("PreviewPanel console wiring", () => {
           timestampMs: 20,
         },
       }),
-      resolvedSource,
+      resolvedBuild,
     );
 
     expect(consoleEntries.append).toHaveBeenCalledWith({
@@ -183,7 +200,7 @@ describe("PreviewPanel console wiring", () => {
         type: "runtime-error",
         payload: { message: "boom", timestampMs: 20 },
       }),
-      resolvedSource,
+      resolvedBuild,
     );
 
     expect(consoleEntries.append).toHaveBeenCalledWith({
@@ -207,7 +224,7 @@ describe("PreviewPanel console wiring", () => {
           timestampMs: 30,
         },
       }),
-      resolvedSource,
+      resolvedBuild,
     );
 
     expect(consoleEntries.append).toHaveBeenCalledWith({
@@ -230,7 +247,7 @@ describe("PreviewPanel console wiring", () => {
           timestampMs: 40,
         },
       }),
-      resolvedSource,
+      resolvedBuild,
     );
 
     expect(consoleEntries.append).toHaveBeenCalledWith({
@@ -326,7 +343,7 @@ describe("PreviewPanel console wiring", () => {
           timestampMs: 50,
         },
       }),
-      scssResolvedSource,
+      { resolvedSource: scssResolvedSource, scriptLineMap: null },
     );
 
     expect(consoleEntries.append).toHaveBeenCalledWith(
@@ -334,6 +351,45 @@ describe("PreviewPanel console wiring", () => {
         type: "runtime-error",
         mappedLocation: { panel: "script", line: 1 },
       }),
+    );
+  });
+
+  it("appends one script-diagnostic entry per diagnostic and forwards to onScriptDiagnostics", () => {
+    const consoleEntries = createConsoleEntriesStub();
+    const onScriptDiagnostics = vi.fn();
+    renderPreviewPanel(consoleEntries, { onScriptDiagnostics });
+
+    const diagnostics: TsDiagnostic[] = [
+      { message: "Type error.", category: "error", line: 3, column: 5 },
+      { message: "Types unavailable.", category: "warning" },
+    ];
+    previewFrameProps.current?.onScriptDiagnostics?.(
+      diagnostics,
+      "compilation-1",
+    );
+
+    expect(consoleEntries.append).toHaveBeenCalledTimes(2);
+    expect(consoleEntries.append).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        type: "script-diagnostic",
+        level: "error",
+        message: "Type error.",
+        scriptLocation: { line: 3, column: 5 },
+      }),
+    );
+    expect(consoleEntries.append).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        type: "script-diagnostic",
+        level: "warn",
+        message: "Types unavailable.",
+        scriptLocation: null,
+      }),
+    );
+    expect(onScriptDiagnostics).toHaveBeenCalledWith(
+      diagnostics,
+      "compilation-1",
     );
   });
 });

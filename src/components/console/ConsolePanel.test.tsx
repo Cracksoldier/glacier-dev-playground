@@ -209,4 +209,71 @@ describe("ConsolePanel", () => {
 
     expect(onFocusSource).toHaveBeenCalledWith({ panel: "style", line: 5 });
   });
+
+  it("includes only error-level script-diagnostic entries in the error badge count", () => {
+    renderConsolePanel([
+      makeEntry({
+        id: "e1",
+        type: "script-diagnostic",
+        level: "error",
+        message: "Type error",
+      }),
+      makeEntry({
+        id: "e2",
+        type: "script-diagnostic",
+        level: "warn",
+        message: "Types unavailable",
+      }),
+      makeEntry({ id: "e3" }),
+    ]);
+    expect(screen.getByText("1")).toBeInTheDocument();
+  });
+
+  it("renders a script-diagnostic entry's message", () => {
+    renderConsolePanel([
+      makeEntry({
+        type: "script-diagnostic",
+        level: "error",
+        args: undefined,
+        message: "Type 'string' is not assignable to type 'number'.",
+      }),
+    ]);
+    expect(
+      screen.getByText("Type 'string' is not assignable to type 'number'."),
+    ).toBeInTheDocument();
+  });
+
+  it("is not clickable for a script-diagnostic entry without a scriptLocation", () => {
+    renderConsolePanel([
+      makeEntry({
+        type: "script-diagnostic",
+        level: "error",
+        args: undefined,
+        message: "Unmapped script error",
+        scriptLocation: null,
+      }),
+    ]);
+    expect(
+      screen.queryByRole("button", { name: /Unmapped script error/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("is clickable for a script-diagnostic entry with a scriptLocation, and calls onFocusSource with a script-panel location", async () => {
+    const user = userEvent.setup();
+    const { onFocusSource } = renderConsolePanel([
+      makeEntry({
+        type: "script-diagnostic",
+        level: "error",
+        args: undefined,
+        message: "Mapped script error",
+        scriptLocation: { line: 7, column: 2 },
+      }),
+    ]);
+
+    await user.click(
+      screen.getByRole("button", { name: /Mapped script error/ }),
+    );
+
+    expect(onFocusSource).toHaveBeenCalledWith({ panel: "script", line: 7 });
+  });
 });

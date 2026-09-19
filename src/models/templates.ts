@@ -104,7 +104,8 @@ function createJavaScriptInteractionProject(): PlaygroundProject {
       "button {\n  font-family: sans-serif;\n  font-size: 1rem;\n  padding: 0.5rem 1rem;\n}",
     stylesheetLanguage: "css",
     script:
-      'let count = 0;\nconst button = document.getElementById("counter");\n\nbutton.addEventListener("click", () => {\n  count += 1;\n  button.textContent = `Clicked \\u0024{count} times`;\n});',
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: authored JS source text, not a real template literal in this file.
+      'let count = 0;\nconst button = document.getElementById("counter");\n\nbutton.addEventListener("click", () => {\n  count += 1;\n  button.textContent = `Clicked ${count} times`;\n});',
     scriptLanguage: "javascript",
     executionMode: "classic",
   });
@@ -117,7 +118,8 @@ function createTypeScriptExampleProject(): PlaygroundProject {
     stylesheet: "body {\n  font-family: sans-serif;\n  margin: 2rem;\n}",
     stylesheetLanguage: "css",
     script:
-      'interface Greeting {\n  name: string;\n}\n\nfunction formatGreeting({ name }: Greeting): string {\n  return `Hello, \\u0024{name}!`;\n}\n\nconst greeting = document.getElementById("greeting");\nif (greeting) {\n  greeting.textContent = formatGreeting({ name: "Glacier" });\n}',
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: authored TS source text, not a real template literal in this file.
+      'interface Greeting {\n  name: string;\n}\n\nfunction formatGreeting({ name }: Greeting): string {\n  return `Hello, ${name}!`;\n}\n\nconst greeting = document.getElementById("greeting");\nif (greeting) {\n  greeting.textContent = formatGreeting({ name: "Glacier" });\n}',
     scriptLanguage: "typescript",
     executionMode: "classic",
   });

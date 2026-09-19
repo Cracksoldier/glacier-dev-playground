@@ -1,6 +1,9 @@
 import { EditorState } from "@codemirror/state";
 import { describe, expect, it } from "vitest";
-import { buildDiagnosticFromError } from "./editorDiagnostics";
+import {
+  buildDiagnosticFromError,
+  buildDiagnosticsFromErrors,
+} from "./editorDiagnostics";
 
 function docFor(text: string) {
   return EditorState.create({ doc: text }).doc;
@@ -78,5 +81,53 @@ describe("buildDiagnosticFromError", () => {
     });
 
     expect(diagnostic.from).toBe(doc.line(1).from);
+  });
+});
+
+describe("buildDiagnosticsFromErrors", () => {
+  it("returns one diagnostic per error, in order", () => {
+    const doc = docFor("one\ntwo\nthree");
+
+    const diagnostics = buildDiagnosticsFromErrors(doc, [
+      { message: "first", line: 1 },
+      { message: "second", line: 2 },
+    ]);
+
+    expect(diagnostics).toHaveLength(2);
+    expect(diagnostics[0]?.message).toBe("first");
+    expect(diagnostics[1]?.message).toBe("second");
+  });
+
+  it("returns an empty array for an empty errors list", () => {
+    const doc = docFor("one");
+    expect(buildDiagnosticsFromErrors(doc, [])).toEqual([]);
+  });
+
+  it("defaults severity to error when omitted", () => {
+    const doc = docFor("one");
+    const [diagnostic] = buildDiagnosticsFromErrors(doc, [
+      { message: "boom", line: 1 },
+    ]);
+    expect(diagnostic?.severity).toBe("error");
+  });
+
+  it("honors an explicit warning severity", () => {
+    const doc = docFor("one");
+    const [diagnostic] = buildDiagnosticsFromErrors(doc, [
+      { message: "notice", line: 1, severity: "warning" },
+    ]);
+    expect(diagnostic?.severity).toBe("warning");
+  });
+
+  it("clamps each error's line/column independently, same as buildDiagnosticFromError", () => {
+    const doc = docFor("one\ntwo\nthree");
+
+    const diagnostics = buildDiagnosticsFromErrors(doc, [
+      { message: "past end", line: 999 },
+      { message: "before start", line: 0 },
+    ]);
+
+    expect(diagnostics[0]?.from).toBe(doc.line(3).from);
+    expect(diagnostics[1]?.from).toBe(doc.line(1).from);
   });
 });

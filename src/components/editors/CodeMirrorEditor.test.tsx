@@ -27,6 +27,7 @@ function renderEditor(
       ariaLabel={props.ariaLabel ?? "HTML source"}
       ref={props.ref}
       diagnosticError={props.diagnosticError}
+      diagnosticErrors={props.diagnosticErrors}
       readOnly={props.readOnly}
     />,
   );
@@ -231,6 +232,40 @@ describe("CodeMirrorEditor", () => {
     );
 
     expect(container.querySelector(".cm-lintRange-error")).toBeNull();
+  });
+
+  it("renders no diagnostic marker when diagnosticErrors is null", () => {
+    const { container } = renderEditor({
+      value: "const a = 1;",
+      diagnosticErrors: null,
+    });
+
+    expect(container.querySelector(".cm-lintRange-error")).toBeNull();
+    expect(container.querySelector(".cm-lintRange-warning")).toBeNull();
+  });
+
+  it("renders a diagnostic marker per entry in diagnosticErrors, with each entry's own severity", () => {
+    const { container } = renderEditor({
+      value: "const a: string = 1;\nconsole.log(a);",
+      diagnosticErrors: [
+        { message: "Type mismatch", line: 1, column: 1, severity: "error" },
+        { message: "Unused import", line: 2, column: 1, severity: "warning" },
+      ],
+    });
+
+    expect(container.querySelector(".cm-lintRange-error")).not.toBeNull();
+    expect(container.querySelector(".cm-lintRange-warning")).not.toBeNull();
+  });
+
+  it("merges diagnosticError and diagnosticErrors into a single diagnostics set", () => {
+    const { container } = renderEditor({
+      value: ".a {\n  color: red\n}",
+      diagnosticError: { message: "boom", line: 1 },
+      diagnosticErrors: [{ message: "warn", line: 2, severity: "warning" }],
+    });
+
+    expect(container.querySelector(".cm-lintRange-error")).not.toBeNull();
+    expect(container.querySelector(".cm-lintRange-warning")).not.toBeNull();
   });
 
   it("renders as read-only and does not call onChange when the user types, when readOnly is true", async () => {

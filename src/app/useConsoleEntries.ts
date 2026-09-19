@@ -8,7 +8,7 @@ import type {
 
 export interface ConsoleEntry {
   id: string;
-  type: PreviewMessage["type"] | "scss-compile-error";
+  type: PreviewMessage["type"] | "scss-compile-error" | "script-diagnostic";
   level?: ConsoleLevel;
   timestampMs: number;
   relativeMs: number;
@@ -18,6 +18,8 @@ export interface ConsoleEntry {
   mappedLocation?: MappedSourceLocation | null;
   /** Set only on `scss-compile-error` entries — the Sass-reported source position, already 1-indexed. */
   scssLocation?: { line: number; column?: number } | null;
+  /** Set only on `script-diagnostic` entries — the TS/JS-reported source position, already 1-indexed. */
+  scriptLocation?: { line: number; column?: number } | null;
 }
 
 export type ConsoleEntryInput = Omit<ConsoleEntry, "id" | "relativeMs">;

@@ -20,6 +20,7 @@ import { useConsoleEntries } from "./useConsoleEntries";
 import { useEditorFocusShortcuts } from "./useEditorFocusShortcuts";
 import { useEditorPreferences } from "./useEditorPreferences";
 import { useScssCompileStatus } from "./useScssCompileStatus";
+import { useTsCompileStatus } from "./useTsCompileStatus";
 
 const WORKSPACE_PANEL_IDS = [
   "html-editor",
@@ -60,6 +61,9 @@ function AppShellContent() {
   const scssStatus = useScssCompileStatus(
     `${activeProject.id}:${activeProject.source.stylesheetLanguage}`,
   );
+  const tsStatus = useTsCompileStatus(
+    `${activeProject.id}:${activeProject.source.scriptLanguage}:${activeProject.source.executionMode}`,
+  );
 
   function handleFocusSource(location: MappedSourceLocation) {
     const editorRef = {
@@ -80,11 +84,18 @@ function AppShellContent() {
         entry.type === "runtime-error" &&
         entry.mappedLocation?.panel === "style",
     ) || scssStatus.lastError !== null;
-  const hasJsError = consoleEntries.entries.some(
-    (entry) =>
-      entry.type === "runtime-error" &&
-      entry.mappedLocation?.panel === "script",
-  );
+  const hasJsError =
+    consoleEntries.entries.some(
+      (entry) =>
+        entry.type === "runtime-error" &&
+        entry.mappedLocation?.panel === "script",
+    ) || tsStatus.isStale;
+  const jsDiagnosticErrors = tsStatus.diagnostics.map((diagnostic) => ({
+    message: diagnostic.message,
+    line: diagnostic.line,
+    column: diagnostic.column,
+    severity: diagnostic.category,
+  }));
 
   return (
     <div className={styles.shell}>
@@ -141,6 +152,8 @@ function AppShellContent() {
             <JsEditorPanel
               preferences={preferences}
               hasError={hasJsError}
+              diagnosticErrors={jsDiagnosticErrors}
+              isStale={tsStatus.isStale}
               ref={jsEditorRef}
             />
           </Panel>
@@ -155,8 +168,12 @@ function AppShellContent() {
               ref={previewRunHandleRef}
               consoleEntries={consoleEntries}
               isScssStale={scssStatus.isStale}
+              isScriptStale={tsStatus.isStale}
               onScssCompileError={(error) => scssStatus.recordFailure(error)}
               onScssCompileSuccess={(css) => scssStatus.recordSuccess(css)}
+              onScriptDiagnostics={(diagnostics) =>
+                tsStatus.recordResult(diagnostics)
+              }
             />
           </Panel>
         </Group>

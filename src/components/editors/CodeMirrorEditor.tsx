@@ -8,7 +8,11 @@ import {
 import { EditorView } from "@codemirror/view";
 import { type Ref, useEffect, useImperativeHandle, useRef } from "react";
 import styles from "./EditorPanel.module.css";
-import { buildDiagnosticFromError } from "./editorDiagnostics";
+import {
+  buildDiagnosticFromError,
+  buildDiagnosticsFromErrors,
+  type Diagnostic,
+} from "./editorDiagnostics";
 import {
   buildPreferencesExtensions,
   buildSharedExtensions,
@@ -39,6 +43,12 @@ export interface CodeMirrorEditorDiagnosticError {
   column?: number;
 }
 
+/** Plural counterpart of `CodeMirrorEditorDiagnosticError`, for compilers (e.g. the M8 TypeScript/JavaScript worker) that can report many diagnostics per file, each with its own severity. */
+export interface CodeMirrorEditorDiagnostic
+  extends CodeMirrorEditorDiagnosticError {
+  severity?: "error" | "warning";
+}
+
 interface CodeMirrorEditorProps {
   value: string;
   onChange: (value: string) => void;
@@ -48,6 +58,8 @@ interface CodeMirrorEditorProps {
   ref?: Ref<CodeMirrorEditorHandle>;
   /** A single compiler-reported error to surface as a CodeMirror diagnostic, or `null`/omitted to clear it. */
   diagnosticError?: CodeMirrorEditorDiagnosticError | null;
+  /** Many compiler-reported diagnostics to surface at once, merged alongside `diagnosticError`, or `null`/omitted to clear them. */
+  diagnosticErrors?: CodeMirrorEditorDiagnostic[] | null;
   /** Fixed for this instance's lifetime — not reconfigured after mount (see the Compiled CSS view, a separate always-read-only instance). */
   readOnly?: boolean;
 }
@@ -72,6 +84,7 @@ function CodeMirrorEditor({
   ariaLabel,
   ref,
   diagnosticError = null,
+  diagnosticErrors = null,
   readOnly = false,
 }: CodeMirrorEditorProps) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -199,15 +212,16 @@ function CodeMirrorEditor({
     const view = viewRef.current;
     if (!view) return;
 
-    view.dispatch(
-      setDiagnostics(
-        view.state,
-        diagnosticError
-          ? [buildDiagnosticFromError(view.state.doc, diagnosticError)]
-          : [],
-      ),
-    );
-  }, [diagnosticError]);
+    const diagnostics: Diagnostic[] = [
+      ...(diagnosticError
+        ? [buildDiagnosticFromError(view.state.doc, diagnosticError)]
+        : []),
+      ...(diagnosticErrors
+        ? buildDiagnosticsFromErrors(view.state.doc, diagnosticErrors)
+        : []),
+    ];
+    view.dispatch(setDiagnostics(view.state, diagnostics));
+  }, [diagnosticError, diagnosticErrors]);
 
   return <div ref={hostRef} className={styles.codeMirrorHost} />;
 }

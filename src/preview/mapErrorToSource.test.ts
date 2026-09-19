@@ -69,4 +69,40 @@ describe("mapRuntimeErrorLine", () => {
     const offsets = computePreviewLineOffsets(makeSource());
     expect(mapRuntimeErrorLine(offsets.script.end + 100, offsets)).toBeNull();
   });
+
+  it("translates a script hit through a scriptLineMap when provided", () => {
+    const source = makeSource({
+      script: "const a = 1;\nconst b = 2;\nthrow new Error('x');",
+    });
+    const offsets = computePreviewLineOffsets(source);
+    // Emitted line 3 (1-indexed) maps back to authored source line 7.
+    const scriptLineMap = [undefined, 5, 7];
+    expect(
+      mapRuntimeErrorLine(offsets.script.start + 2, offsets, scriptLineMap),
+    ).toEqual({ panel: "script", line: 7 });
+  });
+
+  it("falls back to the untranslated line when the mapped output line has no entry", () => {
+    const offsets = computePreviewLineOffsets(makeSource());
+    const scriptLineMap: (number | undefined)[] = [undefined];
+    expect(
+      mapRuntimeErrorLine(offsets.script.start, offsets, scriptLineMap),
+    ).toEqual({ panel: "script", line: 1 });
+  });
+
+  it("leaves non-script panel hits untouched by a scriptLineMap", () => {
+    const offsets = computePreviewLineOffsets(makeSource());
+    const scriptLineMap = [99];
+    expect(
+      mapRuntimeErrorLine(offsets.style.start, offsets, scriptLineMap),
+    ).toEqual({ panel: "style", line: 1 });
+  });
+
+  it("treats a missing scriptLineMap the same as no translation", () => {
+    const offsets = computePreviewLineOffsets(makeSource());
+    expect(mapRuntimeErrorLine(offsets.script.start, offsets, null)).toEqual({
+      panel: "script",
+      line: 1,
+    });
+  });
 });

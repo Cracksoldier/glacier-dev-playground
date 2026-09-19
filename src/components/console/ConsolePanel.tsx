@@ -50,6 +50,8 @@ function entryMessage(entry: ConsoleEntry): string {
       return entry.message ?? "Resource error";
     case "scss-compile-error":
       return entry.message ?? "SCSS compilation failed";
+    case "script-diagnostic":
+      return entry.message ?? "Script compilation issue";
     default:
       return "";
   }
@@ -67,7 +69,9 @@ function ConsoleEntryRow({
       ? entry.mappedLocation
       : entry.type === "scss-compile-error" && entry.scssLocation
         ? { panel: "style", line: entry.scssLocation.line }
-        : null;
+        : entry.type === "script-diagnostic" && entry.scriptLocation
+          ? { panel: "script", line: entry.scriptLocation.line }
+          : null;
 
   const content = (
     <>
@@ -122,7 +126,9 @@ function ConsolePanel({ entries, onClear, onFocusSource }: ConsolePanelProps) {
 
   const errorCount = entries.filter(
     (entry) =>
-      entry.type === "runtime-error" || entry.type === "scss-compile-error",
+      entry.type === "runtime-error" ||
+      entry.type === "scss-compile-error" ||
+      (entry.type === "script-diagnostic" && entry.level === "error"),
   ).length;
 
   return (

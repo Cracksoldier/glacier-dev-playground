@@ -8,6 +8,7 @@ import {
   PREVIEW_MESSAGE_VERSION,
 } from "../../preview/previewMessage";
 import type { ScssCompileResult } from "../../preview/scssCompiler";
+import type { TsCompileResult } from "../../preview/tsCompiler";
 import PreviewFrame, { type PreviewRunHandle } from "./PreviewFrame";
 
 let executionCounter = 0;
@@ -46,6 +47,27 @@ vi.mock("../../preview/scssCompilerClient", () => ({
   createScssCompilerClient: () => ({
     compile: compileMock,
     dispose: disposeMock,
+  }),
+}));
+
+const tsCompileMock = vi.fn(
+  async (
+    source: string,
+    _scriptLanguage: string,
+    _executionMode: string,
+    _buildId: string,
+  ): Promise<TsCompileResult> => ({
+    diagnostics: [],
+    emittedJs: source,
+    lineMap: null,
+  }),
+);
+const tsDisposeMock = vi.fn();
+
+vi.mock("../../preview/tsCompilerClient", () => ({
+  createTsCompilerClient: () => ({
+    compile: tsCompileMock,
+    dispose: tsDisposeMock,
   }),
 }));
 
@@ -98,6 +120,8 @@ beforeEach(() => {
   isStaleMock.mockClear();
   compileMock.mockClear();
   disposeMock.mockClear();
+  tsCompileMock.mockClear();
+  tsDisposeMock.mockClear();
   executionCounter = 0;
   staleExecutionId = null;
   vi.useFakeTimers();
@@ -225,7 +249,7 @@ describe("PreviewFrame", () => {
     expect(onBuildStart).toHaveBeenCalledExactlyOnceWith("execution-1");
   });
 
-  it("forwards a valid message from the current build's iframe to onMessage, along with the resolved source", () => {
+  it("forwards a valid message from the current build's iframe to onMessage, along with the resolved build", async () => {
     const ref = createRef<PreviewRunHandle>();
     const onMessage = vi.fn();
     const project = makeProject({ autoRun: false });
@@ -233,7 +257,7 @@ describe("PreviewFrame", () => {
       <PreviewFrame project={project} onMessage={onMessage} ref={ref} />,
     );
 
-    ref.current?.runNow();
+    await runAndFlush(ref);
     const iframe = container.querySelector("iframe");
     const message = makeReadyMessage("execution-1");
 
@@ -244,10 +268,13 @@ describe("PreviewFrame", () => {
       }),
     );
 
-    expect(onMessage).toHaveBeenCalledExactlyOnceWith(message, project.source);
+    expect(onMessage).toHaveBeenCalledExactlyOnceWith(message, {
+      resolvedSource: project.source,
+      scriptLineMap: null,
+    });
   });
 
-  it("ignores a message whose source is not the current build's iframe", () => {
+  it("ignores a message whose source is not the current build's iframe", async () => {
     const ref = createRef<PreviewRunHandle>();
     const onMessage = vi.fn();
     render(
@@ -258,7 +285,7 @@ describe("PreviewFrame", () => {
       />,
     );
 
-    ref.current?.runNow();
+    await runAndFlush(ref);
 
     window.dispatchEvent(
       new MessageEvent("message", {
@@ -270,7 +297,7 @@ describe("PreviewFrame", () => {
     expect(onMessage).not.toHaveBeenCalled();
   });
 
-  it("ignores a message that does not match the preview protocol shape", () => {
+  it("ignores a message that does not match the preview protocol shape", async () => {
     const ref = createRef<PreviewRunHandle>();
     const onMessage = vi.fn();
     const { container } = render(
@@ -281,7 +308,7 @@ describe("PreviewFrame", () => {
       />,
     );
 
-    ref.current?.runNow();
+    await runAndFlush(ref);
     const iframe = container.querySelector("iframe");
 
     window.dispatchEvent(
@@ -294,7 +321,7 @@ describe("PreviewFrame", () => {
     expect(onMessage).not.toHaveBeenCalled();
   });
 
-  it("ignores a message whose execution ID the coordinator considers stale", () => {
+  it("ignores a message whose execution ID the coordinator considers stale", async () => {
     const ref = createRef<PreviewRunHandle>();
     const onMessage = vi.fn();
     const { container } = render(
@@ -305,7 +332,7 @@ describe("PreviewFrame", () => {
       />,
     );
 
-    ref.current?.runNow();
+    await runAndFlush(ref);
     const iframe = container.querySelector("iframe");
     staleExecutionId = "execution-1";
 
@@ -420,5 +447,155 @@ describe("PreviewFrame SCSS compilation", () => {
     unmount();
 
     expect(disposeMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("PreviewFrame script compilation", () => {
+  it("compiles the script via the TS client, keyed by compilationId, for a JS-mode project", async () => {
+    const ref = createRef<PreviewRunHandle>();
+    const project = makeProject({ autoRun: false });
+    render(<PreviewFrame project={project} ref={ref} />);
+
+    await runAndFlush(ref);
+
+    expect(tsCompileMock).toHaveBeenCalledExactlyOnceWith(
+      project.source.script,
+      "javascript",
+      "classic",
+      "compilation-1",
+    );
+  });
+
+  it("calls onScriptDiagnostics with every diagnostic from the compile", async () => {
+    const diagnostics = [{ message: "note", category: "warning" as const }];
+    tsCompileMock.mockResolvedValueOnce({
+      diagnostics,
+      emittedJs: "console.log(1);",
+      lineMap: null,
+    });
+    const ref = createRef<PreviewRunHandle>();
+    const onScriptDiagnostics = vi.fn();
+    render(
+      <PreviewFrame
+        project={makeProject({ autoRun: false })}
+        onScriptDiagnostics={onScriptDiagnostics}
+        ref={ref}
+      />,
+    );
+
+    await runAndFlush(ref);
+
+    expect(onScriptDiagnostics).toHaveBeenCalledExactlyOnceWith(
+      diagnostics,
+      "compilation-1",
+    );
+    expect(buildDocumentMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("on a blocking error diagnostic, does not build a document", async () => {
+    tsCompileMock.mockResolvedValueOnce({
+      diagnostics: [
+        { message: "boom", category: "error" as const, line: 1, column: 1 },
+      ],
+      emittedJs: null,
+      lineMap: null,
+    });
+    const ref = createRef<PreviewRunHandle>();
+    render(
+      <PreviewFrame project={makeProject({ autoRun: false })} ref={ref} />,
+    );
+
+    await runAndFlush(ref);
+
+    expect(buildDocumentMock).not.toHaveBeenCalled();
+  });
+
+  it("keeps the authored source as the executed script in JS mode, even if the emit differs", async () => {
+    tsCompileMock.mockResolvedValueOnce({
+      diagnostics: [],
+      emittedJs: "/* a different emit */",
+      lineMap: null,
+    });
+    const ref = createRef<PreviewRunHandle>();
+    const project = makeProject({ autoRun: false });
+    render(<PreviewFrame project={project} ref={ref} />);
+
+    await runAndFlush(ref);
+
+    expect(buildDocumentMock).toHaveBeenCalledWith(
+      expect.objectContaining({ script: project.source.script }),
+      "execution-1",
+    );
+  });
+
+  it("substitutes the emitted JS and carries the line map for a TS-mode project", async () => {
+    const lineMap = [1, 2];
+    tsCompileMock.mockResolvedValueOnce({
+      diagnostics: [],
+      emittedJs: "const a = 1;",
+      lineMap,
+    });
+    const ref = createRef<PreviewRunHandle>();
+    const onMessage = vi.fn();
+    const project = makeProject({ autoRun: false });
+    const tsProject: PlaygroundProject = {
+      ...project,
+      source: {
+        ...project.source,
+        script: "const a: number = 1;",
+        scriptLanguage: "typescript",
+      },
+    };
+    const { container } = render(
+      <PreviewFrame project={tsProject} onMessage={onMessage} ref={ref} />,
+    );
+
+    await runAndFlush(ref);
+
+    expect(buildDocumentMock).toHaveBeenCalledWith(
+      expect.objectContaining({ script: "const a = 1;" }),
+      "execution-1",
+    );
+
+    const iframe = container.querySelector("iframe");
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: makeReadyMessage("execution-1"),
+        source: iframe?.contentWindow,
+      }),
+    );
+    expect(onMessage).toHaveBeenCalledExactlyOnceWith(
+      makeReadyMessage("execution-1"),
+      expect.objectContaining({ scriptLineMap: lineMap }),
+    );
+  });
+
+  it("discards a script compile result that has gone stale by the time it resolves, without building a document", async () => {
+    const ref = createRef<PreviewRunHandle>();
+    render(
+      <PreviewFrame project={makeProject({ autoRun: false })} ref={ref} />,
+    );
+
+    await act(async () => {
+      ref.current?.runNow();
+      staleExecutionId = "execution-1";
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(buildDocumentMock).not.toHaveBeenCalled();
+  });
+
+  it("disposes the TS compiler client on unmount, once it has been created", async () => {
+    const ref = createRef<PreviewRunHandle>();
+    const { unmount } = render(
+      <PreviewFrame project={makeProject({ autoRun: false })} ref={ref} />,
+    );
+
+    await runAndFlush(ref);
+    unmount();
+
+    expect(tsDisposeMock).toHaveBeenCalledTimes(1);
   });
 });

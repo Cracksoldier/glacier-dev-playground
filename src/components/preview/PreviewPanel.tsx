@@ -1,35 +1,50 @@
 import type { Ref } from "react";
 import type { UseConsoleEntriesResult } from "../../app/useConsoleEntries";
 import { WarningIcon } from "../../components/common/icons";
-import type { ProjectSource } from "../../models/project";
 import { mapRuntimeErrorLine } from "../../preview/mapErrorToSource";
 import { computePreviewLineOffsets } from "../../preview/previewDocument";
 import type { PreviewMessage } from "../../preview/previewMessage";
 import { hasRelativeAssetUrls } from "../../preview/relativeUrlWarning";
 import type { ScssCompileError } from "../../preview/scssWorkerProtocol";
+import type { TsDiagnostic } from "../../preview/tsWorkerProtocol";
 import { useProjectStore } from "../../store/ProjectStoreContext";
-import PreviewFrame, { type PreviewRunHandle } from "./PreviewFrame";
+import PreviewFrame, {
+  type PreviewRunHandle,
+  type ResolvedPreviewBuild,
+} from "./PreviewFrame";
 import styles from "./PreviewPanel.module.css";
 
 interface PreviewPanelProps {
   consoleEntries: UseConsoleEntriesResult;
   /** True when the last SCSS compile failed — the visible preview is stale relative to the current source. */
   isScssStale?: boolean;
+  /** True when the last TS/JS compile produced a blocking diagnostic — the visible preview is stale relative to the current source. */
+  isScriptStale?: boolean;
   onScssCompileError?: (error: ScssCompileError, compilationId: string) => void;
   onScssCompileSuccess?: (css: string, compilationId: string) => void;
+  onScriptDiagnostics?: (
+    diagnostics: TsDiagnostic[],
+    compilationId: string,
+  ) => void;
   ref?: Ref<PreviewRunHandle>;
 }
 
 function PreviewPanel({
   consoleEntries,
   isScssStale = false,
+  isScriptStale = false,
   onScssCompileError,
   onScssCompileSuccess,
+  onScriptDiagnostics,
   ref,
 }: PreviewPanelProps) {
   const { activeProject } = useProjectStore();
   const showRelativeUrlWarning = hasRelativeAssetUrls(activeProject.source);
   const preserveConsole = activeProject.settings.preserveConsole;
+  const scriptLanguageLabel =
+    activeProject.source.scriptLanguage === "typescript"
+      ? "TypeScript"
+      : "JavaScript";
 
   function handleBuildStart() {
     consoleEntries.startRun();
@@ -56,10 +71,31 @@ function PreviewPanel({
     onScssCompileSuccess?.(css, compilationId);
   }
 
+  function handleScriptDiagnostics(
+    diagnostics: TsDiagnostic[],
+    compilationId: string,
+  ) {
+    const timestampMs = Date.now();
+    for (const diagnostic of diagnostics) {
+      consoleEntries.append({
+        type: "script-diagnostic",
+        level: diagnostic.category === "error" ? "error" : "warn",
+        message: diagnostic.message,
+        timestampMs,
+        scriptLocation:
+          diagnostic.line !== undefined
+            ? { line: diagnostic.line, column: diagnostic.column }
+            : null,
+      });
+    }
+    onScriptDiagnostics?.(diagnostics, compilationId);
+  }
+
   function handleMessage(
     message: PreviewMessage,
-    resolvedSource: ProjectSource,
+    resolvedBuild: ResolvedPreviewBuild,
   ) {
+    const { resolvedSource, scriptLineMap } = resolvedBuild;
     if (message.type === "ready") return;
 
     if (message.type === "console" && message.payload.level === "clear") {
@@ -82,6 +118,7 @@ function PreviewPanel({
             ? mapRuntimeErrorLine(
                 message.payload.line,
                 computePreviewLineOffsets(resolvedSource),
+                scriptLineMap,
               )
             : null;
         consoleEntries.append({
@@ -134,6 +171,15 @@ function PreviewPanel({
           </p>
         </div>
       )}
+      {isScriptStale && (
+        <div className={styles.warning} role="status">
+          <WarningIcon />
+          <p className={styles.warningMessage}>
+            {scriptLanguageLabel} compile failed — showing the last successful
+            preview.
+          </p>
+        </div>
+      )}
       <PreviewFrame
         key={activeProject.id}
         project={activeProject}
@@ -141,6 +187,7 @@ function PreviewPanel({
         onMessage={handleMessage}
         onScssCompileError={handleScssCompileError}
         onScssCompileSuccess={handleScssCompileSuccess}
+        onScriptDiagnostics={handleScriptDiagnostics}
         ref={ref}
       />
     </section>
