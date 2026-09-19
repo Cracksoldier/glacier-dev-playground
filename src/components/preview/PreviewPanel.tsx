@@ -91,12 +91,24 @@ function PreviewPanel({
     onScriptDiagnostics?.(diagnostics, compilationId);
   }
 
+  function handleResourceLoadError(payload: {
+    url: string;
+    message: string;
+    timestampMs: number;
+  }) {
+    consoleEntries.append({
+      type: "resource-error",
+      message: payload.message,
+      timestampMs: payload.timestampMs,
+    });
+  }
+
   function handleMessage(
     message: PreviewMessage,
     resolvedBuild: ResolvedPreviewBuild,
   ) {
-    const { resolvedSource, scriptLineMap } = resolvedBuild;
-    if (message.type === "ready") return;
+    const { resolvedSource, scriptLineMap, resources } = resolvedBuild;
+    if (message.type === "ready" || message.type === "resources-ready") return;
 
     if (message.type === "console" && message.payload.level === "clear") {
       if (!preserveConsole) consoleEntries.clear();
@@ -117,7 +129,7 @@ function PreviewPanel({
           message.payload.line !== undefined
             ? mapRuntimeErrorLine(
                 message.payload.line,
-                computePreviewLineOffsets(resolvedSource),
+                computePreviewLineOffsets(resolvedSource, resources),
                 scriptLineMap,
               )
             : null;
@@ -188,6 +200,7 @@ function PreviewPanel({
         onScssCompileError={handleScssCompileError}
         onScssCompileSuccess={handleScssCompileSuccess}
         onScriptDiagnostics={handleScriptDiagnostics}
+        onResourceLoadError={handleResourceLoadError}
         ref={ref}
       />
     </section>

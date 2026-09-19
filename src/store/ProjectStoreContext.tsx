@@ -12,6 +12,7 @@ import type {
   ProjectSettings,
   ProjectSource,
 } from "../models/project";
+import type { ExternalResource } from "../models/resource";
 import type { SaveStatus } from "../models/saveStatus";
 import type { TemplateId } from "../models/templates";
 import type { ProjectRepository } from "../persistence/projectRepository";
@@ -45,6 +46,11 @@ interface ProjectStoreActions {
     projectId: ProjectId,
     settings: Partial<ProjectSettings>,
   ) => void;
+  updateProjectResources: (
+    projectId: ProjectId,
+    resources: ExternalResource[],
+  ) => void;
+  setProjectTrusted: (projectId: ProjectId, trusted: boolean) => void;
   resetLocalData: () => Promise<void>;
   saveNow: () => void;
   dismissPersistenceNotice: () => void;
@@ -122,6 +128,16 @@ export function ProjectStoreProvider({
         dispatch({
           type: "project/updateSettings",
           payload: { projectId, settings },
+        }),
+      updateProjectResources: (projectId, resources) =>
+        dispatch({
+          type: "project/updateResources",
+          payload: { projectId, resources },
+        }),
+      setProjectTrusted: (projectId, trusted) =>
+        dispatch({
+          type: "project/setTrusted",
+          payload: { projectId, trusted },
         }),
       resetLocalData: hydration.resetLocalData,
       saveNow: autosave.saveNow,

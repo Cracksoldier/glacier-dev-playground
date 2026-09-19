@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { ExternalResource } from "../models/resource";
 import {
   DEFAULT_STARTER_TEMPLATE_ID,
   PROJECT_TEMPLATES,
@@ -343,6 +344,71 @@ describe("project/updateSettings", () => {
     const next = projectReducer(state, {
       type: "project/updateSettings",
       payload: { projectId: "does-not-exist", settings: { autoRun: false } },
+    });
+
+    expect(next).toBe(state);
+  });
+});
+
+describe("project/updateResources", () => {
+  it("replaces the resources array immutably", () => {
+    const state = initialState();
+    const projectId = state.projects[0].id;
+    const resources: ExternalResource[] = [
+      {
+        id: "r1",
+        name: "Bootstrap CSS",
+        url: "https://example.com/bootstrap.css",
+        type: "stylesheet",
+        enabled: true,
+        order: 0,
+      },
+    ];
+
+    const next = projectReducer(state, {
+      type: "project/updateResources",
+      payload: { projectId, resources },
+    });
+
+    const updated = getActiveProject(next);
+    expect(updated.resources).toBe(resources);
+    expect(updated.resources).not.toBe(state.projects[0].resources);
+    expect(next.revision).toBe(state.revision + 1);
+  });
+
+  it("is a no-op for an unknown project id", () => {
+    const state = initialState();
+
+    const next = projectReducer(state, {
+      type: "project/updateResources",
+      payload: { projectId: "does-not-exist", resources: [] },
+    });
+
+    expect(next).toBe(state);
+  });
+});
+
+describe("project/setTrusted", () => {
+  it("updates the trusted flag", () => {
+    const state = initialState();
+    const projectId = state.projects[0].id;
+    expect(state.projects[0].trusted).toBe(true);
+
+    const next = projectReducer(state, {
+      type: "project/setTrusted",
+      payload: { projectId, trusted: false },
+    });
+
+    expect(getActiveProject(next).trusted).toBe(false);
+    expect(next.revision).toBe(state.revision + 1);
+  });
+
+  it("is a no-op for an unknown project id", () => {
+    const state = initialState();
+
+    const next = projectReducer(state, {
+      type: "project/setTrusted",
+      payload: { projectId: "does-not-exist", trusted: false },
     });
 
     expect(next).toBe(state);

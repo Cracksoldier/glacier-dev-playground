@@ -40,7 +40,11 @@ describe("createPreviewBuildCoordinator", () => {
     const project = makeProject();
 
     const build = coordinator.beginBuild(project);
-    const document = coordinator.buildDocument(build.source, build.executionId);
+    const document = coordinator.buildDocument(
+      build.source,
+      build.executionId,
+      build.resources,
+    );
 
     expect(document).toContain(project.source.html);
   });
@@ -51,7 +55,11 @@ describe("createPreviewBuildCoordinator", () => {
 
     const build = coordinator.beginBuild(project);
     project.source.html = "<p>mutated after the fact</p>";
-    const document = coordinator.buildDocument(build.source, build.executionId);
+    const document = coordinator.buildDocument(
+      build.source,
+      build.executionId,
+      build.resources,
+    );
 
     expect(document).not.toContain("mutated after the fact");
   });
@@ -61,7 +69,11 @@ describe("createPreviewBuildCoordinator", () => {
     const project = makeProject();
 
     const build = coordinator.beginBuild(project);
-    const document = coordinator.buildDocument(build.source, build.executionId);
+    const document = coordinator.buildDocument(
+      build.source,
+      build.executionId,
+      build.resources,
+    );
 
     expect(document).toContain(build.executionId);
   });
@@ -78,8 +90,56 @@ describe("createPreviewBuildCoordinator", () => {
     const document = coordinator.buildDocument(
       resolvedSource,
       build.executionId,
+      build.resources,
     );
 
     expect(document).toContain(".compiled { color: red; }");
+  });
+
+  it("includes an enabled resource's URL in the built document", () => {
+    const coordinator = createPreviewBuildCoordinator();
+    const project = makeProject();
+    project.resources = [
+      {
+        id: "resource-1",
+        name: "Example script",
+        url: "https://example.com/a.js",
+        type: "script",
+        enabled: true,
+        order: 0,
+      },
+    ];
+
+    const build = coordinator.beginBuild(project);
+    const document = coordinator.buildDocument(
+      build.source,
+      build.executionId,
+      build.resources,
+    );
+
+    expect(document).toContain("https://example.com/a.js");
+  });
+
+  it("is not affected by mutating the resources array after beginBuild returns", () => {
+    const coordinator = createPreviewBuildCoordinator();
+    const project = makeProject();
+    project.resources = [];
+
+    const build = coordinator.beginBuild(project);
+    project.resources.push({
+      id: "resource-1",
+      name: "Example script",
+      url: "https://example.com/mutated-after-the-fact.js",
+      type: "script",
+      enabled: true,
+      order: 0,
+    });
+    const document = coordinator.buildDocument(
+      build.source,
+      build.executionId,
+      build.resources,
+    );
+
+    expect(document).not.toContain("mutated-after-the-fact.js");
   });
 });

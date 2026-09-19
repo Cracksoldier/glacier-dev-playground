@@ -18,6 +18,7 @@ import {
 import NewProjectDialog from "../components/projects/NewProjectDialog";
 import ProjectSwitcherPopover from "../components/projects/ProjectSwitcherPopover";
 import ResetProjectDialog from "../components/projects/ResetProjectDialog";
+import ResourceManagerDialog from "../components/resources/ResourceManagerDialog";
 import type { SaveStatus } from "../models/saveStatus";
 import type { EditorPreferences } from "../preferences/editorPreferences";
 import { useProjectStore } from "../store/ProjectStoreContext";
@@ -30,7 +31,6 @@ interface ToolbarAction {
 }
 
 const MIDDLE_DISABLED_ACTIONS: ToolbarAction[] = [
-  { name: "Resources", Icon: ResourcesIcon },
   { name: "Import", Icon: ImportIcon },
   { name: "Export", Icon: ExportIcon },
 ];
@@ -61,6 +61,7 @@ function Toolbar({
   const [isNewProjectOpen, setNewProjectOpen] = useState(false);
   const [isResetOpen, setResetOpen] = useState(false);
   const [isEditorPreferencesOpen, setEditorPreferencesOpen] = useState(false);
+  const [isResourcesOpen, setResourcesOpen] = useState(false);
 
   const isSaveStatusError =
     saveStatus === "save-failed" || saveStatus === "storage-unavailable";
@@ -119,6 +120,15 @@ function Toolbar({
           }
         >
           <AutoRunIcon />
+        </button>
+        <button
+          type="button"
+          className={styles.button}
+          aria-label="Resources"
+          title="Resources"
+          onClick={() => setResourcesOpen(true)}
+        >
+          <ResourcesIcon />
         </button>
         {MIDDLE_DISABLED_ACTIONS.map(({ name, Icon }) => (
           <button
@@ -185,6 +195,10 @@ function Toolbar({
         isOpen={isResetOpen}
         projectId={activeProject.id}
         onClose={() => setResetOpen(false)}
+      />
+      <ResourceManagerDialog
+        isOpen={isResourcesOpen}
+        onClose={() => setResourcesOpen(false)}
       />
       <EditorPreferencesPopover
         isOpen={isEditorPreferencesOpen}

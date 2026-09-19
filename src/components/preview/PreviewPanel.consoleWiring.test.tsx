@@ -95,6 +95,7 @@ const resolvedSource: ProjectSource = {
 const resolvedBuild: ResolvedPreviewBuild = {
   resolvedSource,
   scriptLineMap: null,
+  resources: [],
 };
 
 describe("PreviewPanel console wiring", () => {
@@ -330,8 +331,8 @@ describe("PreviewPanel console wiring", () => {
         (_, i) => `.rule-${i} { color: red; }`,
       ).join("\n"),
     };
-    const documentLine =
-      computePreviewLineOffsets(scssResolvedSource).script.start;
+    const documentLine = computePreviewLineOffsets(scssResolvedSource, [])
+      .script.start;
 
     previewFrameProps.current?.onMessage?.(
       makeMessage({
@@ -343,7 +344,11 @@ describe("PreviewPanel console wiring", () => {
           timestampMs: 50,
         },
       }),
-      { resolvedSource: scssResolvedSource, scriptLineMap: null },
+      {
+        resolvedSource: scssResolvedSource,
+        scriptLineMap: null,
+        resources: [],
+      },
     );
 
     expect(consoleEntries.append).toHaveBeenCalledWith(

@@ -2,6 +2,7 @@ import { act, render } from "@testing-library/react";
 import { createRef, type RefObject } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { PlaygroundProject } from "../../models/project";
+import type { ExternalResource } from "../../models/resource";
 import { PROJECT_TEMPLATES } from "../../models/templates";
 import {
   PREVIEW_MESSAGE_PROTOCOL,
@@ -18,6 +19,7 @@ const beginBuildMock = vi.fn((project: PlaygroundProject) => {
     compilationId: `compilation-${executionCounter}`,
     executionId: `execution-${executionCounter}`,
     source: project.source,
+    resources: project.resources,
   };
 });
 const buildDocumentMock = vi.fn(() => "<html></html>");
@@ -78,6 +80,43 @@ function makeReadyMessage(executionId: string) {
     executionId,
     type: "ready" as const,
     payload: { timestampMs: 0 },
+  };
+}
+
+function makeResourcesReadyMessage(executionId: string) {
+  return {
+    protocol: PREVIEW_MESSAGE_PROTOCOL,
+    version: PREVIEW_MESSAGE_VERSION,
+    executionId,
+    type: "resources-ready" as const,
+    payload: { timestampMs: 0 },
+  };
+}
+
+function makeResourceErrorMessage(
+  executionId: string,
+  payload: { url: string; message: string },
+) {
+  return {
+    protocol: PREVIEW_MESSAGE_PROTOCOL,
+    version: PREVIEW_MESSAGE_VERSION,
+    executionId,
+    type: "resource-error" as const,
+    payload: { ...payload, timestampMs: 0 },
+  };
+}
+
+function makeResource(
+  overrides: Partial<ExternalResource> = {},
+): ExternalResource {
+  return {
+    id: "resource-1",
+    name: "Example script",
+    url: "https://example.com/a.js",
+    type: "script",
+    enabled: true,
+    order: 0,
+    ...overrides,
   };
 }
 
@@ -271,6 +310,7 @@ describe("PreviewFrame", () => {
     expect(onMessage).toHaveBeenCalledExactlyOnceWith(message, {
       resolvedSource: project.source,
       scriptLineMap: null,
+      resources: project.resources,
     });
   });
 
@@ -394,6 +434,7 @@ describe("PreviewFrame SCSS compilation", () => {
     expect(buildDocumentMock).toHaveBeenCalledWith(
       expect.objectContaining({ stylesheet: "/* compiled compilation-1 */" }),
       "execution-1",
+      [],
     );
   });
 
@@ -525,6 +566,7 @@ describe("PreviewFrame script compilation", () => {
     expect(buildDocumentMock).toHaveBeenCalledWith(
       expect.objectContaining({ script: project.source.script }),
       "execution-1",
+      [],
     );
   });
 
@@ -555,6 +597,7 @@ describe("PreviewFrame script compilation", () => {
     expect(buildDocumentMock).toHaveBeenCalledWith(
       expect.objectContaining({ script: "const a = 1;" }),
       "execution-1",
+      [],
     );
 
     const iframe = container.querySelector("iframe");
@@ -597,5 +640,225 @@ describe("PreviewFrame script compilation", () => {
     unmount();
 
     expect(tsDisposeMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("PreviewFrame resource loading gate", () => {
+  // jsdom fires a real "load" event as soon as an iframe with no src/srcdoc
+  // is connected to the document (default about:blank navigation), and it
+  // does so synchronously enough within runAndFlush's act() that it beats
+  // any test code back to the microtask queue. That makes it impossible to
+  // test "resources-ready before load" ordering against jsdom's own timing.
+  // Instead, intercept addEventListener so PreviewFrame's "load" listener is
+  // captured here rather than registered on the real element -- jsdom's
+  // internal navigation-triggered dispatch then finds no listener to call,
+  // and tests fire the captured listener directly via fireLoad() whenever
+  // they choose.
+  let originalAddEventListener: typeof HTMLIFrameElement.prototype.addEventListener;
+  let loadListeners: WeakMap<HTMLIFrameElement, EventListener>;
+
+  function fireLoad(iframe: HTMLIFrameElement | null | undefined) {
+    if (!iframe) return;
+    loadListeners.get(iframe)?.(new Event("load"));
+  }
+
+  beforeEach(() => {
+    loadListeners = new WeakMap();
+    originalAddEventListener = HTMLIFrameElement.prototype.addEventListener;
+    HTMLIFrameElement.prototype.addEventListener = function (
+      this: HTMLIFrameElement,
+      type: string,
+      listener: EventListenerOrEventListenerObject | null,
+      options?: boolean | AddEventListenerOptions,
+    ) {
+      if (type === "load" && typeof listener === "function") {
+        loadListeners.set(this, listener);
+        return;
+      }
+      if (listener !== null) {
+        originalAddEventListener.call(this, type, listener, options);
+      }
+    } as typeof HTMLIFrameElement.prototype.addEventListener;
+  });
+
+  afterEach(() => {
+    HTMLIFrameElement.prototype.addEventListener = originalAddEventListener;
+  });
+
+  it("does not promote the candidate until both native load and resources-ready have arrived (load first)", async () => {
+    const ref = createRef<PreviewRunHandle>();
+    const { container } = render(
+      <PreviewFrame project={makeProject({ autoRun: false })} ref={ref} />,
+    );
+
+    await runAndFlush(ref);
+    const iframe = container.querySelector("iframe");
+    expect(iframe?.style.visibility).toBe("hidden");
+
+    fireLoad(iframe);
+    expect(iframe?.style.visibility).toBe("hidden");
+
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: makeResourcesReadyMessage("execution-1"),
+        source: iframe?.contentWindow,
+      }),
+    );
+    expect(iframe?.style.visibility).toBe("visible");
+  });
+
+  it("does not promote the candidate until both native load and resources-ready have arrived (resources-ready first)", async () => {
+    const ref = createRef<PreviewRunHandle>();
+    const { container } = render(
+      <PreviewFrame project={makeProject({ autoRun: false })} ref={ref} />,
+    );
+
+    await runAndFlush(ref);
+    const iframe = container.querySelector("iframe");
+    expect(iframe?.style.visibility).toBe("hidden");
+
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: makeResourcesReadyMessage("execution-1"),
+        source: iframe?.contentWindow,
+      }),
+    );
+    expect(iframe?.style.visibility).toBe("hidden");
+
+    fireLoad(iframe);
+    expect(iframe?.style.visibility).toBe("visible");
+  });
+
+  it("promotes a candidate with zero enabled resources as soon as load and resources-ready both fire", async () => {
+    const ref = createRef<PreviewRunHandle>();
+    const { container } = render(
+      <PreviewFrame project={makeProject({ autoRun: false })} ref={ref} />,
+    );
+
+    await runAndFlush(ref);
+    const iframe = container.querySelector("iframe");
+    fireLoad(iframe);
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: makeResourcesReadyMessage("execution-1"),
+        source: iframe?.contentWindow,
+      }),
+    );
+
+    expect(iframe?.style.visibility).toBe("visible");
+    expect(container.querySelectorAll("iframe")).toHaveLength(1);
+  });
+
+  it("rejects a pending candidate on a fatal (script) resource-error, keeps the previously-promoted iframe visible, and reports via onResourceLoadError instead of onMessage", async () => {
+    const ref = createRef<PreviewRunHandle>();
+    const onMessage = vi.fn();
+    const onResourceLoadError = vi.fn();
+    const project: PlaygroundProject = {
+      ...makeProject({ autoRun: false }),
+      resources: [makeResource({ url: "https://example.com/a.js" })],
+    };
+    const { container } = render(
+      <PreviewFrame
+        project={project}
+        onMessage={onMessage}
+        onResourceLoadError={onResourceLoadError}
+        ref={ref}
+      />,
+    );
+
+    // Promote the first build so there's a previously-visible iframe to protect.
+    await runAndFlush(ref);
+    const firstIframe = container.querySelector("iframe");
+    fireLoad(firstIframe);
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: makeResourcesReadyMessage("execution-1"),
+        source: firstIframe?.contentWindow,
+      }),
+    );
+    expect(firstIframe?.style.visibility).toBe("visible");
+
+    // Start a second build; its candidate fails a fatal script resource.
+    await runAndFlush(ref);
+    const iframes = container.querySelectorAll("iframe");
+    expect(iframes).toHaveLength(2);
+    const secondIframe = iframes[1];
+
+    onMessage.mockClear();
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: makeResourceErrorMessage("execution-2", {
+          url: "https://example.com/a.js",
+          message: "Failed to load resource.",
+        }),
+        source: secondIframe.contentWindow,
+      }),
+    );
+
+    expect(container.querySelectorAll("iframe")).toHaveLength(1);
+    expect(container.querySelector("iframe")).toBe(firstIframe);
+    expect(firstIframe?.style.visibility).toBe("visible");
+    expect(onResourceLoadError).toHaveBeenCalledExactlyOnceWith(
+      {
+        url: "https://example.com/a.js",
+        message: "Failed to load resource.",
+        timestampMs: 0,
+      },
+      "execution-2",
+    );
+    expect(onMessage).not.toHaveBeenCalled();
+  });
+
+  it("does not reject a pending candidate on a non-fatal (stylesheet) resource-error, and still forwards it via onMessage", async () => {
+    const ref = createRef<PreviewRunHandle>();
+    const onMessage = vi.fn();
+    const onResourceLoadError = vi.fn();
+    const project: PlaygroundProject = {
+      ...makeProject({ autoRun: false }),
+      resources: [
+        makeResource({
+          id: "resource-2",
+          url: "https://example.com/a.css",
+          type: "stylesheet",
+        }),
+      ],
+    };
+    const { container } = render(
+      <PreviewFrame
+        project={project}
+        onMessage={onMessage}
+        onResourceLoadError={onResourceLoadError}
+        ref={ref}
+      />,
+    );
+
+    await runAndFlush(ref);
+    const iframe = container.querySelector("iframe");
+
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: makeResourceErrorMessage("execution-1", {
+          url: "https://example.com/a.css",
+          message: "Failed to load stylesheet.",
+        }),
+        source: iframe?.contentWindow,
+      }),
+    );
+
+    expect(onResourceLoadError).not.toHaveBeenCalled();
+    expect(onMessage).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ type: "resource-error" }),
+      expect.anything(),
+    );
+
+    // The candidate is still promotable after a non-fatal error.
+    fireLoad(iframe);
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: makeResourcesReadyMessage("execution-1"),
+        source: iframe?.contentWindow,
+      }),
+    );
+    expect(iframe?.style.visibility).toBe("visible");
   });
 });

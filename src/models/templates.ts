@@ -65,6 +65,7 @@ function buildProject(input: BuildProjectInput): PlaygroundProject {
     source,
     resources: [],
     settings: defaultSettings(),
+    trusted: true,
   };
 }
 

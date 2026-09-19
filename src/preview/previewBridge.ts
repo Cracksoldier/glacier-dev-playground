@@ -192,6 +192,8 @@ export function buildPreviewBridgeScript(executionId: string): string {
     });
   });
 
+  window.__glacierPreviewBridge = { post: post };
+
   post("ready", { timestampMs: Date.now() });
 })();`;
 }

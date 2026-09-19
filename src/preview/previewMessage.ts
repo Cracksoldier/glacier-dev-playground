@@ -37,6 +37,10 @@ export type PreviewMessage =
       payload: { timestampMs: number };
     })
   | (PreviewMessageBase & {
+      type: "resources-ready";
+      payload: { timestampMs: number };
+    })
+  | (PreviewMessageBase & {
       type: "console";
       payload: {
         level: ConsoleLevel;
@@ -162,6 +166,7 @@ function isValidPayload(
   if (!isPlainObject(payload)) return false;
   switch (type) {
     case "ready":
+    case "resources-ready":
       return typeof payload.timestampMs === "number";
     case "console":
       return (
@@ -196,6 +201,7 @@ function isValidPayload(
 
 const MESSAGE_TYPES: readonly PreviewMessage["type"][] = [
   "ready",
+  "resources-ready",
   "console",
   "runtime-error",
   "unhandled-rejection",

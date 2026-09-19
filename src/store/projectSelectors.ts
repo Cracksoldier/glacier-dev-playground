@@ -1,4 +1,5 @@
 import type { PlaygroundProject } from "../models/project";
+import type { ExternalResource } from "../models/resource";
 import type { ProjectStoreState } from "./projectReducer";
 
 export function getActiveProject(state: ProjectStoreState): PlaygroundProject {
@@ -13,4 +14,10 @@ export function getActiveProject(state: ProjectStoreState): PlaygroundProject {
 
 export function isProjectStoreDirty(state: ProjectStoreState): boolean {
   return state.revision !== state.lastPersistedRevision;
+}
+
+export function getActiveProjectResources(
+  state: ProjectStoreState,
+): ExternalResource[] {
+  return getActiveProject(state).resources;
 }

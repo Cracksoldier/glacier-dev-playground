@@ -1,11 +1,13 @@
 import { createCompilationId, createExecutionId } from "../models/identifiers";
 import type { PlaygroundProject, ProjectSource } from "../models/project";
+import type { ExternalResource } from "../models/resource";
 import { buildPreviewDocument } from "./previewDocument";
 
 export interface PreviewBuild {
   compilationId: string;
   executionId: string;
   source: ProjectSource;
+  resources: ExternalResource[];
 }
 
 export interface PreviewBuildCoordinator {
@@ -25,7 +27,11 @@ export interface PreviewBuildCoordinator {
    * Builds the preview document HTML for `resolvedSource` (the build's
    * source, with any compiled CSS already substituted in by the caller).
    */
-  buildDocument(resolvedSource: ProjectSource, executionId: string): string;
+  buildDocument(
+    resolvedSource: ProjectSource,
+    executionId: string,
+    resources: ExternalResource[],
+  ): string;
   /** True once a later build has been started than the one identified by `executionId`. */
   isStale(executionId: string): boolean;
 }
@@ -49,10 +55,11 @@ export function createPreviewBuildCoordinator(): PreviewBuildCoordinator {
         compilationId,
         executionId,
         source: snapshot.source,
+        resources: snapshot.resources,
       };
     },
-    buildDocument(resolvedSource, executionId) {
-      return buildPreviewDocument(resolvedSource, executionId);
+    buildDocument(resolvedSource, executionId, resources) {
+      return buildPreviewDocument(resolvedSource, executionId, resources);
     },
     isStale(executionId) {
       return executionId !== latestExecutionId;

@@ -48,6 +48,14 @@ export interface PlaygroundProject {
   source: ProjectSource;
   resources: ExternalResource[];
   settings: ProjectSettings;
+  /**
+   * Whether this project's script is allowed to execute without an
+   * approval prompt. Every template/creation path in this milestone sets
+   * this to `true`; only M10's future import flow will ever construct a
+   * project with `false`. M9 does not build any enforcement gate on this
+   * field — it exists so M10 can wire one in without a schema change.
+   */
+  trusted: boolean;
 }
 
 export function nowIso(): string {

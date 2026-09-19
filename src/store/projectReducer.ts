@@ -5,6 +5,7 @@ import type {
   ProjectSource,
 } from "../models/project";
 import { normalizeProjectTitle } from "../models/projectTitle";
+import type { ExternalResource } from "../models/resource";
 import {
   DEFAULT_STARTER_TEMPLATE_ID,
   PROJECT_TEMPLATES,
@@ -40,6 +41,14 @@ export type ProjectStoreAction =
   | {
       type: "project/updateSettings";
       payload: { projectId: ProjectId; settings: Partial<ProjectSettings> };
+    }
+  | {
+      type: "project/updateResources";
+      payload: { projectId: ProjectId; resources: ExternalResource[] };
+    }
+  | {
+      type: "project/setTrusted";
+      payload: { projectId: ProjectId; trusted: boolean };
     }
   | {
       type: "project/hydrate";
@@ -212,6 +221,38 @@ export function projectReducer(
       projects[index] = {
         ...target,
         settings: { ...target.settings, ...settings },
+        updatedAt: new Date().toISOString(),
+      };
+
+      return { ...state, projects, revision: state.revision + 1 };
+    }
+
+    case "project/updateResources": {
+      const { projectId, resources } = action.payload;
+      const index = state.projects.findIndex((p) => p.id === projectId);
+      if (index === -1) return state;
+
+      const target = state.projects[index];
+      const projects = [...state.projects];
+      projects[index] = {
+        ...target,
+        resources,
+        updatedAt: new Date().toISOString(),
+      };
+
+      return { ...state, projects, revision: state.revision + 1 };
+    }
+
+    case "project/setTrusted": {
+      const { projectId, trusted } = action.payload;
+      const index = state.projects.findIndex((p) => p.id === projectId);
+      if (index === -1) return state;
+
+      const target = state.projects[index];
+      const projects = [...state.projects];
+      projects[index] = {
+        ...target,
+        trusted,
         updatedAt: new Date().toISOString(),
       };
 

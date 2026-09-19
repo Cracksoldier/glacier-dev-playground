@@ -25,6 +25,16 @@ describe("isPreviewMessage", () => {
     ).toBe(true);
   });
 
+  it("accepts a valid resources-ready message", () => {
+    expect(
+      isPreviewMessage({
+        ...baseFields(),
+        type: "resources-ready",
+        payload: { timestampMs: 1 },
+      }),
+    ).toBe(true);
+  });
+
   it("accepts a valid console message with primitive args", () => {
     const value: SerializedValue = { kind: "primitive", value: "hello" };
     expect(

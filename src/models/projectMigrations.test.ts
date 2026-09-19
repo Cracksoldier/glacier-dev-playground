@@ -107,6 +107,28 @@ describe("recoverProjectRecord", () => {
     }
   });
 
+  it("defaults a missing trusted field to true for pre-existing records", () => {
+    const result = recoverProjectRecord(validRawProject(), 1, {});
+
+    expect(result.status).toBe("ok");
+    if (result.status === "ok") {
+      expect(result.project.trusted).toBe(true);
+    }
+  });
+
+  it("preserves an explicit trusted: false value", () => {
+    const result = recoverProjectRecord(
+      validRawProject({ trusted: false }),
+      1,
+      {},
+    );
+
+    expect(result.status).toBe("ok");
+    if (result.status === "ok") {
+      expect(result.project.trusted).toBe(false);
+    }
+  });
+
   it("never throws on arbitrary garbage input", () => {
     expect(() => recoverProjectRecord(undefined)).not.toThrow();
     expect(() => recoverProjectRecord(42)).not.toThrow();

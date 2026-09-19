@@ -26,18 +26,14 @@ vi.mock("../components/preview/PreviewFrame", () => ({
   },
 }));
 
-const DISABLED_TOOLBAR_ACTION_NAMES = [
-  "Resources",
-  "Import",
-  "Export",
-  "Settings",
-];
+const DISABLED_TOOLBAR_ACTION_NAMES = ["Import", "Export", "Settings"];
 
 const ENABLED_TOOLBAR_ACTION_NAMES = [
   "Switch project",
   "New project",
   "Run",
   "Auto-run",
+  "Resources",
   "Reset",
 ];
 

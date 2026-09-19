@@ -34,7 +34,8 @@ function hasValidShape(
     typeof record.updatedAt === "string" &&
     isPlainObject(record.source) &&
     Array.isArray(record.resources) &&
-    isPlainObject(record.settings)
+    isPlainObject(record.settings) &&
+    typeof record.trusted === "boolean"
   );
 }
 
@@ -79,7 +80,16 @@ export function recoverProjectRecord(
     version += 1;
   }
 
-  const migrated = { ...record, schemaVersion: currentVersion };
+  const migrated: Record<string, unknown> = {
+    ...record,
+    schemaVersion: currentVersion,
+  };
+  // `trusted` was added after schemaVersion 1 shipped without a version bump
+  // (see PlaygroundProject#trusted) — records persisted before this field
+  // existed must be defaulted here rather than via a migration step.
+  if (typeof migrated.trusted !== "boolean") {
+    migrated.trusted = true;
+  }
   if (!hasValidShape(migrated)) {
     return {
       status: "invalid",

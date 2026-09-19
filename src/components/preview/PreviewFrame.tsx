@@ -6,6 +6,7 @@ import {
   useRef,
 } from "react";
 import type { PlaygroundProject, ProjectSource } from "../../models/project";
+import type { ExternalResource } from "../../models/resource";
 import { createDebouncer } from "../../persistence/debounce";
 import { createPreviewBuildCoordinator } from "../../preview/buildCoordinator";
 import {
@@ -36,6 +37,7 @@ export interface PreviewRunHandle {
 export interface ResolvedPreviewBuild {
   resolvedSource: ProjectSource;
   scriptLineMap: (number | undefined)[] | null;
+  resources: ExternalResource[];
 }
 
 interface PreviewFrameProps {
@@ -67,6 +69,20 @@ interface PreviewFrameProps {
     diagnostics: TsDiagnostic[],
     compilationId: string,
   ) => void;
+  /**
+   * Fires when a still-pending candidate's `resource-error` is fatal (a
+   * `"script"`/`"module"` resource, classified by cross-referencing the
+   * failed URL against that candidate's own resource list) — the candidate
+   * is discarded immediately and the previously-visible preview stays up
+   * (same "stale" pattern as `onScssCompileError`/`onScriptDiagnostics`). A
+   * `"stylesheet"`/`"font-stylesheet"` resource failure is non-fatal and
+   * never fires this — it's still surfaced to `onMessage` for console
+   * logging.
+   */
+  onResourceLoadError?: (
+    payload: { url: string; message: string; timestampMs: number },
+    executionId: string,
+  ) => void;
   ref?: Ref<PreviewRunHandle>;
 }
 
@@ -92,6 +108,16 @@ function createPreviewIframe(): HTMLIFrameElement {
  * than this component trying to detect and react to project switches
  * itself — see `CodeMirrorEditor.tsx` for the same convention.
  */
+interface PendingCandidate {
+  executionId: string;
+  iframe: HTMLIFrameElement;
+  resolvedBuild: ResolvedPreviewBuild;
+  /** Set by the candidate iframe's native `load` event. */
+  loaded: boolean;
+  /** Set once the candidate's `"resources-ready"` message arrives. */
+  resourcesReady: boolean;
+}
+
 function PreviewFrame({
   project,
   onBuildStart,
@@ -99,16 +125,13 @@ function PreviewFrame({
   onScssCompileError,
   onScssCompileSuccess,
   onScriptDiagnostics,
+  onResourceLoadError,
   ref,
 }: PreviewFrameProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const visibleFrameRef = useRef<HTMLIFrameElement | null>(null);
   const visibleResolvedBuildRef = useRef<ResolvedPreviewBuild | null>(null);
-  const pendingCandidateRef = useRef<{
-    executionId: string;
-    iframe: HTMLIFrameElement;
-    resolvedBuild: ResolvedPreviewBuild;
-  } | null>(null);
+  const pendingCandidateRef = useRef<PendingCandidate | null>(null);
   const disposedRef = useRef(false);
 
   const projectRef = useRef(project);
@@ -126,6 +149,40 @@ function PreviewFrame({
   onScssCompileSuccessRef.current = onScssCompileSuccess;
   const onScriptDiagnosticsRef = useRef(onScriptDiagnostics);
   onScriptDiagnosticsRef.current = onScriptDiagnostics;
+  const onResourceLoadErrorRef = useRef(onResourceLoadError);
+  onResourceLoadErrorRef.current = onResourceLoadError;
+
+  /**
+   * The AND-gate: a candidate is only promoted once both its native `load`
+   * (parser-discovered static resources — the stylesheet `<link>` tags —
+   * finishing) and its `"resources-ready"` message (the JS-created
+   * script/module resources and the user script itself finishing) have
+   * landed. The two signals are not orderable relative to each other — a
+   * zero-script-resource build's `"resources-ready"` can post before `load`
+   * fires — so both call sites just flip their own flag and call this,
+   * order-independent.
+   */
+  const tryPromote = useCallback((candidate: PendingCandidate) => {
+    if (pendingCandidateRef.current !== candidate) return;
+    if (!candidate.loaded || !candidate.resourcesReady) return;
+
+    const currentCoordinator = coordinatorRef.current;
+    if (
+      !currentCoordinator ||
+      currentCoordinator.isStale(candidate.executionId)
+    ) {
+      candidate.iframe.remove();
+      pendingCandidateRef.current = null;
+      return;
+    }
+
+    candidate.iframe.style.visibility = "visible";
+    const previous = visibleFrameRef.current;
+    visibleFrameRef.current = candidate.iframe;
+    visibleResolvedBuildRef.current = candidate.resolvedBuild;
+    pendingCandidateRef.current = null;
+    previous?.remove();
+  }, []);
 
   const coordinatorRef = useRef<ReturnType<
     typeof createPreviewBuildCoordinator
@@ -155,9 +212,8 @@ function PreviewFrame({
     const coordinator = coordinatorRef.current;
     if (!host || !coordinator || disposedRef.current) return;
 
-    const { compilationId, executionId, source } = coordinator.beginBuild(
-      projectRef.current,
-    );
+    const { compilationId, executionId, source, resources } =
+      coordinator.beginBuild(projectRef.current);
     onBuildStartRef.current?.(executionId);
 
     let resolvedStylesheet = source.stylesheet;
@@ -213,8 +269,13 @@ function PreviewFrame({
     const resolvedBuild: ResolvedPreviewBuild = {
       resolvedSource,
       scriptLineMap,
+      resources,
     };
-    const documentHtml = coordinator.buildDocument(resolvedSource, executionId);
+    const documentHtml = coordinator.buildDocument(
+      resolvedSource,
+      executionId,
+      resources,
+    );
 
     const iframe = createPreviewIframe();
     iframe.style.visibility = "hidden";
@@ -223,28 +284,29 @@ function PreviewFrame({
       iframe.removeEventListener("load", handleLoad);
       if (disposedRef.current) return;
 
-      const currentCoordinator = coordinatorRef.current;
-      if (!currentCoordinator || currentCoordinator.isStale(executionId)) {
+      const candidate = pendingCandidateRef.current;
+      if (!candidate || candidate.iframe !== iframe) {
+        // A newer build superseded this candidate (or it was already
+        // rejected by a fatal resource error) before it finished loading.
         iframe.remove();
-        if (pendingCandidateRef.current?.iframe === iframe) {
-          pendingCandidateRef.current = null;
-        }
         return;
       }
 
-      iframe.style.visibility = "visible";
-      const previous = visibleFrameRef.current;
-      visibleFrameRef.current = iframe;
-      visibleResolvedBuildRef.current = resolvedBuild;
-      pendingCandidateRef.current = null;
-      previous?.remove();
+      candidate.loaded = true;
+      tryPromote(candidate);
     }
 
     iframe.addEventListener("load", handleLoad);
-    pendingCandidateRef.current = { executionId, iframe, resolvedBuild };
+    pendingCandidateRef.current = {
+      executionId,
+      iframe,
+      resolvedBuild,
+      loaded: false,
+      resourcesReady: false,
+    };
     host.appendChild(iframe);
     iframe.srcdoc = documentHtml;
-  }, []);
+  }, [tryPromote]);
 
   const debouncerRef = useRef<ReturnType<typeof createDebouncer<void>> | null>(
     null,
@@ -270,8 +332,10 @@ function PreviewFrame({
   const isFirstRunRef = useRef(true);
   // Reads autoRun via projectRef (fresh, non-reactive) rather than depending
   // on it directly, so toggling auto-run alone never itself triggers a run —
-  // only the next source edit or a manual Run does. project.source stays in
-  // the dependency list purely as the reactive trigger for that edit.
+  // only the next source/resource edit or a manual Run does. project.source
+  // and project.resources stay in the dependency list purely as the reactive
+  // triggers for those edits (resources included since adding/editing/
+  // reordering/enabling a resource must also rebuild the candidate preview).
   // biome-ignore lint/correctness/useExhaustiveDependencies: see comment above.
   useEffect(() => {
     if (isFirstRunRef.current) {
@@ -281,7 +345,7 @@ function PreviewFrame({
     }
     if (!projectRef.current.settings.autoRun) return;
     debouncerRef.current?.schedule();
-  }, [project.source, runBuild]);
+  }, [project.source, project.resources, runBuild]);
 
   useEffect(() => {
     // React StrictMode double-invokes effects in development (mount ->
@@ -309,10 +373,11 @@ function PreviewFrame({
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
       const source = event.source;
+      const pendingCandidate = pendingCandidateRef.current;
       const isFromVisibleFrame =
         source === visibleFrameRef.current?.contentWindow;
       const isFromPendingCandidate =
-        source === pendingCandidateRef.current?.iframe.contentWindow;
+        source === pendingCandidate?.iframe.contentWindow;
       if (!isFromVisibleFrame && !isFromPendingCandidate) return;
 
       if (!isPreviewMessage(event.data)) return;
@@ -322,15 +387,44 @@ function PreviewFrame({
 
       const resolvedBuild = isFromVisibleFrame
         ? visibleResolvedBuildRef.current
-        : pendingCandidateRef.current?.resolvedBuild;
+        : pendingCandidate?.resolvedBuild;
       if (!resolvedBuild) return;
+
+      if (isFromPendingCandidate && pendingCandidate) {
+        if (event.data.type === "resources-ready") {
+          pendingCandidate.resourcesReady = true;
+          tryPromote(pendingCandidate);
+        } else if (event.data.type === "resource-error") {
+          const failedResource = resolvedBuild.resources.find(
+            (resource) => resource.url === event.data.payload.url,
+          );
+          const isFatal =
+            failedResource?.type === "script" ||
+            failedResource?.type === "module";
+          if (isFatal) {
+            pendingCandidate.iframe.remove();
+            if (pendingCandidateRef.current === pendingCandidate) {
+              pendingCandidateRef.current = null;
+            }
+            // Reported via onResourceLoadError, not onMessage — a fatal
+            // resource-error only ever comes from a pending (never-visible)
+            // candidate (resources-ready never follows it), so there's no
+            // separate "informational" audience left to notify.
+            onResourceLoadErrorRef.current?.(
+              event.data.payload,
+              pendingCandidate.executionId,
+            );
+            return;
+          }
+        }
+      }
 
       onMessageRef.current?.(event.data, resolvedBuild);
     }
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, []);
+  }, [tryPromote]);
 
   return <div ref={hostRef} className={styles.host} />;
 }
