@@ -643,6 +643,70 @@ describe("PreviewFrame script compilation", () => {
   });
 });
 
+describe("PreviewFrame trust gate", () => {
+  function makeUntrustedProject(
+    overrides: Partial<PlaygroundProject["settings"]> = {},
+  ): PlaygroundProject {
+    const project = makeProject(overrides);
+    return {
+      ...project,
+      trusted: false,
+      resources: [makeResource({ type: "script", enabled: true })],
+    };
+  }
+
+  it("does not auto-run on mount for an untrusted project with an enabled script resource", () => {
+    render(<PreviewFrame project={makeUntrustedProject({ autoRun: true })} />);
+    expect(beginBuildMock).not.toHaveBeenCalled();
+  });
+
+  it("runNow() is a silent no-op while gated, starting no candidate build", () => {
+    const ref = createRef<PreviewRunHandle>();
+    const onBuildStart = vi.fn();
+    render(
+      <PreviewFrame
+        project={makeUntrustedProject({ autoRun: false })}
+        onBuildStart={onBuildStart}
+        ref={ref}
+      />,
+    );
+
+    ref.current?.runNow();
+
+    expect(beginBuildMock).not.toHaveBeenCalled();
+    expect(onBuildStart).not.toHaveBeenCalled();
+  });
+
+  it("runTrusted() bypasses the gate and starts a build", () => {
+    const ref = createRef<PreviewRunHandle>();
+    render(
+      <PreviewFrame
+        project={makeUntrustedProject({ autoRun: false })}
+        ref={ref}
+      />,
+    );
+
+    ref.current?.runTrusted();
+
+    expect(beginBuildMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("runs normally via runNow() once the project becomes trusted", () => {
+    const project = makeUntrustedProject({ autoRun: false });
+    const ref = createRef<PreviewRunHandle>();
+    const { rerender } = render(<PreviewFrame project={project} ref={ref} />);
+
+    ref.current?.runNow();
+    expect(beginBuildMock).not.toHaveBeenCalled();
+
+    rerender(
+      <PreviewFrame project={{ ...project, trusted: true }} ref={ref} />,
+    );
+    ref.current?.runNow();
+    expect(beginBuildMock).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("PreviewFrame resource loading gate", () => {
   // jsdom fires a real "load" event as soon as an iframe with no src/srcdoc
   // is connected to the document (default about:blank navigation), and it

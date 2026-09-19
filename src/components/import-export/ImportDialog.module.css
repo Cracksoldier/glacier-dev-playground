@@ -1,0 +1,133 @@
+.title {
+  margin: 0 0 var(--glacier-space-5);
+  font-family: var(--glacier-font-display);
+  font-size: 1.0625rem;
+  color: var(--glacier-text-primary);
+}
+
+.field {
+  margin: 0 0 var(--glacier-space-3);
+}
+
+.label {
+  display: block;
+  margin: 0 0 var(--glacier-space-2);
+  font-family: var(--glacier-font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--glacier-text-secondary);
+}
+
+.fileInput {
+  width: 100%;
+  color: var(--glacier-text-primary);
+  font-family: var(--glacier-font-body);
+  font-size: 0.8125rem;
+}
+
+.textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--glacier-space-2) var(--glacier-space-3);
+  background: var(--glacier-bg-base);
+  border: 1px solid var(--glacier-panel-border);
+  border-radius: var(--glacier-radius-sm);
+  color: var(--glacier-text-primary);
+  font-family: var(--glacier-font-mono);
+  font-size: 0.8125rem;
+  resize: vertical;
+}
+
+.textarea:focus-visible {
+  outline: none;
+  box-shadow: var(--glacier-focus-ring);
+}
+
+.errorText {
+  margin: var(--glacier-space-2) 0 0;
+  color: var(--glacier-status-danger);
+  font-family: var(--glacier-font-body);
+  font-size: 0.75rem;
+}
+
+.preview {
+  margin: 0 0 var(--glacier-space-3);
+  padding: var(--glacier-space-3);
+  background: var(--glacier-bg-sunken);
+  border: 1px solid var(--glacier-panel-border);
+  border-radius: var(--glacier-radius-md);
+}
+
+.previewSummary {
+  margin: 0 0 var(--glacier-space-3);
+  color: var(--glacier-text-primary);
+  font-family: var(--glacier-font-body);
+  font-size: 0.875rem;
+}
+
+.modeFieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.modeLegend {
+  margin: 0 0 var(--glacier-space-2);
+  padding: 0;
+  color: var(--glacier-text-secondary);
+  font-family: var(--glacier-font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.modeOption {
+  display: flex;
+  align-items: center;
+  gap: var(--glacier-space-2);
+  margin: 0 0 var(--glacier-space-2);
+  color: var(--glacier-text-primary);
+  font-family: var(--glacier-font-body);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--glacier-space-3);
+}
+
+.cancelButton,
+.continueButton {
+  padding: var(--glacier-space-2) var(--glacier-space-4);
+  border-radius: var(--glacier-radius-sm);
+  font-family: var(--glacier-font-body);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition:
+    background-color var(--glacier-transition-fast),
+    border-color var(--glacier-transition-fast);
+}
+
+.cancelButton {
+  background: transparent;
+  border: 1px solid var(--glacier-panel-border);
+  color: var(--glacier-text-secondary);
+}
+
+.cancelButton:hover {
+  background: var(--glacier-panel-bg);
+  color: var(--glacier-text-primary);
+}
+
+.continueButton {
+  background: var(--glacier-accent-cyan);
+  border: 1px solid var(--glacier-accent-cyan);
+  color: var(--glacier-bg-base);
+  font-weight: 600;
+}
+
+.continueButton:hover {
+  background: var(--glacier-accent-cyan-strong);
+  border-color: var(--glacier-accent-cyan-strong);
+}

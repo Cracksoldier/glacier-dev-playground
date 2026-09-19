@@ -40,3 +40,24 @@
   font-family: var(--glacier-font-body);
   font-size: 0.75rem;
 }
+
+.trustButton {
+  flex-shrink: 0;
+  padding: var(--glacier-space-1) var(--glacier-space-3);
+  background: transparent;
+  border: 1px solid var(--glacier-status-warning);
+  border-radius: var(--glacier-radius-sm);
+  color: var(--glacier-status-warning);
+  font-family: var(--glacier-font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--glacier-transition-fast),
+    color var(--glacier-transition-fast);
+}
+
+.trustButton:hover {
+  background: var(--glacier-status-warning);
+  color: var(--glacier-bg-base);
+}

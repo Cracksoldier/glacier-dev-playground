@@ -1,10 +1,9 @@
-import { type ReactElement, useId, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import GlacierMark from "../components/common/GlacierMark";
 import {
   AutoRunIcon,
   EditorPreferencesIcon,
   ExportIcon,
-  type IconProps,
   ImportIcon,
   NewProjectIcon,
   ProjectSwitcherIcon,
@@ -15,6 +14,8 @@ import {
   SettingsIcon,
   WarningIcon,
 } from "../components/common/icons";
+import ExportDialog from "../components/import-export/ExportDialog";
+import ImportDialog from "../components/import-export/ImportDialog";
 import NewProjectDialog from "../components/projects/NewProjectDialog";
 import ProjectSwitcherPopover from "../components/projects/ProjectSwitcherPopover";
 import ResetProjectDialog from "../components/projects/ResetProjectDialog";
@@ -24,16 +25,6 @@ import type { EditorPreferences } from "../preferences/editorPreferences";
 import { useProjectStore } from "../store/ProjectStoreContext";
 import EditorPreferencesPopover from "./EditorPreferencesPopover";
 import styles from "./Toolbar.module.css";
-
-interface ToolbarAction {
-  name: string;
-  Icon: (props: IconProps) => ReactElement;
-}
-
-const MIDDLE_DISABLED_ACTIONS: ToolbarAction[] = [
-  { name: "Import", Icon: ImportIcon },
-  { name: "Export", Icon: ExportIcon },
-];
 
 const SAVE_STATUS_LABEL: Record<SaveStatus, string> = {
   saving: "Saving…",
@@ -62,6 +53,8 @@ function Toolbar({
   const [isResetOpen, setResetOpen] = useState(false);
   const [isEditorPreferencesOpen, setEditorPreferencesOpen] = useState(false);
   const [isResourcesOpen, setResourcesOpen] = useState(false);
+  const [isImportOpen, setImportOpen] = useState(false);
+  const [isExportOpen, setExportOpen] = useState(false);
 
   const isSaveStatusError =
     saveStatus === "save-failed" || saveStatus === "storage-unavailable";
@@ -130,19 +123,24 @@ function Toolbar({
         >
           <ResourcesIcon />
         </button>
-        {MIDDLE_DISABLED_ACTIONS.map(({ name, Icon }) => (
-          <button
-            key={name}
-            type="button"
-            className={styles.button}
-            aria-disabled="true"
-            aria-describedby={disabledHintId}
-            aria-label={name}
-            title={name}
-          >
-            <Icon />
-          </button>
-        ))}
+        <button
+          type="button"
+          className={styles.button}
+          aria-label="Import"
+          title="Import"
+          onClick={() => setImportOpen(true)}
+        >
+          <ImportIcon />
+        </button>
+        <button
+          type="button"
+          className={styles.button}
+          aria-label="Export"
+          title="Export"
+          onClick={() => setExportOpen(true)}
+        >
+          <ExportIcon />
+        </button>
         <button
           type="button"
           className={styles.button}
@@ -199,6 +197,15 @@ function Toolbar({
       <ResourceManagerDialog
         isOpen={isResourcesOpen}
         onClose={() => setResourcesOpen(false)}
+      />
+      <ImportDialog
+        isOpen={isImportOpen}
+        onClose={() => setImportOpen(false)}
+      />
+      <ExportDialog
+        isOpen={isExportOpen}
+        onClose={() => setExportOpen(false)}
+        project={activeProject}
       />
       <EditorPreferencesPopover
         isOpen={isEditorPreferencesOpen}

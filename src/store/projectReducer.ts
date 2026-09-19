@@ -1,8 +1,11 @@
-import type {
-  PlaygroundProject,
-  ProjectId,
-  ProjectSettings,
-  ProjectSource,
+import type { ImportedProjectDraft } from "../import-export/importValidation";
+import {
+  nowIso,
+  type PlaygroundProject,
+  PROJECT_SCHEMA_VERSION,
+  type ProjectId,
+  type ProjectSettings,
+  type ProjectSource,
 } from "../models/project";
 import { normalizeProjectTitle } from "../models/projectTitle";
 import type { ExternalResource } from "../models/resource";
@@ -51,6 +54,16 @@ export type ProjectStoreAction =
       payload: { projectId: ProjectId; trusted: boolean };
     }
   | {
+      type: "project/import";
+      payload:
+        | { mode: "add"; draft: ImportedProjectDraft }
+        | {
+            mode: "replace";
+            targetProjectId: ProjectId;
+            draft: ImportedProjectDraft;
+          };
+    }
+  | {
       type: "project/hydrate";
       payload: { projects: PlaygroundProject[]; activeProjectId: ProjectId };
     }
@@ -72,6 +85,20 @@ function createStarterProject(): PlaygroundProject {
 
 function cloneProject(project: PlaygroundProject): PlaygroundProject {
   return structuredClone(project);
+}
+
+/**
+ * Mints fresh resource ids for an imported draft's resources, avoiding
+ * collisions with any existing project's resources (the file's own ids are
+ * untrusted/arbitrary, same reasoning as regenerating the project id itself).
+ */
+function regenerateResourceIds(
+  resources: ExternalResource[],
+): ExternalResource[] {
+  return resources.map((resource) => ({
+    ...resource,
+    id: crypto.randomUUID(),
+  }));
 }
 
 export function projectReducer(
@@ -257,6 +284,56 @@ export function projectReducer(
       };
 
       return { ...state, projects, revision: state.revision + 1 };
+    }
+
+    case "project/import": {
+      const { payload } = action;
+      const timestamp = nowIso();
+
+      if (payload.mode === "add") {
+        const { draft } = payload;
+        const project: PlaygroundProject = {
+          schemaVersion: PROJECT_SCHEMA_VERSION,
+          id: crypto.randomUUID(),
+          title: draft.title,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+          trusted: false,
+          source: draft.source,
+          resources: regenerateResourceIds(draft.resources),
+          settings: draft.settings,
+        };
+
+        return {
+          ...state,
+          projects: [...state.projects, project],
+          activeProjectId: project.id,
+          revision: state.revision + 1,
+        };
+      }
+
+      const { targetProjectId, draft } = payload;
+      const index = state.projects.findIndex((p) => p.id === targetProjectId);
+      if (index === -1) return state;
+
+      const target = state.projects[index];
+      const projects = [...state.projects];
+      projects[index] = {
+        ...target,
+        title: draft.title,
+        updatedAt: timestamp,
+        trusted: false,
+        source: draft.source,
+        resources: regenerateResourceIds(draft.resources),
+        settings: draft.settings,
+      };
+
+      return {
+        ...state,
+        projects,
+        activeProjectId: targetProjectId,
+        revision: state.revision + 1,
+      };
     }
 
     case "project/hydrate": {

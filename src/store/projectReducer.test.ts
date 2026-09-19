@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { ImportedProjectDraft } from "../import-export/importValidation";
 import type { ExternalResource } from "../models/resource";
 import {
   DEFAULT_STARTER_TEMPLATE_ID,
@@ -409,6 +410,132 @@ describe("project/setTrusted", () => {
     const next = projectReducer(state, {
       type: "project/setTrusted",
       payload: { projectId: "does-not-exist", trusted: false },
+    });
+
+    expect(next).toBe(state);
+  });
+});
+
+function importDraft(
+  overrides: Partial<ImportedProjectDraft> = {},
+): ImportedProjectDraft {
+  return {
+    title: "Imported Project",
+    source: {
+      html: "<p>hi</p>",
+      stylesheet: "p { color: red; }",
+      stylesheetLanguage: "css",
+      script: "console.log(1);",
+      scriptLanguage: "javascript",
+      executionMode: "classic",
+      headContent: "",
+    },
+    resources: [
+      {
+        id: "external-res-id",
+        name: "Lodash",
+        url: "https://example.com/lodash.js",
+        type: "script",
+        enabled: true,
+        order: 0,
+      },
+    ],
+    settings: {
+      autoRun: true,
+      previewDebounceMs: 400,
+      preserveConsole: false,
+    },
+    ...overrides,
+  };
+}
+
+describe("project/import", () => {
+  it("adds a new project with a fresh id, forced-untrusted state, and regenerated resource ids", () => {
+    const state = initialState();
+    const draft = importDraft();
+
+    const next = projectReducer(state, {
+      type: "project/import",
+      payload: { mode: "add", draft },
+    });
+
+    expect(next.projects).toHaveLength(2);
+    const imported = next.projects[1];
+    expect(imported.id).not.toBe("external-res-id");
+    expect(imported.title).toBe("Imported Project");
+    expect(imported.trusted).toBe(false);
+    expect(imported.source).toEqual(draft.source);
+    expect(imported.settings).toEqual(draft.settings);
+    expect(imported.resources).toHaveLength(1);
+    expect(imported.resources[0].id).not.toBe("external-res-id");
+    expect(imported.resources[0].url).toBe(draft.resources[0].url);
+    expect(next.activeProjectId).toBe(imported.id);
+    expect(next.revision).toBe(state.revision + 1);
+  });
+
+  it("mints distinct ids for every imported resource", () => {
+    const state = initialState();
+    const draft = importDraft({
+      resources: [
+        {
+          id: "same-id",
+          name: "A",
+          url: "https://example.com/a.js",
+          type: "script",
+          enabled: true,
+          order: 0,
+        },
+        {
+          id: "same-id",
+          name: "B",
+          url: "https://example.com/b.js",
+          type: "script",
+          enabled: true,
+          order: 1,
+        },
+      ],
+    });
+
+    const next = projectReducer(state, {
+      type: "project/import",
+      payload: { mode: "add", draft },
+    });
+
+    const imported = next.projects[1];
+    const ids = imported.resources.map((r) => r.id);
+    expect(new Set(ids).size).toBe(2);
+  });
+
+  it("replaces the target project's content while preserving its id and createdAt, forcing trusted false", () => {
+    const state = initialState();
+    const targetProjectId = state.projects[0].id;
+    const originalCreatedAt = state.projects[0].createdAt;
+    const draft = importDraft({ title: "Replacement Project" });
+
+    const next = projectReducer(state, {
+      type: "project/import",
+      payload: { mode: "replace", targetProjectId, draft },
+    });
+
+    expect(next.projects).toHaveLength(1);
+    const replaced = next.projects[0];
+    expect(replaced.id).toBe(targetProjectId);
+    expect(replaced.createdAt).toBe(originalCreatedAt);
+    expect(replaced.title).toBe("Replacement Project");
+    expect(replaced.trusted).toBe(false);
+    expect(replaced.source).toEqual(draft.source);
+    expect(replaced.resources[0].id).not.toBe("external-res-id");
+    expect(next.activeProjectId).toBe(targetProjectId);
+    expect(next.revision).toBe(state.revision + 1);
+  });
+
+  it("is a no-op for an unknown target project id in replace mode", () => {
+    const state = initialState();
+    const draft = importDraft();
+
+    const next = projectReducer(state, {
+      type: "project/import",
+      payload: { mode: "replace", targetProjectId: "does-not-exist", draft },
     });
 
     expect(next).toBe(state);

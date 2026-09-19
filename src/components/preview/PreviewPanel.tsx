@@ -1,6 +1,7 @@
-import type { Ref } from "react";
+import { type Ref, useImperativeHandle, useRef } from "react";
 import type { UseConsoleEntriesResult } from "../../app/useConsoleEntries";
 import { WarningIcon } from "../../components/common/icons";
+import { requiresTrustApproval } from "../../models/trustGate";
 import { mapRuntimeErrorLine } from "../../preview/mapErrorToSource";
 import { computePreviewLineOffsets } from "../../preview/previewDocument";
 import type { PreviewMessage } from "../../preview/previewMessage";
@@ -38,13 +39,29 @@ function PreviewPanel({
   onScriptDiagnostics,
   ref,
 }: PreviewPanelProps) {
-  const { activeProject } = useProjectStore();
+  const { activeProject, actions } = useProjectStore();
   const showRelativeUrlWarning = hasRelativeAssetUrls(activeProject.source);
   const preserveConsole = activeProject.settings.preserveConsole;
   const scriptLanguageLabel =
     activeProject.source.scriptLanguage === "typescript"
       ? "TypeScript"
       : "JavaScript";
+  const needsTrustApproval = requiresTrustApproval(activeProject);
+
+  const frameRef = useRef<PreviewRunHandle>(null);
+  useImperativeHandle(
+    ref,
+    () => ({
+      runNow: () => frameRef.current?.runNow(),
+      runTrusted: () => frameRef.current?.runTrusted(),
+    }),
+    [],
+  );
+
+  function handleTrustAndRun() {
+    actions.setProjectTrusted(activeProject.id, true);
+    frameRef.current?.runTrusted();
+  }
 
   function handleBuildStart() {
     consoleEntries.startRun();
@@ -166,6 +183,22 @@ function PreviewPanel({
   return (
     <section className={styles.panel} aria-label="Preview">
       <div className={styles.header}>Preview</div>
+      {needsTrustApproval && (
+        <div className={styles.warning} role="status">
+          <WarningIcon />
+          <p className={styles.warningMessage}>
+            This imported project includes script or module resources and hasn't
+            been trusted yet — it won't run automatically.
+          </p>
+          <button
+            type="button"
+            className={styles.trustButton}
+            onClick={handleTrustAndRun}
+          >
+            Trust and run
+          </button>
+        </div>
+      )}
       {showRelativeUrlWarning && (
         <div className={styles.warning} role="status">
           <WarningIcon />
@@ -201,7 +234,7 @@ function PreviewPanel({
         onScssCompileSuccess={handleScssCompileSuccess}
         onScriptDiagnostics={handleScriptDiagnostics}
         onResourceLoadError={handleResourceLoadError}
-        ref={ref}
+        ref={frameRef}
       />
     </section>
   );

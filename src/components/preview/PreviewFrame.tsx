@@ -7,6 +7,7 @@ import {
 } from "react";
 import type { PlaygroundProject, ProjectSource } from "../../models/project";
 import type { ExternalResource } from "../../models/resource";
+import { requiresTrustApproval } from "../../models/trustGate";
 import { createDebouncer } from "../../persistence/debounce";
 import { createPreviewBuildCoordinator } from "../../preview/buildCoordinator";
 import {
@@ -26,6 +27,8 @@ import styles from "./PreviewFrame.module.css";
 
 export interface PreviewRunHandle {
   runNow: () => void;
+  /** Bypasses the trust gate unconditionally — used only by the "Trust and run" banner action, after the caller has already flipped `trusted` to `true`. */
+  runTrusted: () => void;
 }
 
 /**
@@ -207,106 +210,116 @@ function PreviewFrame({
     null,
   );
 
-  const runBuild = useCallback(async () => {
-    const host = hostRef.current;
-    const coordinator = coordinatorRef.current;
-    if (!host || !coordinator || disposedRef.current) return;
-
-    const { compilationId, executionId, source, resources } =
-      coordinator.beginBuild(projectRef.current);
-    onBuildStartRef.current?.(executionId);
-
-    let resolvedStylesheet = source.stylesheet;
-    if (source.stylesheetLanguage === "scss") {
-      if (!scssClientRef.current) {
-        scssClientRef.current = createScssCompilerClient();
+  const runBuild = useCallback(
+    async (options?: { bypassTrustGate?: boolean }) => {
+      const host = hostRef.current;
+      const coordinator = coordinatorRef.current;
+      if (!host || !coordinator || disposedRef.current) return;
+      if (
+        !options?.bypassTrustGate &&
+        requiresTrustApproval(projectRef.current)
+      ) {
+        return;
       }
-      const result = await scssClientRef.current.compile(
-        source.stylesheet,
+
+      const { compilationId, executionId, source, resources } =
+        coordinator.beginBuild(projectRef.current);
+      onBuildStartRef.current?.(executionId);
+
+      let resolvedStylesheet = source.stylesheet;
+      if (source.stylesheetLanguage === "scss") {
+        if (!scssClientRef.current) {
+          scssClientRef.current = createScssCompilerClient();
+        }
+        const result = await scssClientRef.current.compile(
+          source.stylesheet,
+          compilationId,
+        );
+        // Re-check after the await: a newer build may have started (or this
+        // instance may have unmounted) while the compile was in flight.
+        if (disposedRef.current || coordinator.isStale(executionId)) return;
+
+        if (result.type === "failure") {
+          onScssCompileErrorRef.current?.(result.error, compilationId);
+          return;
+        }
+        onScssCompileSuccessRef.current?.(result.css, compilationId);
+        resolvedStylesheet = result.css;
+      }
+
+      if (!tsClientRef.current) {
+        tsClientRef.current = createTsCompilerClient();
+      }
+      const scriptResult = await tsClientRef.current.compile(
+        source.script,
+        source.scriptLanguage,
+        source.executionMode,
         compilationId,
       );
-      // Re-check after the await: a newer build may have started (or this
-      // instance may have unmounted) while the compile was in flight.
       if (disposedRef.current || coordinator.isStale(executionId)) return;
 
-      if (result.type === "failure") {
-        onScssCompileErrorRef.current?.(result.error, compilationId);
-        return;
-      }
-      onScssCompileSuccessRef.current?.(result.css, compilationId);
-      resolvedStylesheet = result.css;
-    }
+      onScriptDiagnosticsRef.current?.(scriptResult.diagnostics, compilationId);
+      if (scriptResult.diagnostics.some((d) => d.category === "error")) return;
 
-    if (!tsClientRef.current) {
-      tsClientRef.current = createTsCompilerClient();
-    }
-    const scriptResult = await tsClientRef.current.compile(
-      source.script,
-      source.scriptLanguage,
-      source.executionMode,
-      compilationId,
-    );
-    if (disposedRef.current || coordinator.isStale(executionId)) return;
+      // JS-mode keeps the authored source as the executed payload — the
+      // worker's JS emit is diagnostic-only, never trusted as the executed
+      // code (see `tsCompiler.ts`).
+      const resolvedScript =
+        source.scriptLanguage === "typescript" &&
+        scriptResult.emittedJs !== null
+          ? scriptResult.emittedJs
+          : source.script;
+      const scriptLineMap =
+        source.scriptLanguage === "typescript" ? scriptResult.lineMap : null;
 
-    onScriptDiagnosticsRef.current?.(scriptResult.diagnostics, compilationId);
-    if (scriptResult.diagnostics.some((d) => d.category === "error")) return;
+      const resolvedSource: ProjectSource = {
+        ...source,
+        stylesheet: resolvedStylesheet,
+        script: resolvedScript,
+      };
+      const resolvedBuild: ResolvedPreviewBuild = {
+        resolvedSource,
+        scriptLineMap,
+        resources,
+      };
+      const documentHtml = coordinator.buildDocument(
+        resolvedSource,
+        executionId,
+        resources,
+      );
 
-    // JS-mode keeps the authored source as the executed payload — the
-    // worker's JS emit is diagnostic-only, never trusted as the executed
-    // code (see `tsCompiler.ts`).
-    const resolvedScript =
-      source.scriptLanguage === "typescript" && scriptResult.emittedJs !== null
-        ? scriptResult.emittedJs
-        : source.script;
-    const scriptLineMap =
-      source.scriptLanguage === "typescript" ? scriptResult.lineMap : null;
+      const iframe = createPreviewIframe();
+      iframe.style.visibility = "hidden";
 
-    const resolvedSource: ProjectSource = {
-      ...source,
-      stylesheet: resolvedStylesheet,
-      script: resolvedScript,
-    };
-    const resolvedBuild: ResolvedPreviewBuild = {
-      resolvedSource,
-      scriptLineMap,
-      resources,
-    };
-    const documentHtml = coordinator.buildDocument(
-      resolvedSource,
-      executionId,
-      resources,
-    );
+      function handleLoad() {
+        iframe.removeEventListener("load", handleLoad);
+        if (disposedRef.current) return;
 
-    const iframe = createPreviewIframe();
-    iframe.style.visibility = "hidden";
+        const candidate = pendingCandidateRef.current;
+        if (!candidate || candidate.iframe !== iframe) {
+          // A newer build superseded this candidate (or it was already
+          // rejected by a fatal resource error) before it finished loading.
+          iframe.remove();
+          return;
+        }
 
-    function handleLoad() {
-      iframe.removeEventListener("load", handleLoad);
-      if (disposedRef.current) return;
-
-      const candidate = pendingCandidateRef.current;
-      if (!candidate || candidate.iframe !== iframe) {
-        // A newer build superseded this candidate (or it was already
-        // rejected by a fatal resource error) before it finished loading.
-        iframe.remove();
-        return;
+        candidate.loaded = true;
+        tryPromote(candidate);
       }
 
-      candidate.loaded = true;
-      tryPromote(candidate);
-    }
-
-    iframe.addEventListener("load", handleLoad);
-    pendingCandidateRef.current = {
-      executionId,
-      iframe,
-      resolvedBuild,
-      loaded: false,
-      resourcesReady: false,
-    };
-    host.appendChild(iframe);
-    iframe.srcdoc = documentHtml;
-  }, [tryPromote]);
+      iframe.addEventListener("load", handleLoad);
+      pendingCandidateRef.current = {
+        executionId,
+        iframe,
+        resolvedBuild,
+        loaded: false,
+        resourcesReady: false,
+      };
+      host.appendChild(iframe);
+      iframe.srcdoc = documentHtml;
+    },
+    [tryPromote],
+  );
 
   const debouncerRef = useRef<ReturnType<typeof createDebouncer<void>> | null>(
     null,
@@ -324,6 +337,10 @@ function PreviewFrame({
       runNow: () => {
         debouncerRef.current?.cancel();
         runBuild();
+      },
+      runTrusted: () => {
+        debouncerRef.current?.cancel();
+        runBuild({ bypassTrustGate: true });
       },
     }),
     [runBuild],

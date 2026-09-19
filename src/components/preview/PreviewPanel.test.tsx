@@ -1,5 +1,5 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
-import { useEffect } from "react";
+import { createRef, useEffect } from "react";
 import { describe, expect, it, vi } from "vitest";
 import type { UseConsoleEntriesResult } from "../../app/useConsoleEntries";
 import {
@@ -7,6 +7,7 @@ import {
   useProjectStore,
 } from "../../store/ProjectStoreContext";
 import { createInMemoryProjectRepository } from "../../test/inMemoryProjectRepository";
+import type { PreviewRunHandle } from "./PreviewFrame";
 import PreviewPanel from "./PreviewPanel";
 
 // jsdom has no Worker; PreviewFrame's build pipeline now unconditionally runs
@@ -49,6 +50,26 @@ function AddRelativeImageOnMount() {
       html: '<img src="images/a.png">',
     });
   }, [activeProjectId, updateProjectSource]);
+  return null;
+}
+
+function MakeUntrustedWithScriptResourceOnMount() {
+  const { activeProject, actions } = useProjectStore();
+  const { id: activeProjectId } = activeProject;
+  const { updateProjectResources, setProjectTrusted } = actions;
+  useEffect(() => {
+    updateProjectResources(activeProjectId, [
+      {
+        id: "resource-1",
+        name: "Example script",
+        url: "https://example.com/a.js",
+        type: "script",
+        enabled: true,
+        order: 0,
+      },
+    ]);
+    setProjectTrusted(activeProjectId, false);
+  }, [activeProjectId, updateProjectResources, setProjectTrusted]);
   return null;
 }
 
@@ -118,6 +139,57 @@ describe("PreviewPanel", () => {
 
     expect(screen.getByRole("status")).toHaveTextContent(
       "JavaScript compile failed",
+    );
+  });
+
+  it("does not show the trust banner for a trusted project", () => {
+    renderPreviewPanel();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
+
+  it("shows the trust banner and a Trust and run button for an untrusted project with an enabled script resource", async () => {
+    await act(async () => {
+      render(
+        <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+          <MakeUntrustedWithScriptResourceOnMount />
+          <PreviewPanel consoleEntries={createConsoleEntriesStub()} />
+        </ProjectStoreProvider>,
+      );
+    });
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "hasn't been trusted yet",
+    );
+    expect(
+      screen.getByRole("button", { name: "Trust and run" }),
+    ).toBeInTheDocument();
+  });
+
+  it("clicking Trust and run trusts the project, dismisses the banner, and starts a new build", async () => {
+    const userEvent = await import("@testing-library/user-event");
+    const user = userEvent.default.setup();
+    const ref = createRef<PreviewRunHandle>();
+
+    const { container } = await act(async () =>
+      render(
+        <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+          <MakeUntrustedWithScriptResourceOnMount />
+          <PreviewPanel consoleEntries={createConsoleEntriesStub()} ref={ref} />
+        </ProjectStoreProvider>,
+      ),
+    );
+
+    const iframeCountBeforeClick = container.querySelectorAll("iframe").length;
+
+    await user.click(screen.getByRole("button", { name: "Trust and run" }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    });
+    await waitFor(() =>
+      expect(container.querySelectorAll("iframe").length).toBeGreaterThan(
+        iframeCountBeforeClick,
+      ),
     );
   });
 });

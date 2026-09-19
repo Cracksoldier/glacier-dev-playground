@@ -6,6 +6,7 @@ import {
   useReducer,
   useState,
 } from "react";
+import type { ImportedProjectDraft } from "../import-export/importValidation";
 import type {
   PlaygroundProject,
   ProjectId,
@@ -51,6 +52,15 @@ interface ProjectStoreActions {
     resources: ExternalResource[],
   ) => void;
   setProjectTrusted: (projectId: ProjectId, trusted: boolean) => void;
+  importProject: (
+    payload:
+      | { mode: "add"; draft: ImportedProjectDraft }
+      | {
+          mode: "replace";
+          targetProjectId: ProjectId;
+          draft: ImportedProjectDraft;
+        },
+  ) => void;
   resetLocalData: () => Promise<void>;
   saveNow: () => void;
   dismissPersistenceNotice: () => void;
@@ -139,6 +149,7 @@ export function ProjectStoreProvider({
           type: "project/setTrusted",
           payload: { projectId, trusted },
         }),
+      importProject: (payload) => dispatch({ type: "project/import", payload }),
       resetLocalData: hydration.resetLocalData,
       saveNow: autosave.saveNow,
       dismissPersistenceNotice: hydration.dismissNotice,
