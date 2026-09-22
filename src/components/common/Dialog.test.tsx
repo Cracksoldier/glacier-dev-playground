@@ -39,6 +39,26 @@ describe("Dialog", () => {
     expect(document.getElementById("dialog-root")).toContainElement(dialog);
   });
 
+  it("wires aria-describedby to the supplied descriptionId", () => {
+    render(
+      <Dialog
+        isOpen={true}
+        onClose={vi.fn()}
+        titleId="test-dialog-title"
+        descriptionId="test-dialog-description"
+      >
+        <h2 id="test-dialog-title">Dialog title</h2>
+        <p id="test-dialog-description">Dialog description</p>
+        <button type="button">First</button>
+      </Dialog>,
+    );
+
+    expect(screen.getByRole("dialog")).toHaveAttribute(
+      "aria-describedby",
+      "test-dialog-description",
+    );
+  });
+
   it("focuses the first focusable element on open", () => {
     renderDialog(true, vi.fn());
 

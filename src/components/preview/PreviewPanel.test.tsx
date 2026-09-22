@@ -36,7 +36,11 @@ function createConsoleEntriesStub(): UseConsoleEntriesResult {
 function renderPreviewPanel() {
   return render(
     <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
-      <PreviewPanel consoleEntries={createConsoleEntriesStub()} />
+      <PreviewPanel
+        consoleEntries={createConsoleEntriesStub()}
+        presentation="default"
+        onPresentationChange={vi.fn()}
+      />
     </ProjectStoreProvider>,
   );
 }
@@ -90,7 +94,11 @@ describe("PreviewPanel", () => {
       render(
         <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
           <AddRelativeImageOnMount />
-          <PreviewPanel consoleEntries={createConsoleEntriesStub()} />
+          <PreviewPanel
+            consoleEntries={createConsoleEntriesStub()}
+            presentation="default"
+            onPresentationChange={vi.fn()}
+          />
         </ProjectStoreProvider>,
       );
     });
@@ -115,7 +123,12 @@ describe("PreviewPanel", () => {
   it("shows the SCSS-stale banner when isScssStale is true", () => {
     render(
       <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
-        <PreviewPanel consoleEntries={createConsoleEntriesStub()} isScssStale />
+        <PreviewPanel
+          consoleEntries={createConsoleEntriesStub()}
+          presentation="default"
+          onPresentationChange={vi.fn()}
+          isScssStale
+        />
       </ProjectStoreProvider>,
     );
 
@@ -132,6 +145,8 @@ describe("PreviewPanel", () => {
       <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
         <PreviewPanel
           consoleEntries={createConsoleEntriesStub()}
+          presentation="default"
+          onPresentationChange={vi.fn()}
           isScriptStale
         />
       </ProjectStoreProvider>,
@@ -152,7 +167,11 @@ describe("PreviewPanel", () => {
       render(
         <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
           <MakeUntrustedWithScriptResourceOnMount />
-          <PreviewPanel consoleEntries={createConsoleEntriesStub()} />
+          <PreviewPanel
+            consoleEntries={createConsoleEntriesStub()}
+            presentation="default"
+            onPresentationChange={vi.fn()}
+          />
         </ProjectStoreProvider>,
       );
     });
@@ -174,7 +193,12 @@ describe("PreviewPanel", () => {
       render(
         <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
           <MakeUntrustedWithScriptResourceOnMount />
-          <PreviewPanel consoleEntries={createConsoleEntriesStub()} ref={ref} />
+          <PreviewPanel
+            consoleEntries={createConsoleEntriesStub()}
+            presentation="default"
+            onPresentationChange={vi.fn()}
+            ref={ref}
+          />
         </ProjectStoreProvider>,
       ),
     );
@@ -191,5 +215,92 @@ describe("PreviewPanel", () => {
         iframeCountBeforeClick,
       ),
     );
+  });
+
+  it("reflects the current presentation on the toggle buttons", () => {
+    render(
+      <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+        <PreviewPanel
+          consoleEntries={createConsoleEntriesStub()}
+          presentation="expanded"
+          onPresentationChange={vi.fn()}
+        />
+      </ProjectStoreProvider>,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Expand preview" }),
+    ).toHaveAttribute("aria-pressed", "true");
+    expect(
+      screen.getByRole("button", { name: "Full-window preview" }),
+    ).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("toggles expanded on and back off", async () => {
+    const userEvent = await import("@testing-library/user-event");
+    const user = userEvent.default.setup();
+    const onPresentationChange = vi.fn();
+    const { rerender } = render(
+      <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+        <PreviewPanel
+          consoleEntries={createConsoleEntriesStub()}
+          presentation="default"
+          onPresentationChange={onPresentationChange}
+        />
+      </ProjectStoreProvider>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Expand preview" }));
+    expect(onPresentationChange).toHaveBeenCalledWith("expanded");
+
+    rerender(
+      <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+        <PreviewPanel
+          consoleEntries={createConsoleEntriesStub()}
+          presentation="expanded"
+          onPresentationChange={onPresentationChange}
+        />
+      </ProjectStoreProvider>,
+    );
+    await user.click(screen.getByRole("button", { name: "Expand preview" }));
+    expect(onPresentationChange).toHaveBeenLastCalledWith("default");
+  });
+
+  it("leaves full-window presentation on Escape", async () => {
+    const userEvent = await import("@testing-library/user-event");
+    const user = userEvent.default.setup();
+    const onPresentationChange = vi.fn();
+    render(
+      <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+        <PreviewPanel
+          consoleEntries={createConsoleEntriesStub()}
+          presentation="full-window"
+          onPresentationChange={onPresentationChange}
+        />
+      </ProjectStoreProvider>,
+    );
+
+    await user.keyboard("{Escape}");
+
+    expect(onPresentationChange).toHaveBeenCalledWith("default");
+  });
+
+  it("ignores Escape when not in full-window presentation", async () => {
+    const userEvent = await import("@testing-library/user-event");
+    const user = userEvent.default.setup();
+    const onPresentationChange = vi.fn();
+    render(
+      <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
+        <PreviewPanel
+          consoleEntries={createConsoleEntriesStub()}
+          presentation="expanded"
+          onPresentationChange={onPresentationChange}
+        />
+      </ProjectStoreProvider>,
+    );
+
+    await user.keyboard("{Escape}");
+
+    expect(onPresentationChange).not.toHaveBeenCalled();
   });
 });

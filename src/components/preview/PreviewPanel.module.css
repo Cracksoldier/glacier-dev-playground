@@ -15,13 +15,48 @@
 
 .header {
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--glacier-space-2);
   padding: var(--glacier-space-2) var(--glacier-space-3);
+  border-bottom: 1px solid var(--glacier-panel-border);
+}
+
+.label {
+  margin: 0;
   font-family: var(--glacier-font-mono);
   font-size: 0.75rem;
+  font-weight: inherit;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--glacier-text-secondary);
-  border-bottom: 1px solid var(--glacier-panel-border);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--glacier-space-1);
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  background: transparent;
+  border: none;
+  border-radius: var(--glacier-radius-sm);
+  color: var(--glacier-text-secondary);
+  cursor: pointer;
+  transition: color var(--glacier-transition-fast);
+}
+
+.actionButton:hover {
+  color: var(--glacier-text-primary);
+}
+
+.actionButton[aria-pressed="true"] {
+  color: var(--glacier-accent-cyan);
 }
 
 .warning {

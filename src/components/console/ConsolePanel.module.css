@@ -140,9 +140,16 @@
   text-decoration: underline;
 }
 
+.severityTag {
+  flex-shrink: 0;
+  min-width: 3.5em;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
 .entryTime {
   flex-shrink: 0;
-  color: var(--glacier-text-disabled);
+  color: var(--glacier-text-muted);
   font-size: 0.75rem;
 }
 

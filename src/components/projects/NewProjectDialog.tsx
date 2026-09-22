@@ -15,6 +15,7 @@ export interface NewProjectDialogProps {
 
 function NewProjectDialog({ isOpen, onClose }: NewProjectDialogProps) {
   const titleId = useId();
+  const descriptionId = useId();
   const titleInputId = useId();
   const { actions } = useProjectStore();
   const [templateId, setTemplateId] = useState<TemplateId>(
@@ -35,10 +36,18 @@ function NewProjectDialog({ isOpen, onClose }: NewProjectDialogProps) {
   }
 
   return (
-    <Dialog isOpen={isOpen} onClose={handleClose} titleId={titleId}>
+    <Dialog
+      isOpen={isOpen}
+      onClose={handleClose}
+      titleId={titleId}
+      descriptionId={descriptionId}
+    >
       <h2 id={titleId} className={styles.title}>
         New project
       </h2>
+      <p id={descriptionId} className={styles.description}>
+        Choose a starting template and optionally name the new project.
+      </p>
       <form onSubmit={handleSubmit}>
         <div className={styles.field}>
           <label htmlFor={titleInputId} className={styles.label}>

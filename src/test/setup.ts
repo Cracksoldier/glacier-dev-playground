@@ -33,6 +33,36 @@ class ResizeObserverStub {
 
 globalThis.ResizeObserver ??= ResizeObserverStub;
 
+// jsdom does not implement matchMedia; useNarrowLayout and any component
+// mounting AppShellContent need it to avoid throwing. Always reports no
+// match (never a real breakpoint change) — narrow-layout behavior itself is
+// verified against a real matchMedia stub per-test or in Playwright e2e.
+if (typeof window.matchMedia !== "function") {
+  window.matchMedia = (query: string): MediaQueryList => {
+    const target = new EventTarget();
+    return Object.assign(target, {
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      dispatchEvent: target.dispatchEvent.bind(target),
+    }) as MediaQueryList;
+  };
+}
+
+// jsdom does not implement the `sandbox` IDL attribute on iframes, which
+// `detectUnsupportedBrowser` feature-detects. Defined as a reflecting getter
+// so the browser-support gate sees the capability every real browser has.
+if (!("sandbox" in HTMLIFrameElement.prototype)) {
+  Object.defineProperty(HTMLIFrameElement.prototype, "sandbox", {
+    configurable: true,
+    get(this: HTMLIFrameElement) {
+      return this.getAttribute("sandbox") ?? "";
+    },
+  });
+}
+
 // jsdom has no layout engine, so `Range.getClientRects`/`getBoundingClientRect`
 // are unimplemented; CodeMirror 6's internal measurement pass (run on a
 // requestAnimationFrame callback) calls both and throws otherwise. Stubbed to

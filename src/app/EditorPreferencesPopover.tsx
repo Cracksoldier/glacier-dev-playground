@@ -37,6 +37,8 @@ function EditorPreferencesPopover({
       isOpen={isOpen}
       onClose={onClose}
       anchorRef={anchorRef}
+      role="group"
+      aria-label="Editor preferences"
       className={styles.popover}
     >
       <div className={styles.row}>

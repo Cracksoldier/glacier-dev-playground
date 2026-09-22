@@ -29,6 +29,8 @@ export interface PreviewRunHandle {
   runNow: () => void;
   /** Bypasses the trust gate unconditionally — used only by the "Trust and run" banner action, after the caller has already flipped `trusted` to `true`. */
   runTrusted: () => void;
+  /** Focuses the currently visible preview iframe, if one exists. */
+  focus: () => void;
 }
 
 /**
@@ -341,6 +343,9 @@ function PreviewFrame({
       runTrusted: () => {
         debouncerRef.current?.cancel();
         runBuild({ bypassTrustGate: true });
+      },
+      focus: () => {
+        visibleFrameRef.current?.focus();
       },
     }),
     [runBuild],

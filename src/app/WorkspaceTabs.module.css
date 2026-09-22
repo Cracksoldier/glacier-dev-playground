@@ -1,0 +1,35 @@
+.tablist {
+  display: none;
+  flex-shrink: 0;
+  overflow-x: auto;
+  border-top: 1px solid var(--glacier-panel-border);
+  background: var(--glacier-panel-bg);
+}
+
+@media (max-width: 767.98px) {
+  .tablist {
+    display: flex;
+  }
+}
+
+.tab {
+  flex: 1;
+  padding: var(--glacier-space-2) var(--glacier-space-2);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--glacier-text-secondary);
+  font-family: var(--glacier-font-body);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--glacier-text-primary);
+}
+
+.tabSelected {
+  border-bottom-color: var(--glacier-accent-cyan);
+  color: var(--glacier-text-primary);
+}

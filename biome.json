@@ -38,6 +38,15 @@
       "linter": {
         "enabled": false
       }
+    },
+    {
+      "includes": ["graphify-out/**"],
+      "linter": {
+        "enabled": false
+      },
+      "formatter": {
+        "enabled": false
+      }
     }
   ]
 }

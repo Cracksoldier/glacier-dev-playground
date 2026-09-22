@@ -6,10 +6,18 @@
 }
 
 .title {
-  margin: 0 0 var(--glacier-space-4);
+  margin: 0 0 var(--glacier-space-2);
   font-family: var(--glacier-font-display);
   font-size: 1.0625rem;
   color: var(--glacier-text-primary);
+}
+
+.description {
+  margin: 0 0 var(--glacier-space-4);
+  font-family: var(--glacier-font-body);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--glacier-text-secondary);
 }
 
 .list {

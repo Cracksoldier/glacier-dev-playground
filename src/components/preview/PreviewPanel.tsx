@@ -1,6 +1,11 @@
-import { type Ref, useImperativeHandle, useRef } from "react";
+import { type Ref, useEffect, useId, useImperativeHandle, useRef } from "react";
 import type { UseConsoleEntriesResult } from "../../app/useConsoleEntries";
-import { WarningIcon } from "../../components/common/icons";
+import {
+  CollapseIcon,
+  ExpandIcon,
+  FullWindowIcon,
+  WarningIcon,
+} from "../../components/common/icons";
 import { requiresTrustApproval } from "../../models/trustGate";
 import { mapRuntimeErrorLine } from "../../preview/mapErrorToSource";
 import { computePreviewLineOffsets } from "../../preview/previewDocument";
@@ -15,8 +20,17 @@ import PreviewFrame, {
 } from "./PreviewFrame";
 import styles from "./PreviewPanel.module.css";
 
+/**
+ * How much of the workspace the preview takes over. `expanded` keeps the
+ * editor panels visible but shrunk; `full-window` covers the whole viewport.
+ * Never a separate browser window.
+ */
+export type PreviewPresentation = "default" | "expanded" | "full-window";
+
 interface PreviewPanelProps {
   consoleEntries: UseConsoleEntriesResult;
+  presentation: PreviewPresentation;
+  onPresentationChange: (presentation: PreviewPresentation) => void;
   /** True when the last SCSS compile failed — the visible preview is stale relative to the current source. */
   isScssStale?: boolean;
   /** True when the last TS/JS compile produced a blocking diagnostic — the visible preview is stale relative to the current source. */
@@ -32,6 +46,8 @@ interface PreviewPanelProps {
 
 function PreviewPanel({
   consoleEntries,
+  presentation,
+  onPresentationChange,
   isScssStale = false,
   isScriptStale = false,
   onScssCompileError,
@@ -40,6 +56,7 @@ function PreviewPanel({
   ref,
 }: PreviewPanelProps) {
   const { activeProject, actions } = useProjectStore();
+  const headingId = useId();
   const showRelativeUrlWarning = hasRelativeAssetUrls(activeProject.source);
   const preserveConsole = activeProject.settings.preserveConsole;
   const scriptLanguageLabel =
@@ -54,9 +71,21 @@ function PreviewPanel({
     () => ({
       runNow: () => frameRef.current?.runNow(),
       runTrusted: () => frameRef.current?.runTrusted(),
+      focus: () => frameRef.current?.focus(),
     }),
     [],
   );
+
+  useEffect(() => {
+    if (presentation !== "full-window") return;
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onPresentationChange("default");
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [presentation, onPresentationChange]);
 
   function handleTrustAndRun() {
     actions.setProjectTrusted(activeProject.id, true);
@@ -181,8 +210,40 @@ function PreviewPanel({
   }
 
   return (
-    <section className={styles.panel} aria-label="Preview">
-      <div className={styles.header}>Preview</div>
+    <section className={styles.panel} aria-labelledby={headingId}>
+      <div className={styles.header}>
+        <h2 id={headingId} className={styles.label}>
+          Preview
+        </h2>
+        <div className={styles.actions}>
+          <button
+            type="button"
+            className={styles.actionButton}
+            aria-label="Expand preview"
+            aria-pressed={presentation === "expanded"}
+            onClick={() =>
+              onPresentationChange(
+                presentation === "expanded" ? "default" : "expanded",
+              )
+            }
+          >
+            {presentation === "expanded" ? <CollapseIcon /> : <ExpandIcon />}
+          </button>
+          <button
+            type="button"
+            className={styles.actionButton}
+            aria-label="Full-window preview"
+            aria-pressed={presentation === "full-window"}
+            onClick={() =>
+              onPresentationChange(
+                presentation === "full-window" ? "default" : "full-window",
+              )
+            }
+          >
+            <FullWindowIcon />
+          </button>
+        </div>
+      </div>
       {needsTrustApproval && (
         <div className={styles.warning} role="status">
           <WarningIcon />

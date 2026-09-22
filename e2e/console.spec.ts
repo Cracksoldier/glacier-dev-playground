@@ -70,7 +70,7 @@ test("captures console.log/info/warn/error/debug calls with correct severity", a
   ).toHaveCSS("color", "rgb(242, 112, 138)");
   await expect(
     consolePanel(page).locator("li").filter({ hasText: "a debug message" }),
-  ).toHaveCSS("color", "rgb(100, 119, 140)");
+  ).toHaveCSS("color", "rgb(116, 136, 160)");
 });
 
 test("console.clear() clears prior entries", async ({ page }) => {

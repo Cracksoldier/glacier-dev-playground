@@ -2,7 +2,10 @@ import { renderHook } from "@testing-library/react";
 import type { RefObject } from "react";
 import { describe, expect, it, vi } from "vitest";
 import type { CodeMirrorEditorHandle } from "../components/editors/CodeMirrorEditor";
-import { useEditorFocusShortcuts } from "./useEditorFocusShortcuts";
+import {
+  type FocusableHandle,
+  useEditorFocusShortcuts,
+} from "./useEditorFocusShortcuts";
 
 function dispatchKeydown(init: KeyboardEventInit) {
   window.dispatchEvent(new KeyboardEvent("keydown", init));
@@ -12,16 +15,22 @@ function makeRef(focus: () => void): RefObject<CodeMirrorEditorHandle | null> {
   return { current: { focus, focusLine: vi.fn() } };
 }
 
+function makePreviewRef(focus: () => void): RefObject<FocusableHandle | null> {
+  return { current: { focus } };
+}
+
 describe("useEditorFocusShortcuts", () => {
   it("focuses the HTML editor on Alt+1", () => {
     const htmlFocus = vi.fn();
     const cssFocus = vi.fn();
     const jsFocus = vi.fn();
+    const previewFocus = vi.fn();
     renderHook(() =>
       useEditorFocusShortcuts(
         makeRef(htmlFocus),
         makeRef(cssFocus),
         makeRef(jsFocus),
+        makePreviewRef(previewFocus),
       ),
     );
 
@@ -30,17 +39,20 @@ describe("useEditorFocusShortcuts", () => {
     expect(htmlFocus).toHaveBeenCalledTimes(1);
     expect(cssFocus).not.toHaveBeenCalled();
     expect(jsFocus).not.toHaveBeenCalled();
+    expect(previewFocus).not.toHaveBeenCalled();
   });
 
   it("focuses the CSS editor on Alt+2", () => {
     const htmlFocus = vi.fn();
     const cssFocus = vi.fn();
     const jsFocus = vi.fn();
+    const previewFocus = vi.fn();
     renderHook(() =>
       useEditorFocusShortcuts(
         makeRef(htmlFocus),
         makeRef(cssFocus),
         makeRef(jsFocus),
+        makePreviewRef(previewFocus),
       ),
     );
 
@@ -49,17 +61,20 @@ describe("useEditorFocusShortcuts", () => {
     expect(cssFocus).toHaveBeenCalledTimes(1);
     expect(htmlFocus).not.toHaveBeenCalled();
     expect(jsFocus).not.toHaveBeenCalled();
+    expect(previewFocus).not.toHaveBeenCalled();
   });
 
   it("focuses the JS editor on Alt+3", () => {
     const htmlFocus = vi.fn();
     const cssFocus = vi.fn();
     const jsFocus = vi.fn();
+    const previewFocus = vi.fn();
     renderHook(() =>
       useEditorFocusShortcuts(
         makeRef(htmlFocus),
         makeRef(cssFocus),
         makeRef(jsFocus),
+        makePreviewRef(previewFocus),
       ),
     );
 
@@ -68,6 +83,29 @@ describe("useEditorFocusShortcuts", () => {
     expect(jsFocus).toHaveBeenCalledTimes(1);
     expect(htmlFocus).not.toHaveBeenCalled();
     expect(cssFocus).not.toHaveBeenCalled();
+    expect(previewFocus).not.toHaveBeenCalled();
+  });
+
+  it("focuses the preview panel on Alt+4", () => {
+    const htmlFocus = vi.fn();
+    const cssFocus = vi.fn();
+    const jsFocus = vi.fn();
+    const previewFocus = vi.fn();
+    renderHook(() =>
+      useEditorFocusShortcuts(
+        makeRef(htmlFocus),
+        makeRef(cssFocus),
+        makeRef(jsFocus),
+        makePreviewRef(previewFocus),
+      ),
+    );
+
+    dispatchKeydown({ key: "4", altKey: true });
+
+    expect(previewFocus).toHaveBeenCalledTimes(1);
+    expect(htmlFocus).not.toHaveBeenCalled();
+    expect(cssFocus).not.toHaveBeenCalled();
+    expect(jsFocus).not.toHaveBeenCalled();
   });
 
   it("prevents default on a matching combo", () => {
@@ -77,6 +115,7 @@ describe("useEditorFocusShortcuts", () => {
         makeRef(htmlFocus),
         makeRef(vi.fn()),
         makeRef(vi.fn()),
+        makePreviewRef(vi.fn()),
       ),
     );
 
@@ -94,6 +133,7 @@ describe("useEditorFocusShortcuts", () => {
         makeRef(htmlFocus),
         makeRef(vi.fn()),
         makeRef(vi.fn()),
+        makePreviewRef(vi.fn()),
       ),
     );
 
@@ -109,6 +149,7 @@ describe("useEditorFocusShortcuts", () => {
         makeRef(htmlFocus),
         makeRef(vi.fn()),
         makeRef(vi.fn()),
+        makePreviewRef(vi.fn()),
       ),
     );
 
@@ -124,12 +165,74 @@ describe("useEditorFocusShortcuts", () => {
         makeRef(htmlFocus),
         makeRef(vi.fn()),
         makeRef(vi.fn()),
+        makePreviewRef(vi.fn()),
+      ),
+    );
+
+    dispatchKeydown({ key: "5", altKey: true });
+
+    expect(htmlFocus).not.toHaveBeenCalled();
+  });
+
+  it("selects the matching tab before focusing on a narrow layout", async () => {
+    const htmlFocus = vi.fn();
+    const setActiveTab = vi.fn();
+    renderHook(() =>
+      useEditorFocusShortcuts(
+        makeRef(htmlFocus),
+        makeRef(vi.fn()),
+        makeRef(vi.fn()),
+        makePreviewRef(vi.fn()),
+        { isNarrow: true, setActiveTab },
+      ),
+    );
+
+    dispatchKeydown({ key: "1", altKey: true });
+
+    expect(setActiveTab).toHaveBeenCalledWith("html");
+    // Focus is deferred until the newly selected tab panel is rendered.
+    expect(htmlFocus).not.toHaveBeenCalled();
+    await new Promise(requestAnimationFrame);
+    expect(htmlFocus).toHaveBeenCalledTimes(1);
+  });
+
+  it("selects the preview tab on Alt+4 on a narrow layout", async () => {
+    const previewFocus = vi.fn();
+    const setActiveTab = vi.fn();
+    renderHook(() =>
+      useEditorFocusShortcuts(
+        makeRef(vi.fn()),
+        makeRef(vi.fn()),
+        makeRef(vi.fn()),
+        makePreviewRef(previewFocus),
+        { isNarrow: true, setActiveTab },
       ),
     );
 
     dispatchKeydown({ key: "4", altKey: true });
 
-    expect(htmlFocus).not.toHaveBeenCalled();
+    expect(setActiveTab).toHaveBeenCalledWith("preview");
+    await new Promise(requestAnimationFrame);
+    expect(previewFocus).toHaveBeenCalledTimes(1);
+  });
+
+  it("focuses immediately without selecting a tab on a wide layout", () => {
+    const htmlFocus = vi.fn();
+    const setActiveTab = vi.fn();
+    renderHook(() =>
+      useEditorFocusShortcuts(
+        makeRef(htmlFocus),
+        makeRef(vi.fn()),
+        makeRef(vi.fn()),
+        makePreviewRef(vi.fn()),
+        { isNarrow: false, setActiveTab },
+      ),
+    );
+
+    dispatchKeydown({ key: "1", altKey: true });
+
+    expect(htmlFocus).toHaveBeenCalledTimes(1);
+    expect(setActiveTab).not.toHaveBeenCalled();
   });
 
   it("removes the listener on unmount", () => {
@@ -139,6 +242,7 @@ describe("useEditorFocusShortcuts", () => {
         makeRef(htmlFocus),
         makeRef(vi.fn()),
         makeRef(vi.fn()),
+        makePreviewRef(vi.fn()),
       ),
     );
 

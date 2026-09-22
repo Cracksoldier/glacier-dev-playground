@@ -56,7 +56,7 @@ function RenameRow({
         onCommit();
       }}
     >
-      <label htmlFor={inputId} className={styles.srOnly}>
+      <label htmlFor={inputId} className="glacier-visually-hidden">
         New title for {project.title}
       </label>
       <input
@@ -110,6 +110,8 @@ function ProjectSwitcherPopover({
         isOpen={isOpen}
         onClose={onClose}
         anchorRef={anchorRef}
+        role="menu"
+        aria-label="Projects"
         className={styles.popover}
       >
         <ul className={styles.list}>

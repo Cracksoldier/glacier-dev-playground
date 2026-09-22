@@ -1,4 +1,4 @@
-import { type Ref, useMemo } from "react";
+import { type Ref, useId, useMemo } from "react";
 import type { EditorPreferences } from "../../preferences/editorPreferences";
 import { useProjectStore } from "../../store/ProjectStoreContext";
 import CodeMirrorEditor, {
@@ -15,23 +15,24 @@ interface HtmlEditorPanelProps {
 
 function HtmlEditorPanel({ preferences, hasError, ref }: HtmlEditorPanelProps) {
   const { activeProject, actions } = useProjectStore();
+  const headingId = useId();
   const languageExtensions = useMemo(
     () => buildLanguageExtensions("html", {}),
     [],
   );
 
   return (
-    <section className={styles.panel} aria-label="HTML editor">
+    <section className={styles.panel} aria-labelledby={headingId}>
       <div className={styles.header}>
-        <span className={styles.label}>
+        <h2 id={headingId} className={styles.label}>
           HTML
           {hasError && (
             <>
               <span className={styles.errorBadge} aria-hidden="true" />
-              <span className={styles.srOnly}>Contains an error</span>
+              <span className="glacier-visually-hidden">Contains an error</span>
             </>
           )}
-        </span>
+        </h2>
       </div>
       <div className={styles.body}>
         <CodeMirrorEditor

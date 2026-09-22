@@ -41,6 +41,7 @@ function ResourceManagerDialog({
   onClose,
 }: ResourceManagerDialogProps) {
   const titleId = useId();
+  const descriptionId = useId();
   const formId = useId();
   const headContentId = useId();
   const { activeProject, actions } = useProjectStore();
@@ -96,11 +97,15 @@ function ResourceManagerDialog({
         isOpen={isOpen}
         onClose={handleClose}
         titleId={titleId}
+        descriptionId={descriptionId}
         className={styles.dialog}
       >
         <h2 id={titleId} className={styles.title}>
           Resources
         </h2>
+        <p id={descriptionId} className={styles.description}>
+          Manage external stylesheets and scripts loaded into the preview.
+        </p>
 
         <ResourcePresetsSection onApply={handleApplyPresets} />
 

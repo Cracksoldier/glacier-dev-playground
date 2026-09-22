@@ -66,3 +66,39 @@ test("does not offer a light-theme toggle", async ({ page }) => {
   await expect(page.getByRole("switch")).toHaveCount(0);
   await expect(page.getByRole("button", { name: /theme/i })).toHaveCount(0);
 });
+
+test("honors prefers-reduced-motion by zeroing transition durations", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  const transitionTokens = await page.evaluate(() => {
+    const rootStyle = getComputedStyle(document.documentElement);
+    return {
+      fast: rootStyle.getPropertyValue("--glacier-transition-fast").trim(),
+      base: rootStyle.getPropertyValue("--glacier-transition-base").trim(),
+    };
+  });
+
+  expect(transitionTokens.fast).toBe("0s");
+  expect(transitionTokens.base).toBe("0s");
+});
+
+test("uses non-zero transition durations without prefers-reduced-motion", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+
+  const transitionTokens = await page.evaluate(() => {
+    const rootStyle = getComputedStyle(document.documentElement);
+    return {
+      fast: rootStyle.getPropertyValue("--glacier-transition-fast").trim(),
+      base: rootStyle.getPropertyValue("--glacier-transition-base").trim(),
+    };
+  });
+
+  expect(transitionTokens.fast).not.toBe("0ms");
+  expect(transitionTokens.base).not.toBe("0ms");
+});

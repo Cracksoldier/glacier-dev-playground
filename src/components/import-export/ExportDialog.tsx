@@ -34,6 +34,7 @@ function describeCompileError(
 
 function ExportDialog({ isOpen, onClose, project }: ExportDialogProps) {
   const titleId = useId();
+  const descriptionId = useId();
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [htmlStatus, setHtmlStatus] = useState<ActionStatus>("idle");
   const [htmlError, setHtmlError] = useState<string | null>(null);
@@ -140,10 +141,15 @@ function ExportDialog({ isOpen, onClose, project }: ExportDialogProps) {
         isOpen={isOpen && !fallbackHtml}
         onClose={handleClose}
         titleId={titleId}
+        descriptionId={descriptionId}
       >
         <h2 id={titleId} className={styles.title}>
           Export project
         </h2>
+        <p id={descriptionId} className={styles.description}>
+          Export the current project as JSON, a standalone HTML file, or a ZIP
+          archive.
+        </p>
 
         <div className={styles.actionRow}>
           <div className={styles.actionInfo}>

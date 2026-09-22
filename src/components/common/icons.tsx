@@ -159,3 +159,37 @@ export function ClearIcon(props: IconProps) {
     </IconBase>
   );
 }
+
+export function KeyboardIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect x="2" y="6" width="20" height="12" rx="2" />
+      <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h12" />
+    </IconBase>
+  );
+}
+
+export function ExpandIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M13 3h8v8M21 3l-7 7M11 21H3v-8M3 21l7-7" />
+    </IconBase>
+  );
+}
+
+export function CollapseIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M14 10h7V3M21 3l-7 7M10 14H3v7M3 21l7-7" />
+    </IconBase>
+  );
+}
+
+export function FullWindowIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M3 9h18" />
+    </IconBase>
+  );
+}

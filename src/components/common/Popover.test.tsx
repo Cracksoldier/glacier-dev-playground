@@ -22,7 +22,10 @@ function Harness({
         isOpen={isOpen}
         onClose={onClose}
         anchorRef={anchorRef as RefObject<HTMLElement | null>}
+        role="menu"
+        aria-label="Test menu"
       >
+        <button type="button">First</button>
         <button type="button">Inside popover</button>
       </Popover>
     </div>
@@ -82,5 +85,34 @@ describe("Popover", () => {
 
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(screen.getByText("Trigger")).toHaveFocus();
+  });
+
+  it("auto-focuses the first focusable element when opened", () => {
+    render(<Harness isOpen={true} onClose={vi.fn()} />);
+
+    expect(screen.getByText("First")).toHaveFocus();
+  });
+
+  it("traps Tab focus within the popover", async () => {
+    const user = userEvent.setup();
+    render(<Harness isOpen={true} onClose={vi.fn()} />);
+
+    const first = screen.getByText("First");
+    const last = screen.getByText("Inside popover");
+    expect(first).toHaveFocus();
+
+    last.focus();
+    await user.tab();
+    expect(first).toHaveFocus();
+
+    await user.tab({ shift: true });
+    expect(last).toHaveFocus();
+  });
+
+  it("applies the caller-supplied role and aria-label", () => {
+    render(<Harness isOpen={true} onClose={vi.fn()} />);
+
+    const menu = screen.getByRole("menu", { name: "Test menu" });
+    expect(menu).toBeInTheDocument();
   });
 });

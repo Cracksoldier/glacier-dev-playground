@@ -1,0 +1,62 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--glacier-space-4);
+  min-height: 100vh;
+  padding: var(--glacier-space-6);
+  background: var(--glacier-bg-base);
+  color: var(--glacier-text-primary);
+  text-align: center;
+  color-scheme: dark;
+}
+
+.icon {
+  color: var(--glacier-status-warning);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--glacier-font-display);
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+}
+
+.message {
+  max-width: 44ch;
+  margin: 0;
+  font-family: var(--glacier-font-body);
+  font-size: 0.9375rem;
+  color: var(--glacier-text-secondary);
+}
+
+.missingHeading {
+  margin: 0;
+  font-family: var(--glacier-font-mono);
+  font-size: 0.75rem;
+  font-weight: inherit;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--glacier-text-muted);
+}
+
+.missingList {
+  max-width: 48ch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--glacier-space-2);
+  font-family: var(--glacier-font-body);
+  font-size: 0.875rem;
+  color: var(--glacier-text-secondary);
+}
+
+.missingList li {
+  padding: var(--glacier-space-2) var(--glacier-space-3);
+  background: var(--glacier-bg-raised);
+  border: 1px solid var(--glacier-panel-border);
+  border-radius: var(--glacier-radius-sm);
+}

@@ -5,6 +5,7 @@ import {
   EditorPreferencesIcon,
   ExportIcon,
   ImportIcon,
+  KeyboardIcon,
   NewProjectIcon,
   ProjectSwitcherIcon,
   ResetIcon,
@@ -14,6 +15,7 @@ import {
   SettingsIcon,
   WarningIcon,
 } from "../components/common/icons";
+import KeyboardHelpDialog from "../components/common/KeyboardHelpDialog";
 import ExportDialog from "../components/import-export/ExportDialog";
 import ImportDialog from "../components/import-export/ImportDialog";
 import NewProjectDialog from "../components/projects/NewProjectDialog";
@@ -55,6 +57,7 @@ function Toolbar({
   const [isResourcesOpen, setResourcesOpen] = useState(false);
   const [isImportOpen, setImportOpen] = useState(false);
   const [isExportOpen, setExportOpen] = useState(false);
+  const [isKeyboardHelpOpen, setKeyboardHelpOpen] = useState(false);
 
   const isSaveStatusError =
     saveStatus === "save-failed" || saveStatus === "storage-unavailable";
@@ -165,6 +168,15 @@ function Toolbar({
         <button
           type="button"
           className={styles.button}
+          aria-label="Keyboard shortcuts"
+          title="Keyboard shortcuts"
+          onClick={() => setKeyboardHelpOpen(true)}
+        >
+          <KeyboardIcon />
+        </button>
+        <button
+          type="button"
+          className={styles.button}
           aria-disabled="true"
           aria-describedby={disabledHintId}
           aria-label="Settings"
@@ -213,6 +225,10 @@ function Toolbar({
         anchorRef={editorPreferencesButtonRef}
         preferences={editorPreferences}
         onUpdatePreferences={onUpdateEditorPreferences}
+      />
+      <KeyboardHelpDialog
+        isOpen={isKeyboardHelpOpen}
+        onClose={() => setKeyboardHelpOpen(false)}
       />
     </div>
   );

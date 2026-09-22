@@ -16,7 +16,7 @@ function renderConsolePanel(
 ) {
   const onClear = overrides.onClear ?? vi.fn();
   const onFocusSource = overrides.onFocusSource ?? vi.fn();
-  render(
+  const { container } = render(
     <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
       <ConsolePanel
         entries={entries}
@@ -25,7 +25,7 @@ function renderConsolePanel(
       />
     </ProjectStoreProvider>,
   );
-  return { onClear, onFocusSource };
+  return { onClear, onFocusSource, container };
 }
 
 function makeEntry(overrides: Partial<ConsoleEntry> = {}): ConsoleEntry {
@@ -275,5 +275,41 @@ describe("ConsolePanel", () => {
     );
 
     expect(onFocusSource).toHaveBeenCalledWith({ panel: "script", line: 7 });
+  });
+
+  it("renders a text severity label alongside each entry, not just a color cue", () => {
+    renderConsolePanel([
+      makeEntry({ id: "e1", level: "log" }),
+      makeEntry({ id: "e2", level: "warn" }),
+      makeEntry({ id: "e3", level: "debug" }),
+      makeEntry({
+        id: "e4",
+        type: "runtime-error",
+        args: undefined,
+        message: "boom",
+      }),
+    ]);
+
+    expect(screen.getByText("LOG")).toBeInTheDocument();
+    expect(screen.getByText("WARN")).toBeInTheDocument();
+    expect(screen.getByText("DEBUG")).toBeInTheDocument();
+    expect(screen.getByText("ERROR")).toBeInTheDocument();
+  });
+
+  it("announces the error count in a live region for screen readers", () => {
+    const { container } = renderConsolePanel([
+      makeEntry({ id: "e1", type: "runtime-error", message: "boom" }),
+      makeEntry({ id: "e2", type: "runtime-error", message: "boom again" }),
+    ]);
+
+    expect(container.querySelector("[aria-live]")).toHaveTextContent(
+      "2 errors",
+    );
+  });
+
+  it("renders an empty live region when there are no errors", () => {
+    const { container } = renderConsolePanel([makeEntry()]);
+
+    expect(container.querySelector("[aria-live]")).toHaveTextContent("");
   });
 });

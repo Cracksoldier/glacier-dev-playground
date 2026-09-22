@@ -14,6 +14,7 @@ function ClipboardFallbackDialog({
   html,
 }: ClipboardFallbackDialogProps) {
   const titleId = useId();
+  const descriptionId = useId();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -23,11 +24,16 @@ function ClipboardFallbackDialog({
   }, [isOpen]);
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} titleId={titleId}>
+    <Dialog
+      isOpen={isOpen}
+      onClose={onClose}
+      titleId={titleId}
+      descriptionId={descriptionId}
+    >
       <h2 id={titleId} className={styles.title}>
         Copy manually
       </h2>
-      <p className={styles.description}>
+      <p id={descriptionId} className={styles.description}>
         Your browser didn't allow automatic clipboard access. Select the HTML
         below and copy it manually (Ctrl/Cmd+C).
       </p>

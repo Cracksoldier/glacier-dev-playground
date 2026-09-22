@@ -1,19 +1,14 @@
-import {
-  type KeyboardEvent as ReactKeyboardEvent,
-  type ReactNode,
-  useEffect,
-  useRef,
-} from "react";
+import type { KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
+import { useRef } from "react";
 import { createPortal } from "react-dom";
 import styles from "./Dialog.module.css";
-
-const FOCUSABLE_SELECTOR =
-  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+import useFocusTrap from "./useFocusTrap";
 
 export interface DialogProps {
   isOpen: boolean;
   onClose: () => void;
   titleId: string;
+  descriptionId?: string;
   children: ReactNode;
   className?: string;
 }
@@ -27,26 +22,12 @@ function Dialog({
   isOpen,
   onClose,
   titleId,
+  descriptionId,
   children,
   className,
 }: DialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
-  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
-
-    const dialogElement = dialogRef.current;
-    const firstFocusable =
-      dialogElement?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR);
-    firstFocusable?.focus();
-
-    return () => {
-      previouslyFocusedRef.current?.focus();
-    };
-  }, [isOpen]);
+  const { handleTabTrap } = useFocusTrap(dialogRef, isOpen);
 
   if (!isOpen) return null;
 
@@ -60,26 +41,7 @@ function Dialog({
       return;
     }
 
-    if (event.key !== "Tab") return;
-
-    const dialogElement = dialogRef.current;
-    if (!dialogElement) return;
-
-    const focusable = Array.from(
-      dialogElement.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
-    );
-    if (focusable.length === 0) return;
-
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last?.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first?.focus();
-    }
+    handleTabTrap(event);
   }
 
   return createPortal(
@@ -95,6 +57,7 @@ function Dialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        aria-describedby={descriptionId}
         className={className ? `${styles.dialog} ${className}` : styles.dialog}
         onClick={(event) => event.stopPropagation()}
         onKeyDown={handleKeyDown}

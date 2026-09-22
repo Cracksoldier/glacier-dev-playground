@@ -37,6 +37,7 @@ function describeError(
 
 function ImportDialog({ isOpen, onClose }: ImportDialogProps) {
   const titleId = useId();
+  const descriptionId = useId();
   const textareaId = useId();
   const fileInputId = useId();
   const { activeProject, actions } = useProjectStore();
@@ -126,10 +127,18 @@ function ImportDialog({ isOpen, onClose }: ImportDialogProps) {
   }
 
   return (
-    <Dialog isOpen={isOpen} onClose={handleClose} titleId={titleId}>
+    <Dialog
+      isOpen={isOpen}
+      onClose={handleClose}
+      titleId={titleId}
+      descriptionId={descriptionId}
+    >
       <h2 id={titleId} className={styles.title}>
         Import project
       </h2>
+      <p id={descriptionId} className={styles.description}>
+        Import a project from a JSON file or pasted JSON text.
+      </p>
 
       <div className={styles.field}>
         <label htmlFor={fileInputId} className={styles.label}>

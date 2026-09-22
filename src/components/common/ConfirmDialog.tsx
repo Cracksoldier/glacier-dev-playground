@@ -24,13 +24,21 @@ function ConfirmDialog({
   onCancel,
 }: ConfirmDialogProps) {
   const titleId = useId();
+  const descriptionId = useId();
 
   return (
-    <Dialog isOpen={isOpen} onClose={onCancel} titleId={titleId}>
+    <Dialog
+      isOpen={isOpen}
+      onClose={onCancel}
+      titleId={titleId}
+      descriptionId={descriptionId}
+    >
       <h2 id={titleId} className={styles.title}>
         {title}
       </h2>
-      <p className={styles.description}>{description}</p>
+      <p id={descriptionId} className={styles.description}>
+        {description}
+      </p>
       <div className={styles.actions}>
         <button
           type="button"

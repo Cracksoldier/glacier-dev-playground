@@ -25,6 +25,7 @@ function ResetProjectDialog({
   onClose,
 }: ResetProjectDialogProps) {
   const titleId = useId();
+  const descriptionId = useId();
   const { actions } = useProjectStore();
   const [step, setStep] = useState<Step>("template");
   const [templateId, setTemplateId] = useState<TemplateId>(
@@ -57,10 +58,19 @@ function ResetProjectDialog({
   }
 
   return (
-    <Dialog isOpen={isOpen} onClose={handleClose} titleId={titleId}>
+    <Dialog
+      isOpen={isOpen}
+      onClose={handleClose}
+      titleId={titleId}
+      descriptionId={descriptionId}
+    >
       <h2 id={titleId} className={styles.title}>
         Reset project
       </h2>
+      <p id={descriptionId} className={styles.description}>
+        Choose a template to reset the project's HTML, CSS, and JavaScript to.
+        This cannot be undone.
+      </p>
       <TemplatePicker
         name="reset-project-template"
         value={templateId}

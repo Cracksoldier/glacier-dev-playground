@@ -12,6 +12,17 @@
   flex-direction: column;
 }
 
+/* Positioned ancestor for the absolutely-placed narrow-layout tab panels —
+   including the console one, which sits outside `.group`. Excludes the tab
+   bar, so `inset: 0` panels never overlap it. */
+.workspace {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
 .group {
   flex: 1;
   min-height: 0;
@@ -20,4 +31,89 @@
 .panel {
   height: 100%;
   min-height: 0;
+}
+
+/* Marker class that exempts the preview from the expanded-preview squeeze. */
+.previewPanel {
+  min-width: 0;
+}
+
+/* The tab panel wrapper is a plain div nested inside `Panel`, never `Panel`
+   itself: react-resizable-panels sets `display` inline on its own elements,
+   which external CSS can't override. */
+.tabPanel {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+}
+
+.consoleTabPanel {
+  display: none;
+  flex-direction: column;
+  background: var(--glacier-panel-bg);
+}
+
+.consoleTabPanelHeading {
+  flex-shrink: 0;
+  margin: 0;
+  padding: var(--glacier-space-2) var(--glacier-space-3);
+  border-bottom: 1px solid var(--glacier-panel-border);
+  color: var(--glacier-text-secondary);
+  font-family: var(--glacier-font-mono);
+  font-size: 0.75rem;
+  font-weight: inherit;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.consoleTabPanelBody {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  color: var(--glacier-text-muted);
+  font-family: var(--glacier-font-mono);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 767.98px) {
+  [data-tab-panel] {
+    display: none;
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    flex-direction: column;
+  }
+
+  [data-active-tab="html"] [data-tab-panel="html"],
+  [data-active-tab="css"] [data-tab-panel="css"],
+  [data-active-tab="js"] [data-tab-panel="js"],
+  [data-active-tab="preview"] [data-tab-panel="preview"],
+  [data-active-tab="console"] [data-tab-panel="console"] {
+    display: flex;
+  }
+}
+
+/* Expanded preview: squeeze the editor panels toward their minimum instead of
+   resizing them imperatively, so the user's persisted split is left intact.
+   The selector targets react-resizable-panels' own outer `[data-panel]`
+   element, which is the one that actually holds the column width — the
+   `className` we pass lands on a child of it. `!important` is unavoidable
+   there because the library writes `max-width`/`flex-grow` inline. */
+[data-preview-presentation="expanded"] [data-panel]:not(:has(> .previewPanel)) {
+  /* biome-ignore lint/complexity/noImportantStyles: the only way to override react-resizable-panels' inline sizing without its imperative API */
+  max-width: 10% !important;
+}
+
+/* Full-window preview stays in place in the tree and is only repositioned, so
+   the iframe is never torn down and re-created. Deliberately in-page: the app
+   never opens a real browser window for the preview. */
+[data-preview-presentation="full-window"] [data-tab-panel="preview"] {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0;
+  z-index: var(--glacier-z-dialog);
+  background: var(--glacier-bg-base);
 }

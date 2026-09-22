@@ -67,7 +67,12 @@ function renderPreviewPanel(
 ) {
   return render(
     <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
-      <PreviewPanel consoleEntries={consoleEntries} {...overrides} />
+      <PreviewPanel
+        consoleEntries={consoleEntries}
+        presentation="default"
+        onPresentationChange={vi.fn()}
+        {...overrides}
+      />
     </ProjectStoreProvider>,
   );
 }

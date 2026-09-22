@@ -110,7 +110,9 @@ describe("Toolbar", () => {
       screen.getByRole("button", { name: "Editor preferences" }),
     );
 
-    expect(screen.getByRole("menu")).toBeInTheDocument();
+    expect(
+      screen.getByRole("group", { name: "Editor preferences" }),
+    ).toBeInTheDocument();
   });
 
   it("fires onRun when the Run button is clicked", async () => {

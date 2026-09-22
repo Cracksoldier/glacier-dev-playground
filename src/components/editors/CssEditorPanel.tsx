@@ -1,4 +1,4 @@
-import { type Ref, useMemo, useState } from "react";
+import { type Ref, useId, useMemo, useState } from "react";
 import { WarningIcon } from "../../components/common/icons";
 import type { StylesheetLanguage } from "../../models/project";
 import type { EditorPreferences } from "../../preferences/editorPreferences";
@@ -37,6 +37,7 @@ function CssEditorPanel({
   ref,
 }: CssEditorPanelProps) {
   const { activeProject, actions } = useProjectStore();
+  const headingId = useId();
   const { stylesheetLanguage } = activeProject.source;
   const isScss = stylesheetLanguage === "scss";
   const [view, setView] = useState<StylesheetView>("source");
@@ -53,21 +54,23 @@ function CssEditorPanel({
   );
 
   return (
-    <section className={styles.panel} aria-label="CSS editor">
+    <section className={styles.panel} aria-labelledby={headingId}>
       <div className={styles.header}>
-        <span className={styles.label}>
+        <h2 id={headingId} className={styles.label}>
           Stylesheet
           {hasError && (
             <>
               <span className={styles.errorBadge} aria-hidden="true" />
-              <span className={styles.srOnly}>Contains an error</span>
+              <span className="glacier-visually-hidden">Contains an error</span>
             </>
           )}
-        </span>
+        </h2>
         <div className={styles.selectors}>
           {isScss && (
             <fieldset className={styles.toggleGroup}>
-              <legend className={styles.srOnly}>Stylesheet view</legend>
+              <legend className="glacier-visually-hidden">
+                Stylesheet view
+              </legend>
               <button
                 type="button"
                 className={styles.toggleButton}
