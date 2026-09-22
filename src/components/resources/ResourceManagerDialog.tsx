@@ -15,6 +15,7 @@ import {
 import { useProjectStore } from "../../store/ProjectStoreContext";
 import ConfirmDialog from "../common/ConfirmDialog";
 import Dialog from "../common/Dialog";
+import SecretsWarning from "../common/SecretsWarning";
 import ResourceForm, { type ResourceFormValues } from "./ResourceForm";
 import styles from "./ResourceManagerDialog.module.css";
 import ResourcePresetsSection from "./ResourcePresetsSection";
@@ -106,6 +107,12 @@ function ResourceManagerDialog({
         <p id={descriptionId} className={styles.description}>
           Manage external stylesheets and scripts loaded into the preview.
         </p>
+
+        <SecretsWarning>
+          External scripts run with full access to your preview page and can
+          read anything in it. Don't put API keys, tokens, or passwords in
+          frontend code.
+        </SecretsWarning>
 
         <ResourcePresetsSection onApply={handleApplyPresets} />
 

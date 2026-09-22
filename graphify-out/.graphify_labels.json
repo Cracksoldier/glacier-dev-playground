@@ -52,6 +52,7 @@
   "50": "ScssCompileError",
   "51": "PreviewPanel.consoleWiring.test.tsx",
   "52": "AppShell.tsx",
+  "53": "IndexedDB",
   "54": "Glacier DEV Playground project overview (CLAUDE.md)",
   "55": "resources.spec.ts",
   "56": "Milestone 2 - Domain Model, Project Store, and Templates",
@@ -70,5 +71,15 @@
   "69": "project.ts",
   "70": "buildCoordinator.ts",
   "71": "previewResourceLoader.ts",
-  "72": "preview-presentation.spec.ts"
+  "72": "preview-presentation.spec.ts",
+  "73": "architecture.md",
+  "74": "Architecture",
+  "75": "Browser support",
+  "76": "identifiers.ts",
+  "77": "browser-support.md",
+  "78": "performance.spec.ts",
+  "79": "WorkerStub",
+  "80": "WorkerStub",
+  "81": "critical-journey.spec.ts",
+  "82": "GlacierMark.tsx"
 }

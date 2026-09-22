@@ -115,18 +115,23 @@ test("a superseded run's timers stop firing", async ({ page }) => {
 
   const preview = previewFrame(page);
   const counter = preview.locator("#counter");
-  await expect(counter).not.toHaveText("0", { timeout: 2000 });
+  const tickCount = async () => Number(await counter.textContent());
+
+  // Let the first run climb well clear of a fresh counter, so the drop after
+  // the re-run below is unambiguous even on a slow machine.
+  await expect.poll(tickCount, { timeout: 3000 }).toBeGreaterThanOrEqual(10);
 
   // Force a new run; the previous iframe (and its interval) must be torn down.
   await page.getByRole("button", { name: "Run", exact: true }).click();
-  await expect(counter).toHaveText("0");
+  await expect.poll(tickCount).toBeLessThan(10);
 
+  const before = await tickCount();
   await page.waitForTimeout(300);
-  const value = Number(await counter.textContent());
+  const elapsedTicks = (await tickCount()) - before;
   // ~6 ticks expected in 300ms at 50ms/tick. A still-running superseded
-  // interval would roughly double this value.
-  expect(value).toBeGreaterThan(0);
-  expect(value).toBeLessThan(10);
+  // interval would roughly double this rate.
+  expect(elapsedTicks).toBeGreaterThan(0);
+  expect(elapsedTicks).toBeLessThan(10);
 });
 
 test("preview code cannot reach the parent document or browser storage", async ({

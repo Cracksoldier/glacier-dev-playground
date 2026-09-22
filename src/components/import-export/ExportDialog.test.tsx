@@ -102,6 +102,14 @@ describe("ExportDialog", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
+  it("warns that exported code exposes any secrets it contains", () => {
+    render(<ExportDialog isOpen onClose={vi.fn()} project={testProject()} />);
+
+    expect(
+      screen.getByText(/Don't put API keys, tokens, or passwords/),
+    ).toBeInTheDocument();
+  });
+
   it("downloads project JSON without compiling", async () => {
     const user = userEvent.setup();
     render(<ExportDialog isOpen onClose={vi.fn()} project={testProject()} />);

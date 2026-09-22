@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const CRITICAL_JOURNEY = /critical-journey\.spec\.ts/;
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -14,6 +16,20 @@ export default defineConfig({
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+    },
+    // Firefox and WebKit run the critical journey only. The rest of the suite
+    // depends on Chromium-only APIs — chiefly `grantPermissions(["clipboard-*"])`,
+    // which throws on both — so widening them would test the harness, not the
+    // app. `critical-journey.spec.ts` avoids those APIs entirely.
+    {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
+      testMatch: CRITICAL_JOURNEY,
+    },
+    {
+      name: "webkit",
+      use: { ...devices["Desktop Safari"] },
+      testMatch: CRITICAL_JOURNEY,
     },
   ],
   webServer: {

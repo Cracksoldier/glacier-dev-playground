@@ -10,6 +10,7 @@ import { buildStandaloneHtmlDocument } from "../../import-export/standaloneHtmlD
 import { downloadProjectZip } from "../../import-export/zipExport";
 import type { PlaygroundProject } from "../../models/project";
 import Dialog from "../common/Dialog";
+import SecretsWarning from "../common/SecretsWarning";
 import ClipboardFallbackDialog from "./ClipboardFallbackDialog";
 import styles from "./ExportDialog.module.css";
 
@@ -150,6 +151,11 @@ function ExportDialog({ isOpen, onClose, project }: ExportDialogProps) {
           Export the current project as JSON, a standalone HTML file, or a ZIP
           archive.
         </p>
+
+        <SecretsWarning>
+          Anything you export is readable by everyone you share it with. Don't
+          put API keys, tokens, or passwords in frontend code.
+        </SecretsWarning>
 
         <div className={styles.actionRow}>
           <div className={styles.actionInfo}>

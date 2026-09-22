@@ -425,6 +425,39 @@
       "norm_label": "seteditorcontent()"
     },
     {
+      "label": "critical-journey.spec.ts",
+      "file_type": "code",
+      "source_file": "e2e/critical-journey.spec.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "e2e_critical_journey_spec",
+      "community": 81,
+      "community_name": "critical-journey.spec.ts",
+      "norm_label": "critical-journey.spec.ts"
+    },
+    {
+      "label": "previewFrame()",
+      "file_type": "code",
+      "source_file": "e2e/critical-journey.spec.ts",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "e2e_critical_journey_spec_previewframe",
+      "community": 81,
+      "community_name": "critical-journey.spec.ts",
+      "norm_label": "previewframe()"
+    },
+    {
+      "label": "setEditorContent()",
+      "file_type": "code",
+      "source_file": "e2e/critical-journey.spec.ts",
+      "source_location": "L28",
+      "_origin": "ast",
+      "id": "e2e_critical_journey_spec_seteditorcontent",
+      "community": 81,
+      "community_name": "critical-journey.spec.ts",
+      "norm_label": "seteditorcontent()"
+    },
+    {
       "label": "import-export.spec.ts",
       "file_type": "code",
       "source_file": "e2e/import-export.spec.ts",
@@ -522,6 +555,61 @@
       "community": 52,
       "community_name": "AppShell.tsx",
       "norm_label": "focusedlabel()"
+    },
+    {
+      "label": "performance.spec.ts",
+      "file_type": "code",
+      "source_file": "e2e/performance.spec.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "e2e_performance_spec",
+      "community": 78,
+      "community_name": "performance.spec.ts",
+      "norm_label": "performance.spec.ts"
+    },
+    {
+      "label": "previewFrame()",
+      "file_type": "code",
+      "source_file": "e2e/performance.spec.ts",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "e2e_performance_spec_previewframe",
+      "community": 78,
+      "community_name": "performance.spec.ts",
+      "norm_label": "previewframe()"
+    },
+    {
+      "label": "setEditorContent()",
+      "file_type": "code",
+      "source_file": "e2e/performance.spec.ts",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "e2e_performance_spec_seteditorcontent",
+      "community": 78,
+      "community_name": "performance.spec.ts",
+      "norm_label": "seteditorcontent()"
+    },
+    {
+      "label": "recordScriptRequests()",
+      "file_type": "code",
+      "source_file": "e2e/performance.spec.ts",
+      "source_location": "L24",
+      "_origin": "ast",
+      "id": "e2e_performance_spec_recordscriptrequests",
+      "community": 78,
+      "community_name": "performance.spec.ts",
+      "norm_label": "recordscriptrequests()"
+    },
+    {
+      "label": "DEFERRED_CHUNKS",
+      "file_type": "code",
+      "source_file": "e2e/performance.spec.ts",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "e2e_performance_spec_deferred_chunks",
+      "community": 78,
+      "community_name": "performance.spec.ts",
+      "norm_label": "deferred_chunks"
     },
     {
       "label": "preview-presentation.spec.ts",
@@ -1938,8 +2026,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_app_app_test_workerstub",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 79,
+      "community_name": "WorkerStub",
       "norm_label": "workerstub"
     },
     {
@@ -1949,8 +2037,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_app_app_test_workerstub_postmessage",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 79,
+      "community_name": "WorkerStub",
       "norm_label": ".postmessage()"
     },
     {
@@ -1960,8 +2048,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_app_app_test_workerstub_terminate",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 79,
+      "community_name": "WorkerStub",
       "norm_label": ".terminate()"
     },
     {
@@ -1971,8 +2059,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_app_app_test_workerstub_addeventlistener",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 79,
+      "community_name": "WorkerStub",
       "norm_label": ".addeventlistener()"
     },
     {
@@ -1982,8 +2070,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_app_app_test_workerstub_removeeventlistener",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 79,
+      "community_name": "WorkerStub",
       "norm_label": ".removeeventlistener()"
     },
     {
@@ -2191,8 +2279,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_persistencenotice_test",
-      "community": 43,
-      "community_name": "ExportDialog.test.tsx",
+      "community": 47,
+      "community_name": "templates.ts",
       "norm_label": "persistencenotice.test.tsx"
     },
     {
@@ -2202,8 +2290,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_app_persistencenotice_test_createrecoveringrepository",
-      "community": 43,
-      "community_name": "ExportDialog.test.tsx",
+      "community": 47,
+      "community_name": "templates.ts",
       "norm_label": "createrecoveringrepository()"
     },
     {
@@ -2213,8 +2301,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_persistencenotice",
-      "community": 43,
-      "community_name": "ExportDialog.test.tsx",
+      "community": 47,
+      "community_name": "templates.ts",
       "norm_label": "persistencenotice.tsx"
     },
     {
@@ -2224,8 +2312,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_persistencenotice_persistencenotice",
-      "community": 43,
-      "community_name": "ExportDialog.test.tsx",
+      "community": 47,
+      "community_name": "templates.ts",
       "norm_label": "persistencenotice()"
     },
     {
@@ -2235,8 +2323,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_toolbar_test",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 41,
+      "community_name": "PreviewFrame.tsx",
       "norm_label": "toolbar.test.tsx"
     },
     {
@@ -2246,8 +2334,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_toolbar_test_rendertoolbar",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 41,
+      "community_name": "PreviewFrame.tsx",
       "norm_label": "rendertoolbar()"
     },
     {
@@ -2257,8 +2345,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_app_toolbar_test_renameonmount",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 41,
+      "community_name": "PreviewFrame.tsx",
       "norm_label": "renameonmount()"
     },
     {
@@ -2273,10 +2361,43 @@
       "norm_label": "toolbar.tsx"
     },
     {
+      "label": "ResourceManagerDialog",
+      "file_type": "code",
+      "source_file": "src/app/Toolbar.tsx",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "src_app_toolbar_resourcemanagerdialog",
+      "community": 9,
+      "community_name": "Toolbar.tsx",
+      "norm_label": "resourcemanagerdialog"
+    },
+    {
+      "label": "ImportDialog",
+      "file_type": "code",
+      "source_file": "src/app/Toolbar.tsx",
+      "source_location": "L35",
+      "_origin": "ast",
+      "id": "src_app_toolbar_importdialog",
+      "community": 9,
+      "community_name": "Toolbar.tsx",
+      "norm_label": "importdialog"
+    },
+    {
+      "label": "ExportDialog",
+      "file_type": "code",
+      "source_file": "src/app/Toolbar.tsx",
+      "source_location": "L38",
+      "_origin": "ast",
+      "id": "src_app_toolbar_exportdialog",
+      "community": 9,
+      "community_name": "Toolbar.tsx",
+      "norm_label": "exportdialog"
+    },
+    {
       "label": "SAVE_STATUS_LABEL",
       "file_type": "code",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L31",
+      "source_location": "L42",
       "_origin": "ast",
       "id": "src_app_toolbar_save_status_label",
       "community": 9,
@@ -2287,7 +2408,7 @@
       "label": "ToolbarProps",
       "file_type": "code",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L38",
+      "source_location": "L49",
       "_origin": "ast",
       "id": "src_app_toolbar_toolbarprops",
       "community": 41,
@@ -2298,7 +2419,7 @@
       "label": "Toolbar()",
       "file_type": "code",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L44",
+      "source_location": "L55",
       "_origin": "ast",
       "id": "src_app_toolbar_toolbar",
       "community": 9,
@@ -2312,8 +2433,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_unsupportedbrowsernotice_test",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 43,
+      "community_name": "ExportDialog.test.tsx",
       "norm_label": "unsupportedbrowsernotice.test.tsx"
     },
     {
@@ -2323,8 +2444,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_unsupportedbrowsernotice",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 43,
+      "community_name": "ExportDialog.test.tsx",
       "norm_label": "unsupportedbrowsernotice.tsx"
     },
     {
@@ -2334,8 +2455,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_app_unsupportedbrowsernotice_unsupportedbrowsernoticeprops",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 43,
+      "community_name": "ExportDialog.test.tsx",
       "norm_label": "unsupportedbrowsernoticeprops"
     },
     {
@@ -2345,8 +2466,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_app_unsupportedbrowsernotice_unsupportedbrowsernotice",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 43,
+      "community_name": "ExportDialog.test.tsx",
       "norm_label": "unsupportedbrowsernotice()"
     },
     {
@@ -2543,8 +2664,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_app_useconsoleentries_useconsoleentriesresult",
-      "community": 60,
-      "community_name": "PlaygroundProject",
+      "community": 51,
+      "community_name": "PreviewPanel.consoleWiring.test.tsx",
       "norm_label": "useconsoleentriesresult"
     },
     {
@@ -2609,8 +2730,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_useconsolevisibility_test",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 35,
+      "community_name": "editorPreferences.ts",
       "norm_label": "useconsolevisibility.test.ts"
     },
     {
@@ -2620,8 +2741,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_useconsolevisibility",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 35,
+      "community_name": "editorPreferences.ts",
       "norm_label": "useconsolevisibility.ts"
     },
     {
@@ -2631,8 +2752,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_app_useconsolevisibility_useconsolevisibilityresult",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 35,
+      "community_name": "editorPreferences.ts",
       "norm_label": "useconsolevisibilityresult"
     },
     {
@@ -2642,8 +2763,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_app_useconsolevisibility_useconsolevisibility",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 35,
+      "community_name": "editorPreferences.ts",
       "norm_label": "useconsolevisibility()"
     },
     {
@@ -2873,8 +2994,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_usescsscompilestatus_test",
-      "community": 50,
-      "community_name": "ScssCompileError",
+      "community": 0,
+      "community_name": "useProjectHydration.test.ts",
       "norm_label": "usescsscompilestatus.test.ts"
     },
     {
@@ -2928,8 +3049,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "src_app_usescsscompilestatus_usescsscompilestatus",
-      "community": 50,
-      "community_name": "ScssCompileError",
+      "community": 0,
+      "community_name": "useProjectHydration.test.ts",
       "norm_label": "usescsscompilestatus()"
     },
     {
@@ -2939,8 +3060,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_usetscompilestatus_test",
-      "community": 0,
-      "community_name": "useProjectHydration.test.ts",
+      "community": 60,
+      "community_name": "PlaygroundProject",
       "norm_label": "usetscompilestatus.test.ts"
     },
     {
@@ -2950,8 +3071,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_app_usetscompilestatus",
-      "community": 0,
-      "community_name": "useProjectHydration.test.ts",
+      "community": 60,
+      "community_name": "PlaygroundProject",
       "norm_label": "usetscompilestatus.ts"
     },
     {
@@ -2961,8 +3082,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_app_usetscompilestatus_usetscompilestatusresult",
-      "community": 0,
-      "community_name": "useProjectHydration.test.ts",
+      "community": 60,
+      "community_name": "PlaygroundProject",
       "norm_label": "usetscompilestatusresult"
     },
     {
@@ -2972,8 +3093,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_app_usetscompilestatus_usetscompilestatus",
-      "community": 0,
-      "community_name": "useProjectHydration.test.ts",
+      "community": 60,
+      "community_name": "PlaygroundProject",
       "norm_label": "usetscompilestatus()"
     },
     {
@@ -2994,8 +3115,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_browsersupport_test_workerstub",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 80,
+      "community_name": "WorkerStub",
       "norm_label": "workerstub"
     },
     {
@@ -3005,8 +3126,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_browsersupport_test_workerstub_postmessage",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 80,
+      "community_name": "WorkerStub",
       "norm_label": ".postmessage()"
     },
     {
@@ -3016,8 +3137,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_browsersupport_test_workerstub_terminate",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 80,
+      "community_name": "WorkerStub",
       "norm_label": ".terminate()"
     },
     {
@@ -3027,8 +3148,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_browsersupport_test_workerstub_addeventlistener",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 80,
+      "community_name": "WorkerStub",
       "norm_label": ".addeventlistener()"
     },
     {
@@ -3038,8 +3159,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_browsersupport_test_workerstub_removeeventlistener",
-      "community": 49,
-      "community_name": "project.ts",
+      "community": 80,
+      "community_name": "WorkerStub",
       "norm_label": ".removeeventlistener()"
     },
     {
@@ -3203,8 +3324,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_common_glaciermark",
-      "community": 9,
-      "community_name": "Toolbar.tsx",
+      "community": 82,
+      "community_name": "GlacierMark.tsx",
       "norm_label": "glaciermark.tsx"
     },
     {
@@ -3214,8 +3335,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_components_common_glaciermark_glaciermarkprops",
-      "community": 9,
-      "community_name": "Toolbar.tsx",
+      "community": 82,
+      "community_name": "GlacierMark.tsx",
       "norm_label": "glaciermarkprops"
     },
     {
@@ -3225,8 +3346,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_components_common_glaciermark_glaciermark",
-      "community": 9,
-      "community_name": "Toolbar.tsx",
+      "community": 82,
+      "community_name": "GlacierMark.tsx",
       "norm_label": "glaciermark()"
     },
     {
@@ -3291,8 +3412,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_common_popover_test",
-      "community": 42,
-      "community_name": "ResetProjectDialog.tsx",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "popover.test.tsx"
     },
     {
@@ -3302,8 +3423,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_components_common_popover_test_harness",
-      "community": 42,
-      "community_name": "ResetProjectDialog.tsx",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "harness()"
     },
     {
@@ -3313,8 +3434,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_common_popover",
-      "community": 42,
-      "community_name": "ResetProjectDialog.tsx",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "popover.tsx"
     },
     {
@@ -3324,8 +3445,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_components_common_popover_popoverprops",
-      "community": 42,
-      "community_name": "ResetProjectDialog.tsx",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "popoverprops"
     },
     {
@@ -3335,8 +3456,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_components_common_popover_popover",
-      "community": 42,
-      "community_name": "ResetProjectDialog.tsx",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "popover()"
     },
     {
@@ -3371,6 +3492,50 @@
       "community": 0,
       "community_name": "useProjectHydration.test.ts",
       "norm_label": "resizehandle()"
+    },
+    {
+      "label": "SecretsWarning.test.tsx",
+      "file_type": "code",
+      "source_file": "src/components/common/SecretsWarning.test.tsx",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_components_common_secretswarning_test",
+      "community": 11,
+      "community_name": "ExternalResource",
+      "norm_label": "secretswarning.test.tsx"
+    },
+    {
+      "label": "SecretsWarning.tsx",
+      "file_type": "code",
+      "source_file": "src/components/common/SecretsWarning.tsx",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "src_components_common_secretswarning",
+      "community": 11,
+      "community_name": "ExternalResource",
+      "norm_label": "secretswarning.tsx"
+    },
+    {
+      "label": "SecretsWarningProps",
+      "file_type": "code",
+      "source_file": "src/components/common/SecretsWarning.tsx",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "src_components_common_secretswarning_secretswarningprops",
+      "community": 11,
+      "community_name": "ExternalResource",
+      "norm_label": "secretswarningprops"
+    },
+    {
+      "label": "SecretsWarning()",
+      "file_type": "code",
+      "source_file": "src/components/common/SecretsWarning.tsx",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "src_components_common_secretswarning_secretswarning",
+      "community": 11,
+      "community_name": "ExternalResource",
+      "norm_label": "secretswarning()"
     },
     {
       "label": "icons.tsx",
@@ -3555,8 +3720,8 @@
       "source_location": "L147",
       "_origin": "ast",
       "id": "src_components_common_icons_chevronicon",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 9,
+      "community_name": "Toolbar.tsx",
       "norm_label": "chevronicon()"
     },
     {
@@ -3566,8 +3731,8 @@
       "source_location": "L155",
       "_origin": "ast",
       "id": "src_components_common_icons_clearicon",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 9,
+      "community_name": "Toolbar.tsx",
       "norm_label": "clearicon()"
     },
     {
@@ -3621,8 +3786,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_common_usefocustrap",
-      "community": 42,
-      "community_name": "ResetProjectDialog.tsx",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "usefocustrap.ts"
     },
     {
@@ -3632,8 +3797,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_components_common_usefocustrap_usefocustrap",
-      "community": 42,
-      "community_name": "ResetProjectDialog.tsx",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "usefocustrap()"
     },
     {
@@ -3786,8 +3951,8 @@
       "source_location": "L152",
       "_origin": "ast",
       "id": "src_components_console_consolebody_consolebody",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "consolebody()"
     },
     {
@@ -3852,8 +4017,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_components_console_consolepanel_consolepanel",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 35,
+      "community_name": "editorPreferences.ts",
       "norm_label": "consolepanel()"
     },
     {
@@ -3863,8 +4028,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_console_serializedvalueview_test",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "serializedvalueview.test.tsx"
     },
     {
@@ -3874,8 +4039,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_console_serializedvalueview",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "serializedvalueview.tsx"
     },
     {
@@ -3885,8 +4050,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_components_console_serializedvalueview_serializedvalueviewprops",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "serializedvalueviewprops"
     },
     {
@@ -3896,8 +4061,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_components_console_serializedvalueview_formatprimitive",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "formatprimitive()"
     },
     {
@@ -3907,8 +4072,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_components_console_serializedvalueview_serializedvalueview",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "serializedvalueview()"
     },
     {
@@ -4193,8 +4358,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_editors_jseditorpanel_test",
-      "community": 41,
-      "community_name": "PreviewFrame.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "jseditorpanel.test.tsx"
     },
     {
@@ -4204,8 +4369,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_components_editors_jseditorpanel_test_harness",
-      "community": 41,
-      "community_name": "PreviewFrame.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "harness()"
     },
     {
@@ -4215,8 +4380,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_components_editors_jseditorpanel_test_renderharness",
-      "community": 41,
-      "community_name": "PreviewFrame.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "renderharness()"
     },
     {
@@ -4226,8 +4391,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "src_components_editors_jseditorpanel_test_diagnosticsharness",
-      "community": 41,
-      "community_name": "PreviewFrame.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "diagnosticsharness()"
     },
     {
@@ -4545,8 +4710,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_import_export_exportdialog_test",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 16,
+      "community_name": "tsCompiler.ts",
       "norm_label": "exportdialog.test.tsx"
     },
     {
@@ -4556,8 +4721,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_components_import_export_exportdialog_test_scsscompilemock",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 16,
+      "community_name": "tsCompiler.ts",
       "norm_label": "scsscompilemock"
     },
     {
@@ -4567,8 +4732,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_components_import_export_exportdialog_test_scssdisposemock",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 16,
+      "community_name": "tsCompiler.ts",
       "norm_label": "scssdisposemock"
     },
     {
@@ -4578,8 +4743,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "src_components_import_export_exportdialog_test_tscompilemock",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 16,
+      "community_name": "tsCompiler.ts",
       "norm_label": "tscompilemock"
     },
     {
@@ -4589,8 +4754,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "src_components_import_export_exportdialog_test_tsdisposemock",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 16,
+      "community_name": "tsCompiler.ts",
       "norm_label": "tsdisposemock"
     },
     {
@@ -4600,8 +4765,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "src_components_import_export_exportdialog_test_triggerblobdownloadmock",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 16,
+      "community_name": "tsCompiler.ts",
       "norm_label": "triggerblobdownloadmock"
     },
     {
@@ -4611,8 +4776,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "src_components_import_export_exportdialog_test_testproject",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 16,
+      "community_name": "tsCompiler.ts",
       "norm_label": "testproject()"
     },
     {
@@ -4630,7 +4795,7 @@
       "label": "ExportDialogProps",
       "file_type": "code",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "_origin": "ast",
       "id": "src_components_import_export_exportdialog_exportdialogprops",
       "community": 14,
@@ -4641,7 +4806,7 @@
       "label": "ActionStatus",
       "file_type": "code",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "src_components_import_export_exportdialog_actionstatus",
       "community": 14,
@@ -4652,7 +4817,7 @@
       "label": "ClipboardActionStatus",
       "file_type": "code",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "_origin": "ast",
       "id": "src_components_import_export_exportdialog_clipboardactionstatus",
       "community": 14,
@@ -4663,7 +4828,7 @@
       "label": "describeCompileError()",
       "file_type": "code",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "src_components_import_export_exportdialog_describecompileerror",
       "community": 14,
@@ -4674,7 +4839,7 @@
       "label": "ExportDialog()",
       "file_type": "code",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L35",
+      "source_location": "L36",
       "_origin": "ast",
       "id": "src_components_import_export_exportdialog_exportdialog",
       "community": 14,
@@ -4688,8 +4853,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_import_export_importdialog_test",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "importdialog.test.tsx"
     },
     {
@@ -4699,8 +4864,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_components_import_export_importdialog_test_validprojectjson",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "validprojectjson()"
     },
     {
@@ -4710,8 +4875,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "src_components_import_export_importdialog_test_harness",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "harness()"
     },
     {
@@ -4721,8 +4886,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_components_import_export_importdialog_test_renderdialog",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "renderdialog()"
     },
     {
@@ -4732,8 +4897,8 @@
       "source_location": "L68",
       "_origin": "ast",
       "id": "src_components_import_export_importdialog_test_statefulharness",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "statefulharness()"
     },
     {
@@ -5007,8 +5172,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_components_preview_previewframe_previewrunhandle",
-      "community": 60,
-      "community_name": "PlaygroundProject",
+      "community": 51,
+      "community_name": "PreviewPanel.consoleWiring.test.tsx",
       "norm_label": "previewrunhandle"
     },
     {
@@ -5117,8 +5282,8 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "src_components_preview_previewpanel_consolewiring_test_renderpreviewpanel",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 60,
+      "community_name": "PlaygroundProject",
       "norm_label": "renderpreviewpanel()"
     },
     {
@@ -5161,8 +5326,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_preview_previewpanel_test",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 51,
+      "community_name": "PreviewPanel.consoleWiring.test.tsx",
       "norm_label": "previewpanel.test.tsx"
     },
     {
@@ -5172,8 +5337,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_components_preview_previewpanel_test_createconsoleentriesstub",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 51,
+      "community_name": "PreviewPanel.consoleWiring.test.tsx",
       "norm_label": "createconsoleentriesstub()"
     },
     {
@@ -5183,8 +5348,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_components_preview_previewpanel_test_renderpreviewpanel",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 51,
+      "community_name": "PreviewPanel.consoleWiring.test.tsx",
       "norm_label": "renderpreviewpanel()"
     },
     {
@@ -5194,8 +5359,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "src_components_preview_previewpanel_test_addrelativeimageonmount",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "addrelativeimageonmount()"
     },
     {
@@ -5205,8 +5370,8 @@
       "source_location": "L60",
       "_origin": "ast",
       "id": "src_components_preview_previewpanel_test_makeuntrustedwithscriptresourceonmount",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "makeuntrustedwithscriptresourceonmount()"
     },
     {
@@ -5216,8 +5381,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_preview_previewpanel",
-      "community": 60,
-      "community_name": "PlaygroundProject",
+      "community": 51,
+      "community_name": "PreviewPanel.consoleWiring.test.tsx",
       "norm_label": "previewpanel.tsx"
     },
     {
@@ -5238,8 +5403,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "src_components_preview_previewpanel_previewpanelprops",
-      "community": 60,
-      "community_name": "PlaygroundProject",
+      "community": 51,
+      "community_name": "PreviewPanel.consoleWiring.test.tsx",
       "norm_label": "previewpanelprops"
     },
     {
@@ -5249,8 +5414,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_components_preview_previewpanel_previewpanel",
-      "community": 69,
-      "community_name": "project.ts",
+      "community": 51,
+      "community_name": "PreviewPanel.consoleWiring.test.tsx",
       "norm_label": "previewpanel()"
     },
     {
@@ -5260,8 +5425,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_projects_newprojectdialog_test",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "newprojectdialog.test.tsx"
     },
     {
@@ -5271,8 +5436,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_components_projects_newprojectdialog_test_activeprojecttitle",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "activeprojecttitle()"
     },
     {
@@ -5282,8 +5447,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_components_projects_newprojectdialog_test_renderdialog",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "renderdialog()"
     },
     {
@@ -5293,8 +5458,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_projects_newprojectdialog",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "newprojectdialog.tsx"
     },
     {
@@ -5304,8 +5469,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_components_projects_newprojectdialog_newprojectdialogprops",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "newprojectdialogprops"
     },
     {
@@ -5315,8 +5480,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "src_components_projects_newprojectdialog_newprojectdialog",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "newprojectdialog()"
     },
     {
@@ -5326,8 +5491,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_projects_projectswitcherpopover_test",
-      "community": 45,
-      "community_name": "scssWorkerProtocol.ts",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "projectswitcherpopover.test.tsx"
     },
     {
@@ -5337,8 +5502,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_components_projects_projectswitcherpopover_test_harness",
-      "community": 45,
-      "community_name": "scssWorkerProtocol.ts",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "harness()"
     },
     {
@@ -5348,8 +5513,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_components_projects_projectswitcherpopover_test_activeprojecttitle",
-      "community": 45,
-      "community_name": "scssWorkerProtocol.ts",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "activeprojecttitle()"
     },
     {
@@ -5359,8 +5524,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "src_components_projects_projectswitcherpopover_test_renderpopover",
-      "community": 45,
-      "community_name": "scssWorkerProtocol.ts",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "renderpopover()"
     },
     {
@@ -5370,8 +5535,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_projects_projectswitcherpopover",
-      "community": 42,
-      "community_name": "ResetProjectDialog.tsx",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "projectswitcherpopover.tsx"
     },
     {
@@ -5381,8 +5546,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_components_projects_projectswitcherpopover_projectswitcherpopoverprops",
-      "community": 42,
-      "community_name": "ResetProjectDialog.tsx",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "projectswitcherpopoverprops"
     },
     {
@@ -5392,8 +5557,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_components_projects_projectswitcherpopover_renamerowprops",
-      "community": 42,
-      "community_name": "ResetProjectDialog.tsx",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "renamerowprops"
     },
     {
@@ -5403,8 +5568,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_components_projects_projectswitcherpopover_renamerow",
-      "community": 42,
-      "community_name": "ResetProjectDialog.tsx",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "renamerow()"
     },
     {
@@ -5414,8 +5579,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "src_components_projects_projectswitcherpopover_projectswitcherpopover",
-      "community": 42,
-      "community_name": "ResetProjectDialog.tsx",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "projectswitcherpopover()"
     },
     {
@@ -5425,8 +5590,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_projects_resetprojectdialog_test",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "resetprojectdialog.test.tsx"
     },
     {
@@ -5436,8 +5601,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_components_projects_resetprojectdialog_test_harness",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "harness()"
     },
     {
@@ -5447,8 +5612,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_components_projects_resetprojectdialog_test_renderdialog",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "renderdialog()"
     },
     {
@@ -5469,8 +5634,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_components_projects_resetprojectdialog_resetprojectdialogprops",
-      "community": 47,
-      "community_name": "templates.ts",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "resetprojectdialogprops"
     },
     {
@@ -5535,8 +5700,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_resources_resourceform_test",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "resourceform.test.tsx"
     },
     {
@@ -5546,8 +5711,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_components_resources_resourceform_test_existing",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "existing"
     },
     {
@@ -5557,8 +5722,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_resources_resourceform",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resourceform.tsx"
     },
     {
@@ -5568,8 +5733,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_components_resources_resourceform_resource_type_options",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resource_type_options"
     },
     {
@@ -5579,8 +5744,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "src_components_resources_resourceform_cross_origin_options",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "cross_origin_options"
     },
     {
@@ -5590,8 +5755,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_components_resources_resourceform_resourceformvalues",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resourceformvalues"
     },
     {
@@ -5601,8 +5766,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_components_resources_resourceform_resourceformprops",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resourceformprops"
     },
     {
@@ -5612,8 +5777,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "src_components_resources_resourceform_resourceform",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resourceform()"
     },
     {
@@ -5664,7 +5829,7 @@
       "label": "ResourceManagerDialogProps",
       "file_type": "code",
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "src_components_resources_resourcemanagerdialog_resourcemanagerdialogprops",
       "community": 11,
@@ -5675,7 +5840,7 @@
       "label": "FormState",
       "file_type": "code",
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L27",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "src_components_resources_resourcemanagerdialog_formstate",
       "community": 11,
@@ -5686,7 +5851,7 @@
       "label": "TYPE_LABEL",
       "file_type": "code",
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L32",
+      "source_location": "L33",
       "_origin": "ast",
       "id": "src_components_resources_resourcemanagerdialog_type_label",
       "community": 11,
@@ -5697,7 +5862,7 @@
       "label": "ResourceManagerDialog()",
       "file_type": "code",
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L39",
+      "source_location": "L40",
       "_origin": "ast",
       "id": "src_components_resources_resourcemanagerdialog_resourcemanagerdialog",
       "community": 11,
@@ -5711,8 +5876,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_resources_resourcepresetssection_test",
-      "community": 35,
-      "community_name": "editorPreferences.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resourcepresetssection.test.tsx"
     },
     {
@@ -5722,8 +5887,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_resources_resourcepresetssection",
-      "community": 35,
-      "community_name": "editorPreferences.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resourcepresetssection.tsx"
     },
     {
@@ -5733,8 +5898,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_components_resources_resourcepresetssection_resourcepresetssectionprops",
-      "community": 35,
-      "community_name": "editorPreferences.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resourcepresetssectionprops"
     },
     {
@@ -5744,8 +5909,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_components_resources_resourcepresetssection_resourcepresetssection",
-      "community": 35,
-      "community_name": "editorPreferences.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resourcepresetssection()"
     },
     {
@@ -6217,8 +6382,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_import_export_standalonehtmldocument_test",
-      "community": 62,
-      "community_name": "standaloneHtmlDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "standalonehtmldocument.test.ts"
     },
     {
@@ -6228,8 +6393,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_import_export_standalonehtmldocument_test_basesource",
-      "community": 62,
-      "community_name": "standaloneHtmlDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "basesource()"
     },
     {
@@ -6239,8 +6404,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "src_import_export_standalonehtmldocument_test_resource",
-      "community": 62,
-      "community_name": "standaloneHtmlDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "resource()"
     },
     {
@@ -6316,8 +6481,8 @@
       "source_location": "L129",
       "_origin": "ast",
       "id": "src_import_export_standalonehtmldocument_buildzipindexhtmldocument",
-      "community": 62,
-      "community_name": "standaloneHtmlDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "buildzipindexhtmldocument()"
     },
     {
@@ -6327,8 +6492,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_import_export_zipexport_test",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 2,
+      "community_name": "useProjectStore",
       "norm_label": "zipexport.test.ts"
     },
     {
@@ -6338,8 +6503,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_import_export_zipexport_test_scsscompilemock",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 2,
+      "community_name": "useProjectStore",
       "norm_label": "scsscompilemock"
     },
     {
@@ -6349,8 +6514,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_import_export_zipexport_test_scssdisposemock",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 2,
+      "community_name": "useProjectStore",
       "norm_label": "scssdisposemock"
     },
     {
@@ -6360,8 +6525,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_import_export_zipexport_test_tscompilemock",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 2,
+      "community_name": "useProjectStore",
       "norm_label": "tscompilemock"
     },
     {
@@ -6371,8 +6536,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_import_export_zipexport_test_tsdisposemock",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 2,
+      "community_name": "useProjectStore",
       "norm_label": "tsdisposemock"
     },
     {
@@ -6382,8 +6547,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "src_import_export_zipexport_test_triggerblobdownloadmock",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 2,
+      "community_name": "useProjectStore",
       "norm_label": "triggerblobdownloadmock"
     },
     {
@@ -6393,8 +6558,8 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "src_import_export_zipexport_test_testproject",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 2,
+      "community_name": "useProjectStore",
       "norm_label": "testproject()"
     },
     {
@@ -6426,8 +6591,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_import_export_zipfileentries_test",
-      "community": 62,
-      "community_name": "standaloneHtmlDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "zipfileentries.test.ts"
     },
     {
@@ -6437,8 +6602,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_import_export_zipfileentries_test_decode",
-      "community": 62,
-      "community_name": "standaloneHtmlDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "decode()"
     },
     {
@@ -6448,8 +6613,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_import_export_zipfileentries_test_source",
-      "community": 62,
-      "community_name": "standaloneHtmlDocument.ts",
+      "community": 36,
+      "community_name": "projectRepository.ts",
       "norm_label": "source()"
     },
     {
@@ -6459,8 +6624,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_import_export_zipfileentries",
-      "community": 62,
-      "community_name": "standaloneHtmlDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "zipfileentries.ts"
     },
     {
@@ -6470,8 +6635,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_import_export_zipfileentries_buildzipfileentries",
-      "community": 62,
-      "community_name": "standaloneHtmlDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "buildzipfileentries()"
     },
     {
@@ -6503,8 +6668,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_models_identifiers_test",
-      "community": 70,
-      "community_name": "buildCoordinator.ts",
+      "community": 76,
+      "community_name": "identifiers.ts",
       "norm_label": "identifiers.test.ts"
     },
     {
@@ -6514,8 +6679,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_models_identifiers",
-      "community": 70,
-      "community_name": "buildCoordinator.ts",
+      "community": 76,
+      "community_name": "identifiers.ts",
       "norm_label": "identifiers.ts"
     },
     {
@@ -6525,8 +6690,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_models_identifiers_compilationid",
-      "community": 70,
-      "community_name": "buildCoordinator.ts",
+      "community": 76,
+      "community_name": "identifiers.ts",
       "norm_label": "compilationid"
     },
     {
@@ -6536,8 +6701,8 @@
       "source_location": "L2",
       "_origin": "ast",
       "id": "src_models_identifiers_executionid",
-      "community": 70,
-      "community_name": "buildCoordinator.ts",
+      "community": 76,
+      "community_name": "identifiers.ts",
       "norm_label": "executionid"
     },
     {
@@ -6547,8 +6712,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_models_identifiers_createcompilationid",
-      "community": 70,
-      "community_name": "buildCoordinator.ts",
+      "community": 76,
+      "community_name": "identifiers.ts",
       "norm_label": "createcompilationid()"
     },
     {
@@ -6558,8 +6723,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_models_identifiers_createexecutionid",
-      "community": 70,
-      "community_name": "buildCoordinator.ts",
+      "community": 76,
+      "community_name": "identifiers.ts",
       "norm_label": "createexecutionid()"
     },
     {
@@ -6580,8 +6745,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_models_project",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "project.ts"
     },
     {
@@ -6657,8 +6822,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_models_project_playgroundproject",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 47,
+      "community_name": "templates.ts",
       "norm_label": "playgroundproject"
     },
     {
@@ -6811,8 +6976,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_models_resource_test",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "resource.test.ts"
     },
     {
@@ -6822,8 +6987,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_models_resource_test_makeresource",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "makeresource()"
     },
     {
@@ -6833,8 +6998,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_models_resource",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "resource.ts"
     },
     {
@@ -6855,8 +7020,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_models_resource_externalresourcetype",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "externalresourcetype"
     },
     {
@@ -6866,8 +7031,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_models_resource_resourcecrossorigin",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resourcecrossorigin"
     },
     {
@@ -6877,8 +7042,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_models_resource_externalresource",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "externalresource"
     },
     {
@@ -6888,8 +7053,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_models_resource_sortresourcesbyorder",
-      "community": 34,
-      "community_name": "previewDocument.ts",
+      "community": 62,
+      "community_name": "standaloneHtmlDocument.ts",
       "norm_label": "sortresourcesbyorder()"
     },
     {
@@ -7020,8 +7185,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_models_resourcepresets_test",
-      "community": 35,
-      "community_name": "editorPreferences.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resourcepresets.test.ts"
     },
     {
@@ -7031,8 +7196,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_models_resourcepresets",
-      "community": 35,
-      "community_name": "editorPreferences.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resourcepresets.ts"
     },
     {
@@ -7042,8 +7207,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_models_resourcepresets_resourcepresetid",
-      "community": 35,
-      "community_name": "editorPreferences.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resourcepresetid"
     },
     {
@@ -7053,8 +7218,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_models_resourcepresets_resourcepreset",
-      "community": 35,
-      "community_name": "editorPreferences.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resourcepreset"
     },
     {
@@ -7064,8 +7229,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_models_resourcepresets_buildresource",
-      "community": 35,
-      "community_name": "editorPreferences.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "buildresource()"
     },
     {
@@ -7075,8 +7240,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "src_models_resourcepresets_resource_presets",
-      "community": 35,
-      "community_name": "editorPreferences.ts",
+      "community": 11,
+      "community_name": "ExternalResource",
       "norm_label": "resource_presets"
     },
     {
@@ -7306,8 +7471,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_models_trustgate_test",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "trustgate.test.ts"
     },
     {
@@ -7317,8 +7482,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_models_trustgate_test_testresource",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "testresource()"
     },
     {
@@ -7328,8 +7493,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "src_models_trustgate_test_testproject",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 70,
+      "community_name": "buildCoordinator.ts",
       "norm_label": "testproject()"
     },
     {
@@ -7339,8 +7504,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_models_trustgate",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 51,
+      "community_name": "PreviewPanel.consoleWiring.test.tsx",
       "norm_label": "trustgate.ts"
     },
     {
@@ -7394,8 +7559,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_persistence_debounce_test",
-      "community": 51,
-      "community_name": "PreviewPanel.consoleWiring.test.tsx",
+      "community": 68,
+      "community_name": "useAutosave.ts",
       "norm_label": "debounce.test.ts"
     },
     {
@@ -7405,8 +7570,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_persistence_debounce",
-      "community": 51,
-      "community_name": "PreviewPanel.consoleWiring.test.tsx",
+      "community": 68,
+      "community_name": "useAutosave.ts",
       "norm_label": "debounce.ts"
     },
     {
@@ -7460,8 +7625,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "src_persistence_debounce_createdebouncer",
-      "community": 51,
-      "community_name": "PreviewPanel.consoleWiring.test.tsx",
+      "community": 68,
+      "community_name": "useAutosave.ts",
       "norm_label": "createdebouncer()"
     },
     {
@@ -7845,8 +8010,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_preferences_shellpreferences_test",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 35,
+      "community_name": "editorPreferences.ts",
       "norm_label": "shellpreferences.test.ts"
     },
     {
@@ -7856,8 +8021,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_preferences_shellpreferences",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 35,
+      "community_name": "editorPreferences.ts",
       "norm_label": "shellpreferences.ts"
     },
     {
@@ -7867,8 +8032,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_preferences_shellpreferences_shellpreferences",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 35,
+      "community_name": "editorPreferences.ts",
       "norm_label": "shellpreferences"
     },
     {
@@ -7878,8 +8043,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "src_preferences_shellpreferences_default_shell_preferences",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 35,
+      "community_name": "editorPreferences.ts",
       "norm_label": "default_shell_preferences"
     },
     {
@@ -7889,8 +8054,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "src_preferences_shellpreferences_isshellpreferences",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 35,
+      "community_name": "editorPreferences.ts",
       "norm_label": "isshellpreferences()"
     },
     {
@@ -7900,8 +8065,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "src_preferences_shellpreferences_loadshellpreferences",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 35,
+      "community_name": "editorPreferences.ts",
       "norm_label": "loadshellpreferences()"
     },
     {
@@ -7911,8 +8076,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "src_preferences_shellpreferences_saveshellpreferences",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 35,
+      "community_name": "editorPreferences.ts",
       "norm_label": "saveshellpreferences()"
     },
     {
@@ -7922,8 +8087,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_preview_buildcoordinator_test",
-      "community": 70,
-      "community_name": "buildCoordinator.ts",
+      "community": 47,
+      "community_name": "templates.ts",
       "norm_label": "buildcoordinator.test.ts"
     },
     {
@@ -7933,8 +8098,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_preview_buildcoordinator_test_makeproject",
-      "community": 70,
-      "community_name": "buildCoordinator.ts",
+      "community": 47,
+      "community_name": "templates.ts",
       "norm_label": "makeproject()"
     },
     {
@@ -8010,8 +8175,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "src_preview_buildcoordinator_createpreviewbuildcoordinator",
-      "community": 70,
-      "community_name": "buildCoordinator.ts",
+      "community": 51,
+      "community_name": "PreviewPanel.consoleWiring.test.tsx",
       "norm_label": "createpreviewbuildcoordinator()"
     },
     {
@@ -8021,8 +8186,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_preview_closingtagescape_test",
-      "community": 48,
-      "community_name": "PreviewPanel.tsx",
+      "community": 62,
+      "community_name": "standaloneHtmlDocument.ts",
       "norm_label": "closingtagescape.test.ts"
     },
     {
@@ -8032,8 +8197,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_preview_closingtagescape",
-      "community": 48,
-      "community_name": "PreviewPanel.tsx",
+      "community": 62,
+      "community_name": "standaloneHtmlDocument.ts",
       "norm_label": "closingtagescape.ts"
     },
     {
@@ -8043,8 +8208,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_preview_closingtagescape_escapeclosingsequence",
-      "community": 48,
-      "community_name": "PreviewPanel.tsx",
+      "community": 62,
+      "community_name": "standaloneHtmlDocument.ts",
       "norm_label": "escapeclosingsequence()"
     },
     {
@@ -8087,8 +8252,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_preview_maperrortosource_test",
-      "community": 60,
-      "community_name": "PlaygroundProject",
+      "community": 48,
+      "community_name": "PreviewPanel.tsx",
       "norm_label": "maperrortosource.test.ts"
     },
     {
@@ -8098,8 +8263,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_preview_maperrortosource_test_makesource",
-      "community": 60,
-      "community_name": "PlaygroundProject",
+      "community": 48,
+      "community_name": "PreviewPanel.tsx",
       "norm_label": "makesource()"
     },
     {
@@ -8142,8 +8307,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "src_preview_maperrortosource_mapruntimeerrorline",
-      "community": 60,
-      "community_name": "PlaygroundProject",
+      "community": 48,
+      "community_name": "PreviewPanel.tsx",
       "norm_label": "mapruntimeerrorline()"
     },
     {
@@ -8351,8 +8516,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "src_preview_previewdocument_stylesheetlinksegment",
-      "community": 48,
-      "community_name": "PreviewPanel.tsx",
+      "community": 62,
+      "community_name": "standaloneHtmlDocument.ts",
       "norm_label": "stylesheetlinksegment()"
     },
     {
@@ -8395,8 +8560,8 @@
       "source_location": "L171",
       "_origin": "ast",
       "id": "src_preview_previewdocument_previewlineoffsets",
-      "community": 10,
-      "community_name": "previewMessage.ts",
+      "community": 48,
+      "community_name": "PreviewPanel.tsx",
       "norm_label": "previewlineoffsets"
     },
     {
@@ -8406,8 +8571,8 @@
       "source_location": "L192",
       "_origin": "ast",
       "id": "src_preview_previewdocument_computepreviewlineoffsets",
-      "community": 60,
-      "community_name": "PlaygroundProject",
+      "community": 48,
+      "community_name": "PreviewPanel.tsx",
       "norm_label": "computepreviewlineoffsets()"
     },
     {
@@ -8417,8 +8582,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_preview_previewmessage_test",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "previewmessage.test.ts"
     },
     {
@@ -8428,8 +8593,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_preview_previewmessage_test_basefields",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "basefields()"
     },
     {
@@ -8439,8 +8604,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_preview_previewmessage",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "previewmessage.ts"
     },
     {
@@ -8461,8 +8626,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_preview_previewmessage_serializedvalue",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "serializedvalue"
     },
     {
@@ -8472,8 +8637,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "src_preview_previewmessage_previewmessagebase",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "previewmessagebase"
     },
     {
@@ -8494,8 +8659,8 @@
       "source_location": "L70",
       "_origin": "ast",
       "id": "src_preview_previewmessage_console_levels",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "console_levels"
     },
     {
@@ -8505,8 +8670,8 @@
       "source_location": "L79",
       "_origin": "ast",
       "id": "src_preview_previewmessage_isplainobject",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "isplainobject()"
     },
     {
@@ -8516,8 +8681,8 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "src_preview_previewmessage_isconsolelevel",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "isconsolelevel()"
     },
     {
@@ -8527,8 +8692,8 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "src_preview_previewmessage_isserializedvalue",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "isserializedvalue()"
     },
     {
@@ -8538,8 +8703,8 @@
       "source_location": "L151",
       "_origin": "ast",
       "id": "src_preview_previewmessage_hasbaseshape",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "hasbaseshape()"
     },
     {
@@ -8549,8 +8714,8 @@
       "source_location": "L162",
       "_origin": "ast",
       "id": "src_preview_previewmessage_isvalidpayload",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "isvalidpayload()"
     },
     {
@@ -8560,8 +8725,8 @@
       "source_location": "L202",
       "_origin": "ast",
       "id": "src_preview_previewmessage_message_types",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "message_types"
     },
     {
@@ -8571,8 +8736,8 @@
       "source_location": "L219",
       "_origin": "ast",
       "id": "src_preview_previewmessage_ispreviewmessage",
-      "community": 17,
-      "community_name": "CodeMirrorEditor.tsx",
+      "community": 10,
+      "community_name": "previewMessage.ts",
       "norm_label": "ispreviewmessage()"
     },
     {
@@ -8780,8 +8945,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_preview_scsscompiler_test",
-      "community": 39,
-      "community_name": "ProjectStoreContext.tsx",
+      "community": 2,
+      "community_name": "useProjectStore",
       "norm_label": "scsscompiler.test.ts"
     },
     {
@@ -8791,8 +8956,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_preview_scsscompiler",
-      "community": 39,
-      "community_name": "ProjectStoreContext.tsx",
+      "community": 2,
+      "community_name": "useProjectStore",
       "norm_label": "scsscompiler.ts"
     },
     {
@@ -8802,8 +8967,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_preview_scsscompiler_scsscompileresult",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 2,
+      "community_name": "useProjectStore",
       "norm_label": "scsscompileresult"
     },
     {
@@ -8813,8 +8978,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "src_preview_scsscompiler_toscsscompileerror",
-      "community": 39,
-      "community_name": "ProjectStoreContext.tsx",
+      "community": 2,
+      "community_name": "useProjectStore",
       "norm_label": "toscsscompileerror()"
     },
     {
@@ -8824,8 +8989,8 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "src_preview_scsscompiler_compilescss",
-      "community": 39,
-      "community_name": "ProjectStoreContext.tsx",
+      "community": 2,
+      "community_name": "useProjectStore",
       "norm_label": "compilescss()"
     },
     {
@@ -8846,8 +9011,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_preview_scsscompilerclient_test",
-      "community": 51,
-      "community_name": "PreviewPanel.consoleWiring.test.tsx",
+      "community": 39,
+      "community_name": "ProjectStoreContext.tsx",
       "norm_label": "scsscompilerclient.test.ts"
     },
     {
@@ -8857,8 +9022,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_preview_scsscompilerclient_test_createfakeworker",
-      "community": 51,
-      "community_name": "PreviewPanel.consoleWiring.test.tsx",
+      "community": 39,
+      "community_name": "ProjectStoreContext.tsx",
       "norm_label": "createfakeworker()"
     },
     {
@@ -8868,8 +9033,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_preview_scsscompilerclient",
-      "community": 51,
-      "community_name": "PreviewPanel.consoleWiring.test.tsx",
+      "community": 39,
+      "community_name": "ProjectStoreContext.tsx",
       "norm_label": "scsscompilerclient.ts"
     },
     {
@@ -8890,8 +9055,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_preview_scsscompilerclient_scsscompilerclient_compile",
-      "community": 14,
-      "community_name": "tsWorkerProtocol.ts",
+      "community": 2,
+      "community_name": "useProjectStore",
       "norm_label": ".compile()"
     },
     {
@@ -8912,8 +9077,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_preview_scsscompilerclient_defaultcreateworker",
-      "community": 51,
-      "community_name": "PreviewPanel.consoleWiring.test.tsx",
+      "community": 39,
+      "community_name": "ProjectStoreContext.tsx",
       "norm_label": "defaultcreateworker()"
     },
     {
@@ -8923,8 +9088,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "src_preview_scsscompilerclient_createscsscompilerclient",
-      "community": 51,
-      "community_name": "PreviewPanel.consoleWiring.test.tsx",
+      "community": 39,
+      "community_name": "ProjectStoreContext.tsx",
       "norm_label": "createscsscompilerclient()"
     },
     {
@@ -9792,8 +9957,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_store_projectstorecontext_test",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "projectstorecontext.test.tsx"
     },
     {
@@ -9803,8 +9968,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "src_store_projectstorecontext_test_activetitleprobe",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "activetitleprobe()"
     },
     {
@@ -9869,8 +10034,8 @@
       "source_location": "L179",
       "_origin": "ast",
       "id": "src_store_projectstorecontext_useprojectstore",
-      "community": 2,
-      "community_name": "useProjectStore",
+      "community": 57,
+      "community_name": "ConfirmDialog.tsx",
       "norm_label": "useprojectstore()"
     },
     {
@@ -11104,6 +11269,688 @@
       "community": 33,
       "community_name": "vite.config.ts",
       "norm_label": "vite.config.ts"
+    },
+    {
+      "label": "acceptance-criteria.md",
+      "file_type": "document",
+      "source_file": "docs/acceptance-criteria.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_acceptance_criteria",
+      "community": 77,
+      "community_name": "browser-support.md",
+      "norm_label": "acceptance-criteria.md"
+    },
+    {
+      "label": "Acceptance criteria evidence",
+      "file_type": "document",
+      "source_file": "docs/acceptance-criteria.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_acceptance_criteria_acceptance_criteria_evidence",
+      "community": 77,
+      "community_name": "browser-support.md",
+      "norm_label": "acceptance criteria evidence"
+    },
+    {
+      "label": "Summary of manual items",
+      "file_type": "document",
+      "source_file": "docs/acceptance-criteria.md",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "docs_acceptance_criteria_summary_of_manual_items",
+      "community": 77,
+      "community_name": "browser-support.md",
+      "norm_label": "summary of manual items"
+    },
+    {
+      "label": "architecture.md",
+      "file_type": "document",
+      "source_file": "docs/architecture.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_architecture",
+      "community": 73,
+      "community_name": "architecture.md",
+      "norm_label": "architecture.md"
+    },
+    {
+      "label": "Architecture",
+      "file_type": "document",
+      "source_file": "docs/architecture.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_architecture_architecture",
+      "community": 74,
+      "community_name": "Architecture",
+      "norm_label": "architecture"
+    },
+    {
+      "label": "Module map",
+      "file_type": "document",
+      "source_file": "docs/architecture.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "docs_architecture_module_map",
+      "community": 74,
+      "community_name": "Architecture",
+      "norm_label": "module map"
+    },
+    {
+      "label": "Build and preview data flow",
+      "file_type": "document",
+      "source_file": "docs/architecture.md",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "docs_architecture_build_and_preview_data_flow",
+      "community": 74,
+      "community_name": "Architecture",
+      "norm_label": "build and preview data flow"
+    },
+    {
+      "label": "Bundle composition",
+      "file_type": "document",
+      "source_file": "docs/architecture.md",
+      "source_location": "L30",
+      "_origin": "ast",
+      "id": "docs_architecture_bundle_composition",
+      "community": 74,
+      "community_name": "Architecture",
+      "norm_label": "bundle composition"
+    },
+    {
+      "label": "Why the TypeScript worker is fetched for JavaScript projects too",
+      "file_type": "document",
+      "source_file": "docs/architecture.md",
+      "source_location": "L50",
+      "_origin": "ast",
+      "id": "docs_architecture_why_the_typescript_worker_is_fetched_for_javascript_projects_too",
+      "community": 74,
+      "community_name": "Architecture",
+      "norm_label": "why the typescript worker is fetched for javascript projects too"
+    },
+    {
+      "label": "Why there is no `manualChunks` vendor split",
+      "file_type": "document",
+      "source_file": "docs/architecture.md",
+      "source_location": "L56",
+      "_origin": "ast",
+      "id": "docs_architecture_why_there_is_no_manualchunks_vendor_split",
+      "community": 74,
+      "community_name": "Architecture",
+      "norm_label": "why there is no `manualchunks` vendor split"
+    },
+    {
+      "label": "Routing and hosting",
+      "file_type": "document",
+      "source_file": "docs/architecture.md",
+      "source_location": "L60",
+      "_origin": "ast",
+      "id": "docs_architecture_routing_and_hosting",
+      "community": 74,
+      "community_name": "Architecture",
+      "norm_label": "routing and hosting"
+    },
+    {
+      "label": "browser-support.md",
+      "file_type": "document",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_browser_support",
+      "community": 77,
+      "community_name": "browser-support.md",
+      "norm_label": "browser-support.md"
+    },
+    {
+      "label": "Browser support",
+      "file_type": "document",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_browser_support_browser_support",
+      "community": 75,
+      "community_name": "Browser support",
+      "norm_label": "browser support"
+    },
+    {
+      "label": "Supported matrix",
+      "file_type": "document",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "docs_browser_support_supported_matrix",
+      "community": 75,
+      "community_name": "Browser support",
+      "norm_label": "supported matrix"
+    },
+    {
+      "label": "Required capabilities",
+      "file_type": "document",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "docs_browser_support_required_capabilities",
+      "community": 75,
+      "community_name": "Browser support",
+      "norm_label": "required capabilities"
+    },
+    {
+      "label": "Cross-browser test strategy",
+      "file_type": "document",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L28",
+      "_origin": "ast",
+      "id": "docs_browser_support_cross_browser_test_strategy",
+      "community": 75,
+      "community_name": "Browser support",
+      "norm_label": "cross-browser test strategy"
+    },
+    {
+      "label": "Documented, unavoidable differences",
+      "file_type": "document",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "docs_browser_support_documented_unavoidable_differences",
+      "community": 75,
+      "community_name": "Browser support",
+      "norm_label": "documented, unavoidable differences"
+    },
+    {
+      "label": "Local WebKit limitation",
+      "file_type": "document",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L41",
+      "_origin": "ast",
+      "id": "docs_browser_support_local_webkit_limitation",
+      "community": 75,
+      "community_name": "Browser support",
+      "norm_label": "local webkit limitation"
+    },
+    {
+      "label": "Manual verification",
+      "file_type": "document",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L45",
+      "_origin": "ast",
+      "id": "docs_browser_support_manual_verification",
+      "community": 75,
+      "community_name": "Browser support",
+      "norm_label": "manual verification"
+    },
+    {
+      "label": "export.md",
+      "file_type": "document",
+      "source_file": "docs/export.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_export",
+      "community": 42,
+      "community_name": "ResetProjectDialog.tsx",
+      "norm_label": "export.md"
+    },
+    {
+      "label": "Export and import",
+      "file_type": "document",
+      "source_file": "docs/export.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_export_export_and_import",
+      "community": 42,
+      "community_name": "ResetProjectDialog.tsx",
+      "norm_label": "export and import"
+    },
+    {
+      "label": "Download JSON",
+      "file_type": "document",
+      "source_file": "docs/export.md",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "docs_export_download_json",
+      "community": 42,
+      "community_name": "ResetProjectDialog.tsx",
+      "norm_label": "download json"
+    },
+    {
+      "label": "Download HTML",
+      "file_type": "document",
+      "source_file": "docs/export.md",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "docs_export_download_html",
+      "community": 42,
+      "community_name": "ResetProjectDialog.tsx",
+      "norm_label": "download html"
+    },
+    {
+      "label": "Copy HTML",
+      "file_type": "document",
+      "source_file": "docs/export.md",
+      "source_location": "L38",
+      "_origin": "ast",
+      "id": "docs_export_copy_html",
+      "community": 42,
+      "community_name": "ResetProjectDialog.tsx",
+      "norm_label": "copy html"
+    },
+    {
+      "label": "Download ZIP",
+      "file_type": "document",
+      "source_file": "docs/export.md",
+      "source_location": "L44",
+      "_origin": "ast",
+      "id": "docs_export_download_zip",
+      "community": 42,
+      "community_name": "ResetProjectDialog.tsx",
+      "norm_label": "download zip"
+    },
+    {
+      "label": "Import",
+      "file_type": "document",
+      "source_file": "docs/export.md",
+      "source_location": "L61",
+      "_origin": "ast",
+      "id": "docs_export_import",
+      "community": 42,
+      "community_name": "ResetProjectDialog.tsx",
+      "norm_label": "import"
+    },
+    {
+      "label": "protocols.md",
+      "file_type": "document",
+      "source_file": "docs/protocols.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_protocols",
+      "community": 73,
+      "community_name": "architecture.md",
+      "norm_label": "protocols.md"
+    },
+    {
+      "label": "Message protocols",
+      "file_type": "document",
+      "source_file": "docs/protocols.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_protocols_message_protocols",
+      "community": 73,
+      "community_name": "architecture.md",
+      "norm_label": "message protocols"
+    },
+    {
+      "label": "Preview \u2192 parent (`src/preview/previewMessage.ts`)",
+      "file_type": "document",
+      "source_file": "docs/protocols.md",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "docs_protocols_preview_parent_src_preview_previewmessage_ts",
+      "community": 73,
+      "community_name": "architecture.md",
+      "norm_label": "preview \u2192 parent (`src/preview/previewmessage.ts`)"
+    },
+    {
+      "label": "`SerializedValue`",
+      "file_type": "document",
+      "source_file": "docs/protocols.md",
+      "source_location": "L26",
+      "_origin": "ast",
+      "id": "docs_protocols_serializedvalue",
+      "community": 73,
+      "community_name": "architecture.md",
+      "norm_label": "`serializedvalue`"
+    },
+    {
+      "label": "Main thread \u2194 SCSS worker (`src/preview/scssWorkerProtocol.ts`)",
+      "file_type": "document",
+      "source_file": "docs/protocols.md",
+      "source_location": "L40",
+      "_origin": "ast",
+      "id": "docs_protocols_main_thread_scss_worker_src_preview_scssworkerprotocol_ts",
+      "community": 73,
+      "community_name": "architecture.md",
+      "norm_label": "main thread \u2194 scss worker (`src/preview/scssworkerprotocol.ts`)"
+    },
+    {
+      "label": "Main thread \u2194 TypeScript worker (`src/preview/tsWorkerProtocol.ts`)",
+      "file_type": "document",
+      "source_file": "docs/protocols.md",
+      "source_location": "L49",
+      "_origin": "ast",
+      "id": "docs_protocols_main_thread_typescript_worker_src_preview_tsworkerprotocol_ts",
+      "community": 73,
+      "community_name": "architecture.md",
+      "norm_label": "main thread \u2194 typescript worker (`src/preview/tsworkerprotocol.ts`)"
+    },
+    {
+      "label": "release-checklist.md",
+      "file_type": "document",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_release_checklist",
+      "community": 77,
+      "community_name": "browser-support.md",
+      "norm_label": "release-checklist.md"
+    },
+    {
+      "label": "Release checklist",
+      "file_type": "document",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_release_checklist_release_checklist",
+      "community": 45,
+      "community_name": "scssWorkerProtocol.ts",
+      "norm_label": "release checklist"
+    },
+    {
+      "label": "1. Automated gate",
+      "file_type": "document",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "docs_release_checklist_1_automated_gate",
+      "community": 45,
+      "community_name": "scssWorkerProtocol.ts",
+      "norm_label": "1. automated gate"
+    },
+    {
+      "label": "2. Cross-browser journey",
+      "file_type": "document",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "docs_release_checklist_2_cross_browser_journey",
+      "community": 45,
+      "community_name": "scssWorkerProtocol.ts",
+      "norm_label": "2. cross-browser journey"
+    },
+    {
+      "label": "3. Bundle review",
+      "file_type": "document",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L30",
+      "_origin": "ast",
+      "id": "docs_release_checklist_3_bundle_review",
+      "community": 45,
+      "community_name": "scssWorkerProtocol.ts",
+      "norm_label": "3. bundle review"
+    },
+    {
+      "label": "4. Repository hygiene",
+      "file_type": "document",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "docs_release_checklist_4_repository_hygiene",
+      "community": 45,
+      "community_name": "scssWorkerProtocol.ts",
+      "norm_label": "4. repository hygiene"
+    },
+    {
+      "label": "5. Documentation",
+      "file_type": "document",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L41",
+      "_origin": "ast",
+      "id": "docs_release_checklist_5_documentation",
+      "community": 45,
+      "community_name": "scssWorkerProtocol.ts",
+      "norm_label": "5. documentation"
+    },
+    {
+      "label": "6. Deploy",
+      "file_type": "document",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L47",
+      "_origin": "ast",
+      "id": "docs_release_checklist_6_deploy",
+      "community": 45,
+      "community_name": "scssWorkerProtocol.ts",
+      "norm_label": "6. deploy"
+    },
+    {
+      "label": "Manual verification",
+      "file_type": "document",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L53",
+      "_origin": "ast",
+      "id": "docs_release_checklist_manual_verification",
+      "community": 45,
+      "community_name": "scssWorkerProtocol.ts",
+      "norm_label": "manual verification"
+    },
+    {
+      "label": "security.md",
+      "file_type": "document",
+      "source_file": "docs/security.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_security",
+      "community": 42,
+      "community_name": "ResetProjectDialog.tsx",
+      "norm_label": "security.md"
+    },
+    {
+      "label": "Security model",
+      "file_type": "document",
+      "source_file": "docs/security.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_security_security_model",
+      "community": 34,
+      "community_name": "previewDocument.ts",
+      "norm_label": "security model"
+    },
+    {
+      "label": "The preview sandbox",
+      "file_type": "document",
+      "source_file": "docs/security.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "docs_security_the_preview_sandbox",
+      "community": 34,
+      "community_name": "previewDocument.ts",
+      "norm_label": "the preview sandbox"
+    },
+    {
+      "label": "What preview code can do",
+      "file_type": "document",
+      "source_file": "docs/security.md",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "docs_security_what_preview_code_can_do",
+      "community": 34,
+      "community_name": "previewDocument.ts",
+      "norm_label": "what preview code can do"
+    },
+    {
+      "label": "What preview code cannot do",
+      "file_type": "document",
+      "source_file": "docs/security.md",
+      "source_location": "L26",
+      "_origin": "ast",
+      "id": "docs_security_what_preview_code_cannot_do",
+      "community": 34,
+      "community_name": "previewDocument.ts",
+      "norm_label": "what preview code cannot do"
+    },
+    {
+      "label": "Messages from the preview",
+      "file_type": "document",
+      "source_file": "docs/security.md",
+      "source_location": "L37",
+      "_origin": "ast",
+      "id": "docs_security_messages_from_the_preview",
+      "community": 34,
+      "community_name": "previewDocument.ts",
+      "norm_label": "messages from the preview"
+    },
+    {
+      "label": "Document assembly",
+      "file_type": "document",
+      "source_file": "docs/security.md",
+      "source_location": "L41",
+      "_origin": "ast",
+      "id": "docs_security_document_assembly",
+      "community": 34,
+      "community_name": "previewDocument.ts",
+      "norm_label": "document assembly"
+    },
+    {
+      "label": "External resources",
+      "file_type": "document",
+      "source_file": "docs/security.md",
+      "source_location": "L50",
+      "_origin": "ast",
+      "id": "docs_security_external_resources",
+      "community": 34,
+      "community_name": "previewDocument.ts",
+      "norm_label": "external resources"
+    },
+    {
+      "label": "Limitations of external resources",
+      "file_type": "document",
+      "source_file": "docs/security.md",
+      "source_location": "L61",
+      "_origin": "ast",
+      "id": "docs_security_limitations_of_external_resources",
+      "community": 34,
+      "community_name": "previewDocument.ts",
+      "norm_label": "limitations of external resources"
+    },
+    {
+      "label": "The trust gate",
+      "file_type": "document",
+      "source_file": "docs/security.md",
+      "source_location": "L68",
+      "_origin": "ast",
+      "id": "docs_security_the_trust_gate",
+      "community": 34,
+      "community_name": "previewDocument.ts",
+      "norm_label": "the trust gate"
+    },
+    {
+      "label": "Imported data",
+      "file_type": "document",
+      "source_file": "docs/security.md",
+      "source_location": "L74",
+      "_origin": "ast",
+      "id": "docs_security_imported_data",
+      "community": 34,
+      "community_name": "previewDocument.ts",
+      "norm_label": "imported data"
+    },
+    {
+      "label": "Secrets",
+      "file_type": "document",
+      "source_file": "docs/security.md",
+      "source_location": "L83",
+      "_origin": "ast",
+      "id": "docs_security_secrets",
+      "community": 34,
+      "community_name": "previewDocument.ts",
+      "norm_label": "secrets"
+    },
+    {
+      "label": "Known limitations",
+      "file_type": "document",
+      "source_file": "docs/security.md",
+      "source_location": "L87",
+      "_origin": "ast",
+      "id": "docs_security_known_limitations",
+      "community": 34,
+      "community_name": "previewDocument.ts",
+      "norm_label": "known limitations"
+    },
+    {
+      "label": "storage.md",
+      "file_type": "document",
+      "source_file": "docs/storage.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_storage",
+      "community": 53,
+      "community_name": "IndexedDB",
+      "norm_label": "storage.md"
+    },
+    {
+      "label": "Storage",
+      "file_type": "document",
+      "source_file": "docs/storage.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_storage_storage",
+      "community": 53,
+      "community_name": "IndexedDB",
+      "norm_label": "storage"
+    },
+    {
+      "label": "IndexedDB",
+      "file_type": "document",
+      "source_file": "docs/storage.md",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "docs_storage_indexeddb",
+      "community": 53,
+      "community_name": "IndexedDB",
+      "norm_label": "indexeddb"
+    },
+    {
+      "label": "Two independent version numbers",
+      "file_type": "document",
+      "source_file": "docs/storage.md",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "docs_storage_two_independent_version_numbers",
+      "community": 53,
+      "community_name": "IndexedDB",
+      "norm_label": "two independent version numbers"
+    },
+    {
+      "label": "Reading: recovery, not trust",
+      "file_type": "document",
+      "source_file": "docs/storage.md",
+      "source_location": "L23",
+      "_origin": "ast",
+      "id": "docs_storage_reading_recovery_not_trust",
+      "community": 53,
+      "community_name": "IndexedDB",
+      "norm_label": "reading: recovery, not trust"
+    },
+    {
+      "label": "Writing",
+      "file_type": "document",
+      "source_file": "docs/storage.md",
+      "source_location": "L39",
+      "_origin": "ast",
+      "id": "docs_storage_writing",
+      "community": 53,
+      "community_name": "IndexedDB",
+      "norm_label": "writing"
+    },
+    {
+      "label": "When IndexedDB is unavailable",
+      "file_type": "document",
+      "source_file": "docs/storage.md",
+      "source_location": "L45",
+      "_origin": "ast",
+      "id": "docs_storage_when_indexeddb_is_unavailable",
+      "community": 53,
+      "community_name": "IndexedDB",
+      "norm_label": "when indexeddb is unavailable"
+    },
+    {
+      "label": "localStorage",
+      "file_type": "document",
+      "source_file": "docs/storage.md",
+      "source_location": "L49",
+      "_origin": "ast",
+      "id": "docs_storage_localstorage",
+      "community": 53,
+      "community_name": "IndexedDB",
+      "norm_label": "localstorage"
     },
     {
       "label": "Graphify Integration Rule",
@@ -12854,6 +13701,28 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "e2e/critical-journey.spec.ts",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "e2e_critical_journey_spec",
+      "target": "e2e_critical_journey_spec_previewframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "e2e/critical-journey.spec.ts",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "e2e_critical_journey_spec",
+      "target": "e2e_critical_journey_spec_seteditorcontent",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "e2e/import-export.spec.ts",
       "source_location": "L14",
       "weight": 1.0,
@@ -12926,6 +13795,50 @@
       "_origin": "ast",
       "source": "e2e_keyboard_workflow_spec",
       "target": "e2e_keyboard_workflow_spec_previewframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "e2e/performance.spec.ts",
+      "source_location": "L32",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "e2e_performance_spec",
+      "target": "e2e_performance_spec_deferred_chunks",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "e2e/performance.spec.ts",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "e2e_performance_spec",
+      "target": "e2e_performance_spec_previewframe",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "e2e/performance.spec.ts",
+      "source_location": "L24",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "e2e_performance_spec",
+      "target": "e2e_performance_spec_recordscriptrequests",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "e2e/performance.spec.ts",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "e2e_performance_spec",
+      "target": "e2e_performance_spec_seteditorcontent",
       "confidence_score": 1.0
     },
     {
@@ -15413,7 +16326,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L28",
+      "source_location": "L25",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -15437,7 +16350,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L28",
+      "source_location": "L25",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -15744,7 +16657,40 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L31",
+      "source_location": "L38",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_app_toolbar",
+      "target": "src_app_toolbar_exportdialog",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/Toolbar.tsx",
+      "source_location": "L35",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_app_toolbar",
+      "target": "src_app_toolbar_importdialog",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/Toolbar.tsx",
+      "source_location": "L32",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_app_toolbar",
+      "target": "src_app_toolbar_resourcemanagerdialog",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/app/Toolbar.tsx",
+      "source_location": "L42",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -15755,7 +16701,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L44",
+      "source_location": "L55",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -15766,7 +16712,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L38",
+      "source_location": "L49",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -15998,30 +16944,6 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
-      "target": "src_components_import_export_exportdialog",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L20",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_app_toolbar",
-      "target": "src_components_import_export_importdialog",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L21",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_app_toolbar",
       "target": "src_components_projects_newprojectdialog",
       "confidence_score": 1.0
     },
@@ -16030,7 +16952,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L21",
+      "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -16042,7 +16964,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L22",
+      "source_location": "L20",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -16054,7 +16976,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L23",
+      "source_location": "L21",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -16066,19 +16988,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L24",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_app_toolbar",
-      "target": "src_components_resources_resourcemanagerdialog",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L25",
+      "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -16090,7 +17000,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L25",
+      "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -16102,7 +17012,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L26",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -16114,7 +17024,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L26",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -16126,7 +17036,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L27",
+      "source_location": "L24",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -16138,7 +17048,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L27",
+      "source_location": "L24",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar",
@@ -16150,7 +17060,7 @@
       "context": "generic_arg",
       "confidence": "EXTRACTED",
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L40",
+      "source_location": "L51",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar_toolbarprops",
@@ -16163,7 +17073,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/app/Toolbar.tsx",
-      "source_location": "L50",
+      "source_location": "L61",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_app_toolbar_toolbar",
@@ -18622,6 +19532,124 @@
       "_origin": "ast",
       "source": "src_components_common_resizehandle",
       "target": "src_components_common_resizehandle_resizehandleprops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/common/SecretsWarning.test.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_common_secretswarning_test",
+      "target": "src_components_common_secretswarning",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/common/SecretsWarning.test.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_common_secretswarning_test",
+      "target": "src_components_common_secretswarning_secretswarning",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/common/SecretsWarning.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_common_secretswarning",
+      "target": "src_components_common_icons",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/common/SecretsWarning.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_common_secretswarning",
+      "target": "src_components_common_icons_warningicon",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/common/SecretsWarning.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_common_secretswarning",
+      "target": "src_components_common_secretswarning_secretswarning",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/common/SecretsWarning.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_common_secretswarning",
+      "target": "src_components_common_secretswarning_secretswarningprops",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/import-export/ExportDialog.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_import_export_exportdialog",
+      "target": "src_components_common_secretswarning",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/resources/ResourceManagerDialog.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_resources_resourcemanagerdialog",
+      "target": "src_components_common_secretswarning",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/import-export/ExportDialog.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_import_export_exportdialog",
+      "target": "src_components_common_secretswarning_secretswarning",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/resources/ResourceManagerDialog.tsx",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "src_components_resources_resourcemanagerdialog",
+      "target": "src_components_common_secretswarning_secretswarning",
       "confidence_score": 1.0
     },
     {
@@ -21582,7 +22610,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_import_export_exportdialog",
@@ -21731,7 +22759,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_import_export_exportdialog",
@@ -21742,7 +22770,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_import_export_exportdialog",
@@ -21753,7 +22781,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_import_export_exportdialog",
@@ -21764,7 +22792,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_import_export_exportdialog",
@@ -21775,7 +22803,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_import_export_exportdialog",
@@ -21967,7 +22995,7 @@
       "context": "field",
       "confidence": "EXTRACTED",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_import_export_exportdialog_exportdialogprops",
@@ -21979,7 +23007,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L78",
+      "source_location": "L79",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_import_export_exportdialog_exportdialog",
@@ -21991,7 +23019,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L68",
+      "source_location": "L69",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_import_export_exportdialog_exportdialog",
@@ -22003,7 +23031,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L68",
+      "source_location": "L69",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_import_export_exportdialog_exportdialog",
@@ -22015,7 +23043,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L66",
+      "source_location": "L67",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_import_export_exportdialog_exportdialog",
@@ -22027,7 +23055,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L84",
+      "source_location": "L85",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_import_export_exportdialog_exportdialog",
@@ -22039,7 +23067,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/import-export/ExportDialog.tsx",
-      "source_location": "L125",
+      "source_location": "L126",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_import_export_exportdialog_exportdialog",
@@ -24946,7 +25974,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_resources_resourcemanagerdialog",
@@ -24982,7 +26010,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_resources_resourcemanagerdialog",
@@ -25063,7 +26091,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_resources_resourcemanagerdialog",
@@ -25074,7 +26102,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_resources_resourcemanagerdialog",
@@ -25085,7 +26113,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_resources_resourcemanagerdialog",
@@ -25096,7 +26124,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_resources_resourcemanagerdialog",
@@ -25108,7 +26136,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_resources_resourcemanagerdialog",
@@ -25301,7 +26329,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L167",
+      "source_location": "L174",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_resources_resourcemanagerdialog_resourcemanagerdialog",
@@ -25313,7 +26341,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L258",
+      "source_location": "L265",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_resources_resourcemanagerdialog_resourcemanagerdialog",
@@ -25325,7 +26353,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L139",
+      "source_location": "L146",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_resources_resourcemanagerdialog_resourcemanagerdialog",
@@ -25337,7 +26365,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L54",
+      "source_location": "L55",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_resources_resourcemanagerdialog_resourcemanagerdialog",
@@ -25349,7 +26377,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/components/resources/ResourceManagerDialog.tsx",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_resources_resourcemanagerdialog_resourcemanagerdialog",
@@ -36936,6 +37964,710 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/acceptance-criteria.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_acceptance_criteria",
+      "target": "docs_acceptance_criteria_acceptance_criteria_evidence",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/acceptance-criteria.md",
+      "source_location": "L54",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_acceptance_criteria",
+      "target": "docs_browser_support",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/acceptance-criteria.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_acceptance_criteria",
+      "target": "docs_release_checklist",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/acceptance-criteria.md",
+      "source_location": "L52",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_acceptance_criteria_acceptance_criteria_evidence",
+      "target": "docs_acceptance_criteria_summary_of_manual_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/architecture.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_architecture",
+      "target": "docs_architecture_architecture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/architecture.md",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_architecture",
+      "target": "docs_protocols",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/architecture.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_architecture",
+      "target": "docs_storage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L32",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_release_checklist",
+      "target": "docs_architecture",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/architecture.md",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_architecture_architecture",
+      "target": "docs_architecture_build_and_preview_data_flow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/architecture.md",
+      "source_location": "L30",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_architecture_architecture",
+      "target": "docs_architecture_bundle_composition",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/architecture.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_architecture_architecture",
+      "target": "docs_architecture_module_map",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/architecture.md",
+      "source_location": "L60",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_architecture_architecture",
+      "target": "docs_architecture_routing_and_hosting",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/architecture.md",
+      "source_location": "L50",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_architecture_bundle_composition",
+      "target": "docs_architecture_why_the_typescript_worker_is_fetched_for_javascript_projects_too",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/architecture.md",
+      "source_location": "L56",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_architecture_bundle_composition",
+      "target": "docs_architecture_why_there_is_no_manualchunks_vendor_split",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_browser_support",
+      "target": "docs_browser_support_browser_support",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L47",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_browser_support",
+      "target": "docs_release_checklist",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L24",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_browser_support",
+      "target": "docs_storage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/security.md",
+      "source_location": "L90",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_security",
+      "target": "docs_browser_support",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L28",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_browser_support_browser_support",
+      "target": "docs_browser_support_cross_browser_test_strategy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L45",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_browser_support_browser_support",
+      "target": "docs_browser_support_manual_verification",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_browser_support_browser_support",
+      "target": "docs_browser_support_required_capabilities",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_browser_support_browser_support",
+      "target": "docs_browser_support_supported_matrix",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L34",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_browser_support_cross_browser_test_strategy",
+      "target": "docs_browser_support_documented_unavoidable_differences",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/browser-support.md",
+      "source_location": "L41",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_browser_support_cross_browser_test_strategy",
+      "target": "docs_browser_support_local_webkit_limitation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/export.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_export",
+      "target": "docs_export_export_and_import",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/export.md",
+      "source_location": "L72",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_export",
+      "target": "docs_security",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/export.md",
+      "source_location": "L38",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_export_export_and_import",
+      "target": "docs_export_copy_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/export.md",
+      "source_location": "L32",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_export_export_and_import",
+      "target": "docs_export_download_html",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/export.md",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_export_export_and_import",
+      "target": "docs_export_download_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/export.md",
+      "source_location": "L44",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_export_export_and_import",
+      "target": "docs_export_download_zip",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/export.md",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_export_export_and_import",
+      "target": "docs_export_import",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/protocols.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_protocols",
+      "target": "docs_protocols_message_protocols",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/protocols.md",
+      "source_location": "L24",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_protocols",
+      "target": "docs_security",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/protocols.md",
+      "source_location": "L40",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_protocols_message_protocols",
+      "target": "docs_protocols_main_thread_scss_worker_src_preview_scssworkerprotocol_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/protocols.md",
+      "source_location": "L49",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_protocols_message_protocols",
+      "target": "docs_protocols_main_thread_typescript_worker_src_preview_tsworkerprotocol_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/protocols.md",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_protocols_message_protocols",
+      "target": "docs_protocols_preview_parent_src_preview_previewmessage_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/protocols.md",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_protocols_preview_parent_src_preview_previewmessage_ts",
+      "target": "docs_protocols_serializedvalue",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_release_checklist",
+      "target": "docs_release_checklist_release_checklist",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_release_checklist_release_checklist",
+      "target": "docs_release_checklist_1_automated_gate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_release_checklist_release_checklist",
+      "target": "docs_release_checklist_2_cross_browser_journey",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L30",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_release_checklist_release_checklist",
+      "target": "docs_release_checklist_3_bundle_review",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L34",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_release_checklist_release_checklist",
+      "target": "docs_release_checklist_4_repository_hygiene",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L41",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_release_checklist_release_checklist",
+      "target": "docs_release_checklist_5_documentation",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L47",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_release_checklist_release_checklist",
+      "target": "docs_release_checklist_6_deploy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/release-checklist.md",
+      "source_location": "L53",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_release_checklist_release_checklist",
+      "target": "docs_release_checklist_manual_verification",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/security.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_security",
+      "target": "docs_security_security_model",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/security.md",
+      "source_location": "L41",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_security_security_model",
+      "target": "docs_security_document_assembly",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/security.md",
+      "source_location": "L50",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_security_security_model",
+      "target": "docs_security_external_resources",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/security.md",
+      "source_location": "L74",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_security_security_model",
+      "target": "docs_security_imported_data",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/security.md",
+      "source_location": "L87",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_security_security_model",
+      "target": "docs_security_known_limitations",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/security.md",
+      "source_location": "L37",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_security_security_model",
+      "target": "docs_security_messages_from_the_preview",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/security.md",
+      "source_location": "L83",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_security_security_model",
+      "target": "docs_security_secrets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/security.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_security_security_model",
+      "target": "docs_security_the_preview_sandbox",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/security.md",
+      "source_location": "L68",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_security_security_model",
+      "target": "docs_security_the_trust_gate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/security.md",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_security_the_preview_sandbox",
+      "target": "docs_security_what_preview_code_can_do",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/security.md",
+      "source_location": "L26",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_security_the_preview_sandbox",
+      "target": "docs_security_what_preview_code_cannot_do",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/security.md",
+      "source_location": "L61",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_security_external_resources",
+      "target": "docs_security_limitations_of_external_resources",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/storage.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_storage",
+      "target": "docs_storage_storage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/storage.md",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_storage_storage",
+      "target": "docs_storage_indexeddb",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/storage.md",
+      "source_location": "L49",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_storage_storage",
+      "target": "docs_storage_localstorage",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/storage.md",
+      "source_location": "L23",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_storage_indexeddb",
+      "target": "docs_storage_reading_recovery_not_trust",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/storage.md",
+      "source_location": "L16",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_storage_indexeddb",
+      "target": "docs_storage_two_independent_version_numbers",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/storage.md",
+      "source_location": "L45",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_storage_indexeddb",
+      "target": "docs_storage_when_indexeddb_is_unavailable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/storage.md",
+      "source_location": "L39",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_storage_indexeddb",
+      "target": "docs_storage_writing",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -38005,5 +39737,5 @@
       "source_file": "CLAUDE.md"
     }
   ],
-  "built_at_commit": "ebff5af4947e7a8c914a91ecf1a865fc2bca158f"
+  "built_at_commit": "c99c99162f49f5185b8a041d8ee9bb0babc2a62a"
 }

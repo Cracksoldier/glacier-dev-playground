@@ -1,71 +1,54 @@
 # Glacier DEV Playground
 
-A browser-based code experimentation environment for HTML, CSS/SCSS, and JavaScript/TypeScript, inspired by the workflow of CodePen. Fully client-side, no backend, no accounts, no telemetry.
+A browser-based code experimentation environment for HTML, CSS/SCSS, and JavaScript/TypeScript, inspired by the workflow of CodePen. Fully client-side: no backend, no accounts, no telemetry.
 
-See [`specification/glacier-dev-playground-specification-v2.md`](./specification/glacier-dev-playground-specification-v2.md) for the full product specification and [`specification/glacier-dev-playground-implementation-milestones.md`](./specification/glacier-dev-playground-implementation-milestones.md) for the implementation plan.
+## Features
 
-## Architecture
-
-- `src/models/` — domain types (`PlaygroundProject` and its schema, versioned from `PROJECT_SCHEMA_VERSION`), project title validation, and pure project template factories. No React or persistence dependencies.
-- `src/store/` — in-memory project store: a plain reducer (`projectReducer.ts`) plus a thin React context/provider (`ProjectStoreContext.tsx`) exposing `useProjectStore()` for reading the active project and dispatching project actions (create, rename, duplicate, delete, switch, reset, source/settings updates).
+- Three source editors (HTML, CSS/SCSS, JavaScript/TypeScript) with a live preview, in a resizable desktop layout that collapses to tabs on narrow screens.
+- SCSS and TypeScript compile in Web Workers, with errors surfaced both in the integrated console and as in-editor diagnostics.
+- Classic and module execution modes, including absolute HTTPS ES-module imports where CORS permits.
+- An integrated console capturing logs, runtime errors, unhandled rejections, and failed resources.
+- External stylesheet/script/font resources with ordering, presets, and a trust gate for imported projects.
+- Multiple local projects, autosaved to IndexedDB, restored on reload.
+- Export as JSON, standalone HTML (download or clipboard), or a ZIP archive; import back from JSON.
 
 ## Requirements
 
 - Node.js (active LTS release)
 - npm
 
-## Setup
+## Quick start
 
 ```bash
 npm ci
-```
-
-## Development
-
-```bash
 npm run dev
 ```
 
-Starts the Vite dev server with hot module replacement.
-
-## Testing
+Playwright's browser binaries must be installed once per machine before running end-to-end tests:
 
 ```bash
-npm run test        # run unit and component tests once (Vitest + React Testing Library)
-npm run test:watch  # run unit and component tests in watch mode
-npm run test:e2e     # run end-to-end tests (Playwright)
+npx playwright install chromium firefox webkit
 ```
 
-Playwright's browser binaries must be installed once per machine:
+## npm scripts
 
-```bash
-npx playwright install chromium
-```
+| Script | What it does |
+| --- | --- |
+| `npm run dev` | Vite dev server with hot module replacement |
+| `npm run build` | Strict type-check (`tsc -b`) and production build into `dist/` |
+| `npm run preview` | Serve the production build locally (not a production host) |
+| `npm run test` | Unit and component tests once (Vitest + React Testing Library) |
+| `npm run test:watch` | The same tests in watch mode |
+| `npm run test:e2e` | End-to-end tests (Playwright) against a production build |
+| `npm run check` | Formatting, import order, and lint rules (Biome) |
+| `npm run check:fix` | Apply Biome's automatic fixes |
+| `npm run verify:base-path` | Build under a repository-style base path and verify asset URLs |
 
-## Static analysis and formatting
+## Deployment
 
-```bash
-npm run check       # check formatting, import order, and lint rules (Biome)
-npm run check:fix   # apply automatic fixes
-```
+Pushes to `main` deploy to GitHub Pages via [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml); the deployment is gated on the full check/test/build/base-path suite and the end-to-end suite. Pull requests run the same validation without deploying, via [`.github/workflows/ci.yml`](./.github/workflows/ci.yml).
 
-## Build
-
-```bash
-npm run build
-```
-
-Type-checks the project and produces a production build in `dist/`.
-
-```bash
-npm run preview
-```
-
-Serves the production build locally for verification. This is not the production hosting server.
-
-### Base path
-
-The production base path can be supplied at build time for repository-style GitHub Pages deployments (e.g. `/glacier-dev-playground/`):
+The base path is supplied at build time, so both repository-style and custom-domain hosting work:
 
 ```bash
 VITE_BASE_PATH=/glacier-dev-playground/ npm run build
@@ -73,15 +56,18 @@ VITE_BASE_PATH=/glacier-dev-playground/ npm run build
 
 When unset, the app builds for root deployment (`/`).
 
-```bash
-npm run verify:base-path
-```
+## Documentation
 
-Builds the app under a repository-style base path into a throwaway directory and verifies that generated asset references use that base path.
+- [Architecture](./docs/architecture.md) — module map, build and preview data flow, bundle composition.
+- [Protocols](./docs/protocols.md) — the worker and preview `postMessage` message contracts.
+- [Storage](./docs/storage.md) — IndexedDB schema, versioning, migrations, and preference keys.
+- [Security](./docs/security.md) — the sandbox model, trust gate, resource rules, and known limitations.
+- [Export and import](./docs/export.md) — what each export format contains and how import validates it.
+- [Browser support](./docs/browser-support.md) — supported matrix, required capabilities, known differences.
+- [Acceptance criteria](./docs/acceptance-criteria.md) — evidence for every release criterion.
+- [Release checklist](./docs/release-checklist.md) — the repeatable pre-release sequence.
 
-## Deployment
-
-Pushes to `main` deploy automatically to GitHub Pages via [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml). Pull requests run validation only, via [`.github/workflows/ci.yml`](./.github/workflows/ci.yml).
+The product specification lives in [`specification/glacier-dev-playground-specification-v2.md`](./specification/glacier-dev-playground-specification-v2.md), and the dependency-ordered build plan in [`specification/glacier-dev-playground-implementation-milestones.md`](./specification/glacier-dev-playground-implementation-milestones.md).
 
 ## License
 

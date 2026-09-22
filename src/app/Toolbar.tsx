@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from "react";
+import { lazy, Suspense, useId, useRef, useState } from "react";
 import GlacierMark from "../components/common/GlacierMark";
 import {
   AutoRunIcon,
@@ -16,17 +16,28 @@ import {
   WarningIcon,
 } from "../components/common/icons";
 import KeyboardHelpDialog from "../components/common/KeyboardHelpDialog";
-import ExportDialog from "../components/import-export/ExportDialog";
-import ImportDialog from "../components/import-export/ImportDialog";
 import NewProjectDialog from "../components/projects/NewProjectDialog";
 import ProjectSwitcherPopover from "../components/projects/ProjectSwitcherPopover";
 import ResetProjectDialog from "../components/projects/ResetProjectDialog";
-import ResourceManagerDialog from "../components/resources/ResourceManagerDialog";
 import type { SaveStatus } from "../models/saveStatus";
 import type { EditorPreferences } from "../preferences/editorPreferences";
 import { useProjectStore } from "../store/ProjectStoreContext";
 import EditorPreferencesPopover from "./EditorPreferencesPopover";
 import styles from "./Toolbar.module.css";
+
+// Code-split: the spec names the import/export dialogs and the resource
+// manager as lazy-load candidates. Only these three are split — the remaining
+// dialogs are small, and deferring them would make `getByRole` assertions
+// immediately after a click resolve a tick too late.
+const ResourceManagerDialog = lazy(
+  () => import("../components/resources/ResourceManagerDialog"),
+);
+const ImportDialog = lazy(
+  () => import("../components/import-export/ImportDialog"),
+);
+const ExportDialog = lazy(
+  () => import("../components/import-export/ExportDialog"),
+);
 
 const SAVE_STATUS_LABEL: Record<SaveStatus, string> = {
   saving: "Saving…",
@@ -206,19 +217,31 @@ function Toolbar({
         projectId={activeProject.id}
         onClose={() => setResetOpen(false)}
       />
-      <ResourceManagerDialog
-        isOpen={isResourcesOpen}
-        onClose={() => setResourcesOpen(false)}
-      />
-      <ImportDialog
-        isOpen={isImportOpen}
-        onClose={() => setImportOpen(false)}
-      />
-      <ExportDialog
-        isOpen={isExportOpen}
-        onClose={() => setExportOpen(false)}
-        project={activeProject}
-      />
+      {/* The three code-split dialogs are mounted only while open. Rendering
+          them unconditionally would resolve their chunks on first paint and
+          undo the split. */}
+      {isResourcesOpen && (
+        <Suspense fallback={null}>
+          <ResourceManagerDialog
+            isOpen
+            onClose={() => setResourcesOpen(false)}
+          />
+        </Suspense>
+      )}
+      {isImportOpen && (
+        <Suspense fallback={null}>
+          <ImportDialog isOpen onClose={() => setImportOpen(false)} />
+        </Suspense>
+      )}
+      {isExportOpen && (
+        <Suspense fallback={null}>
+          <ExportDialog
+            isOpen
+            onClose={() => setExportOpen(false)}
+            project={activeProject}
+          />
+        </Suspense>
+      )}
       <EditorPreferencesPopover
         isOpen={isEditorPreferencesOpen}
         onClose={() => setEditorPreferencesOpen(false)}

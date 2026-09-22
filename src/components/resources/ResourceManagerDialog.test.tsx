@@ -52,6 +52,14 @@ describe("ResourceManagerDialog", () => {
     ).toBeInTheDocument();
   });
 
+  it("warns that external scripts can read everything on the page", () => {
+    renderDialog(true);
+
+    expect(
+      screen.getByText(/External scripts run with full access/),
+    ).toBeInTheDocument();
+  });
+
   it("adds a resource and displays it in the list", async () => {
     const user = userEvent.setup();
     renderDialog(true);
