@@ -570,6 +570,33 @@ describe("PreviewFrame script compilation", () => {
     );
   });
 
+  it("does not run the raw TypeScript source when a TS-mode compile produced no emit", async () => {
+    tsCompileMock.mockResolvedValueOnce({
+      diagnostics: [],
+      emittedJs: null,
+      lineMap: null,
+    });
+    const ref = createRef<PreviewRunHandle>();
+    const project = makeProject({ autoRun: false });
+    render(
+      <PreviewFrame
+        project={{
+          ...project,
+          source: {
+            ...project.source,
+            script: "const a: number = 1;",
+            scriptLanguage: "typescript",
+          },
+        }}
+        ref={ref}
+      />,
+    );
+
+    await runAndFlush(ref);
+
+    expect(buildDocumentMock).not.toHaveBeenCalled();
+  });
+
   it("substitutes the emitted JS and carries the line map for a TS-mode project", async () => {
     const lineMap = [1, 2];
     tsCompileMock.mockResolvedValueOnce({

@@ -42,7 +42,10 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          VITE_BASE_PATH: /${{ github.event.repository.name }}/
+          # Repository-path Pages (owner.github.io/<repo>/) by default. Set the
+          # VITE_BASE_PATH repository variable to "/" for a custom domain or an
+          # owner.github.io repository, which are served from the root.
+          VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || format('/{0}/', github.event.repository.name) }}
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

@@ -21,6 +21,8 @@ export interface ExportDialogProps {
 }
 
 type ActionStatus = "idle" | "busy" | "error";
+
+const UNEXPECTED_EXPORT_ERROR = "Couldn't build the export. Please try again.";
 type ClipboardActionStatus = ActionStatus | "copied";
 
 function describeCompileError(
@@ -76,25 +78,37 @@ function ExportDialog({ isOpen, onClose, project }: ExportDialogProps) {
   async function handleDownloadHtml() {
     setHtmlStatus("busy");
     setHtmlError(null);
-    const result = await compileProjectSourceForExport(project.source);
-    if (result.status !== "ok") {
+    try {
+      const result = await compileProjectSourceForExport(project.source);
+      if (result.status !== "ok") {
+        setHtmlStatus("error");
+        setHtmlError(describeCompileError(result));
+        return;
+      }
+      const html = buildStandaloneHtmlDocument(
+        result.resolvedSource,
+        project.resources,
+      );
+      const blob = new Blob([html], { type: "text/html" });
+      triggerBlobDownload(blob, buildExportFileName(project.title, "html"));
+      setHtmlStatus("idle");
+    } catch {
       setHtmlStatus("error");
-      setHtmlError(describeCompileError(result));
-      return;
+      setHtmlError(UNEXPECTED_EXPORT_ERROR);
     }
-    const html = buildStandaloneHtmlDocument(
-      result.resolvedSource,
-      project.resources,
-    );
-    const blob = new Blob([html], { type: "text/html" });
-    triggerBlobDownload(blob, buildExportFileName(project.title, "html"));
-    setHtmlStatus("idle");
   }
 
   async function handleCopyClipboard() {
     setClipboardStatus("busy");
     setClipboardError(null);
-    const result = await compileProjectSourceForExport(project.source);
+    let result: CompileForExportResult;
+    try {
+      result = await compileProjectSourceForExport(project.source);
+    } catch {
+      setClipboardStatus("error");
+      setClipboardError(UNEXPECTED_EXPORT_ERROR);
+      return;
+    }
     if (result.status !== "ok") {
       setClipboardStatus("error");
       setClipboardError(describeCompileError(result));
@@ -123,7 +137,14 @@ function ExportDialog({ isOpen, onClose, project }: ExportDialogProps) {
   async function handleDownloadZip() {
     setZipStatus("busy");
     setZipError(null);
-    const status = await downloadProjectZip(project);
+    let status: Awaited<ReturnType<typeof downloadProjectZip>>;
+    try {
+      status = await downloadProjectZip(project);
+    } catch {
+      setZipStatus("error");
+      setZipError(UNEXPECTED_EXPORT_ERROR);
+      return;
+    }
     if (status !== "ok") {
       setZipStatus("error");
       setZipError(

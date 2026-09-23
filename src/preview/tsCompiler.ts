@@ -199,5 +199,24 @@ export function compileScript(
       ? decodeOutputLineToSourceLine(emittedMap)
       : null;
 
-  return { diagnostics: allDiagnostics, emittedJs: getEmittedJs(), lineMap };
+  const emittedJs = getEmittedJs();
+  if (emittedJs === null && options.scriptLanguage === "typescript") {
+    // TypeScript's emit is what executes, so an emit that silently produced
+    // nothing must block like an error — never fall back to running the raw
+    // TypeScript source. (JS mode executes the authored source and only uses
+    // the compile for diagnostics, so a missing emit doesn't matter there.)
+    return {
+      diagnostics: [
+        ...allDiagnostics,
+        {
+          message: "The TypeScript compiler produced no JavaScript output.",
+          category: "error",
+        },
+      ],
+      emittedJs: null,
+      lineMap: null,
+    };
+  }
+
+  return { diagnostics: allDiagnostics, emittedJs, lineMap };
 }

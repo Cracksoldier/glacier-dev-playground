@@ -10,5 +10,7 @@ export const DEFAULT_PROJECT_TITLE = "Untitled Project";
 export function normalizeProjectTitle(rawTitle: string): string {
   const collapsed = rawTitle.trim().replace(/\s+/g, " ");
   const normalized = collapsed.length === 0 ? DEFAULT_PROJECT_TITLE : collapsed;
-  return normalized.slice(0, PROJECT_TITLE_MAX_LENGTH);
+  // Trimmed again after truncating: a cut landing just after a space would
+  // otherwise leave a trailing one.
+  return normalized.slice(0, PROJECT_TITLE_MAX_LENGTH).trimEnd();
 }

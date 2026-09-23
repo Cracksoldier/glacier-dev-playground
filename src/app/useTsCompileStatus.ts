@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import type { TsDiagnostic } from "../preview/tsWorkerProtocol";
 
 export interface UseTsCompileStatusResult {
@@ -18,10 +18,13 @@ export interface UseTsCompileStatusResult {
  */
 export function useTsCompileStatus(resetKey: string): UseTsCompileStatusResult {
   const [diagnostics, setDiagnostics] = useState<TsDiagnostic[]>([]);
-  const previousResetKeyRef = useRef(resetKey);
+  // Previous key kept in state, not a ref: React's "adjust state when a prop
+  // changes" pattern. A ref mutated during render would stay updated even if
+  // that render were discarded, and the retry would then skip the reset.
+  const [previousResetKey, setPreviousResetKey] = useState(resetKey);
 
-  if (previousResetKeyRef.current !== resetKey) {
-    previousResetKeyRef.current = resetKey;
+  if (previousResetKey !== resetKey) {
+    setPreviousResetKey(resetKey);
     setDiagnostics([]);
   }
 

@@ -30,6 +30,14 @@ describe("normalizeProjectTitle", () => {
     expect(normalized).toHaveLength(PROJECT_TITLE_MAX_LENGTH);
   });
 
+  it("does not leave a trailing space when truncation lands after a space", () => {
+    const title = `${"x".repeat(PROJECT_TITLE_MAX_LENGTH - 1)} tail`;
+
+    const normalized = normalizeProjectTitle(title);
+
+    expect(normalized).toBe("x".repeat(PROJECT_TITLE_MAX_LENGTH - 1));
+  });
+
   it("never throws", () => {
     expect(() => normalizeProjectTitle("")).not.toThrow();
   });

@@ -1,5 +1,13 @@
 import { expect, test } from "@playwright/test";
 
+/** Milliseconds of the leading `<number>(s|ms)` in a CSS transition value. */
+function durationMs(value: string): number {
+  const match = /^(\d*\.?\d+)(ms|s)\b/.exec(value);
+  if (!match) throw new Error(`Unparseable transition value: "${value}"`);
+  const amount = Number(match[1]);
+  return match[2] === "s" ? amount * 1000 : amount;
+}
+
 test("loads the Glacier application shell", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("banner")).toBeVisible();
@@ -126,6 +134,9 @@ test("uses non-zero transition durations without prefers-reduced-motion", async 
     };
   });
 
-  expect(transitionTokens.fast).not.toBe("0ms");
-  expect(transitionTokens.base).not.toBe("0ms");
+  // Parsed rather than compared as strings: the build minifies "120ms" to
+  // ".12s", and the reduced-motion value serializes as "0s", not "0ms" — a
+  // string inequality check against "0ms" would let leaked zero durations pass.
+  expect(durationMs(transitionTokens.fast)).toBeGreaterThan(0);
+  expect(durationMs(transitionTokens.base)).toBeGreaterThan(0);
 });

@@ -75,9 +75,14 @@ describe("Toolbar", () => {
     const user = userEvent.setup();
     renderToolbar();
 
-    await user.click(screen.getByRole("button", { name: "Switch project" }));
+    const trigger = screen.getByRole("button", { name: "Switch project" });
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await user.click(trigger);
 
-    expect(screen.getByRole("menu")).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Projects" })).toBeInTheDocument();
+    // Disclosure pattern: no aria-haspopup, since the popover is not a menu.
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(trigger).not.toHaveAttribute("aria-haspopup");
   });
 
   it("opens the new project dialog from the toolbar button", async () => {

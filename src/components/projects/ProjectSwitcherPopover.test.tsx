@@ -52,7 +52,9 @@ describe("ProjectSwitcherPopover", () => {
   it("renders nothing when closed", () => {
     renderPopover(false);
 
-    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("group", { name: "Projects" }),
+    ).not.toBeInTheDocument();
   });
 
   it("lists the active project marked as current", () => {

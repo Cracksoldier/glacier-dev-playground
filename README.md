@@ -56,6 +56,8 @@ VITE_BASE_PATH=/glacier-dev-playground/ npm run build
 
 When unset, the app builds for root deployment (`/`).
 
+The deploy workflow builds for `/<repository-name>/` by default. For a custom domain or an `<owner>.github.io` repository, which are served from the root, set a repository variable `VITE_BASE_PATH` to `/` (Settings → Secrets and variables → Actions → Variables).
+
 ## Documentation
 
 - [Architecture](./docs/architecture.md) — module map, build and preview data flow, bundle composition.

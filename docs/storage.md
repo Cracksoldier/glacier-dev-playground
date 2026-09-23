@@ -1,6 +1,6 @@
 # Storage
 
-All user data stays on the device. Projects live in IndexedDB; UI preferences live in `localStorage`. Nothing is uploaded anywhere.
+The app keeps everything it manages on the device and never uploads it: projects live in IndexedDB, UI preferences in `localStorage`. This is about the app's own data handling — code running in the preview, and external resources you add, can still make their own network requests (see [security.md](./security.md)).
 
 ## IndexedDB
 

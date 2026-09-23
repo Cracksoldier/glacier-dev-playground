@@ -16,10 +16,19 @@ export interface PreviewResourceLoaderOptions {
   scriptBlockStartLine: number;
 }
 
+/**
+ * `JSON.stringify` for a value embedded in an inline `<script>`: `<` becomes
+ * `\u003c` — the same string at runtime, but a user-supplied value such as a
+ * URL containing `</script>` can no longer end the script element early.
+ */
+function scriptSafeJson(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
+}
+
 function descriptorLiteral(resource: LoaderResourceDescriptor): string {
-  return `{ url: ${JSON.stringify(resource.url)}, integrity: ${JSON.stringify(
+  return `{ url: ${scriptSafeJson(resource.url)}, integrity: ${scriptSafeJson(
     resource.integrity ?? null,
-  )}, crossOrigin: ${JSON.stringify(resource.crossOrigin ?? null)} }`;
+  )}, crossOrigin: ${scriptSafeJson(resource.crossOrigin ?? null)} }`;
 }
 
 function resourceArrayLiteral(resources: LoaderResourceDescriptor[]): string {

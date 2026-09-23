@@ -90,6 +90,21 @@ describe("buildPreviewResourceLoaderScript", () => {
     expect(harness.messagesOfType("resource-error")).toHaveLength(0);
   });
 
+  it("keeps a resource URL containing </script> from closing the script element, while loading the same URL", () => {
+    const url = "https://example.com/a.js?</script><script>alert(1)</script>";
+    const options: PreviewResourceLoaderOptions = {
+      scriptResources: [{ url, integrity: "sha384-</script>" }],
+      moduleResources: [],
+      executionMode: "classic",
+      scriptBlockStartLine: 1,
+    };
+
+    expect(buildPreviewResourceLoaderScript(options)).not.toContain("</");
+
+    const harness = runLoader(options);
+    expect(harness.createdElements[0].src).toBe(url);
+  });
+
   it("loads classic script resources sequentially in order", () => {
     const harness = runLoader({
       scriptResources: [

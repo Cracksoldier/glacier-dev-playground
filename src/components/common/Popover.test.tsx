@@ -22,8 +22,7 @@ function Harness({
         isOpen={isOpen}
         onClose={onClose}
         anchorRef={anchorRef as RefObject<HTMLElement | null>}
-        role="menu"
-        aria-label="Test menu"
+        aria-label="Test popover"
       >
         <button type="button">First</button>
         <button type="button">Inside popover</button>
@@ -36,13 +35,13 @@ describe("Popover", () => {
   it("renders nothing when closed", () => {
     render(<Harness isOpen={false} onClose={vi.fn()} />);
 
-    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(screen.queryByRole("group")).not.toBeInTheDocument();
   });
 
   it("renders content when open", () => {
     render(<Harness isOpen={true} onClose={vi.fn()} />);
 
-    expect(screen.getByRole("menu")).toBeInTheDocument();
+    expect(screen.getByRole("group")).toBeInTheDocument();
     expect(screen.getByText("Inside popover")).toBeInTheDocument();
   });
 
@@ -109,10 +108,11 @@ describe("Popover", () => {
     expect(last).toHaveFocus();
   });
 
-  it("applies the caller-supplied role and aria-label", () => {
+  it("renders a group labelled by the caller-supplied aria-label", () => {
     render(<Harness isOpen={true} onClose={vi.fn()} />);
 
-    const menu = screen.getByRole("menu", { name: "Test menu" });
-    expect(menu).toBeInTheDocument();
+    expect(
+      screen.getByRole("group", { name: "Test popover" }),
+    ).toBeInTheDocument();
   });
 });

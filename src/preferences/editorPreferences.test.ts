@@ -53,4 +53,18 @@ describe("editorPreferences", () => {
 
     expect(loadEditorPreferences()).toEqual(DEFAULT_EDITOR_PREFERENCES);
   });
+
+  it.each([
+    ["a font size below the supported range", { fontSize: 2, tabWidth: 2 }],
+    ["a font size above the supported range", { fontSize: 400, tabWidth: 2 }],
+    ["a fractional font size", { fontSize: 13.5, tabWidth: 2 }],
+    ["an unsupported tab width", { fontSize: 14, tabWidth: 3 }],
+  ])("falls back to defaults for %s", (_label, values) => {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...values, wordWrap: false, lineNumbers: true }),
+    );
+
+    expect(loadEditorPreferences()).toEqual(DEFAULT_EDITOR_PREFERENCES);
+  });
 });

@@ -1,11 +1,12 @@
 import { type RefObject, useId } from "react";
 import Popover from "../components/common/Popover";
-import type { EditorPreferences } from "../preferences/editorPreferences";
+import {
+  EDITOR_TAB_WIDTH_OPTIONS,
+  type EditorPreferences,
+  MAX_EDITOR_FONT_SIZE,
+  MIN_EDITOR_FONT_SIZE,
+} from "../preferences/editorPreferences";
 import styles from "./EditorPreferencesPopover.module.css";
-
-const TAB_WIDTH_OPTIONS = [2, 4];
-const MIN_FONT_SIZE = 10;
-const MAX_FONT_SIZE = 24;
 
 export interface EditorPreferencesPopoverProps {
   isOpen: boolean;
@@ -26,8 +27,8 @@ function EditorPreferencesPopover({
 
   function stepFontSize(delta: number) {
     const next = Math.min(
-      MAX_FONT_SIZE,
-      Math.max(MIN_FONT_SIZE, preferences.fontSize + delta),
+      MAX_EDITOR_FONT_SIZE,
+      Math.max(MIN_EDITOR_FONT_SIZE, preferences.fontSize + delta),
     );
     onUpdatePreferences({ fontSize: next });
   }
@@ -37,7 +38,6 @@ function EditorPreferencesPopover({
       isOpen={isOpen}
       onClose={onClose}
       anchorRef={anchorRef}
-      role="group"
       aria-label="Editor preferences"
       className={styles.popover}
     >
@@ -48,7 +48,7 @@ function EditorPreferencesPopover({
             type="button"
             className={styles.stepperButton}
             aria-label="Decrease font size"
-            disabled={preferences.fontSize <= MIN_FONT_SIZE}
+            disabled={preferences.fontSize <= MIN_EDITOR_FONT_SIZE}
             onClick={() => stepFontSize(-1)}
           >
             −
@@ -58,7 +58,7 @@ function EditorPreferencesPopover({
             type="button"
             className={styles.stepperButton}
             aria-label="Increase font size"
-            disabled={preferences.fontSize >= MAX_FONT_SIZE}
+            disabled={preferences.fontSize >= MAX_EDITOR_FONT_SIZE}
             onClick={() => stepFontSize(1)}
           >
             +
@@ -77,7 +77,7 @@ function EditorPreferencesPopover({
             onUpdatePreferences({ tabWidth: Number(event.target.value) })
           }
         >
-          {TAB_WIDTH_OPTIONS.map((width) => (
+          {EDITOR_TAB_WIDTH_OPTIONS.map((width) => (
             <option key={width} value={width}>
               {width}
             </option>

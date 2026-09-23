@@ -83,6 +83,15 @@ function ImportDialog({ isOpen, onClose }: ImportDialogProps) {
     event.target.value = "";
     if (!file) return;
 
+    // Checked on the file's byte size before reading, so an oversized file
+    // is never loaded into memory just to be rejected.
+    if (file.size > IMPORT_MAX_SIZE_BYTES) {
+      setText("");
+      setDraft(null);
+      setError(describeError({ status: "too-large" }));
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => {
       const content = typeof reader.result === "string" ? reader.result : "";

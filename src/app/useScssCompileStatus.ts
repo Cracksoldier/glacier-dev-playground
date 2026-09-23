@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import type { ScssCompileError } from "../preview/scssWorkerProtocol";
 
 export interface UseScssCompileStatusResult {
@@ -32,10 +32,11 @@ export function useScssCompileStatus(
   resetKey: string,
 ): UseScssCompileStatusResult {
   const [state, setState] = useState<ScssCompileStatusState>(INITIAL_STATE);
-  const previousResetKeyRef = useRef(resetKey);
+  // See `useTsCompileStatus.ts` for why the previous key lives in state.
+  const [previousResetKey, setPreviousResetKey] = useState(resetKey);
 
-  if (previousResetKeyRef.current !== resetKey) {
-    previousResetKeyRef.current = resetKey;
+  if (previousResetKey !== resetKey) {
+    setPreviousResetKey(resetKey);
     setState(INITIAL_STATE);
   }
 

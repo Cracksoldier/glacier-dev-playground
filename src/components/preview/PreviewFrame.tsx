@@ -298,7 +298,16 @@ function PreviewFrame({
 
       // JS-mode keeps the authored source as the executed payload — the
       // worker's JS emit is diagnostic-only, never trusted as the executed
-      // code (see `tsCompiler.ts`).
+      // code (see `tsCompiler.ts`). TS-mode must run the emit: without one
+      // (the compiler reports that as an error, so this is defensive), the
+      // build ends rather than executing raw TypeScript as JavaScript.
+      if (
+        source.scriptLanguage === "typescript" &&
+        scriptResult.emittedJs === null
+      ) {
+        endBuildWithoutReplacing(executionId);
+        return;
+      }
       const resolvedScript =
         source.scriptLanguage === "typescript" &&
         scriptResult.emittedJs !== null

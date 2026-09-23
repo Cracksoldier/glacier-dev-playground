@@ -33,7 +33,7 @@ Measured from `npm run build` at the M12 release gate:
 
 | Chunk | Size | Gzip | Fetched |
 | --- | --- | --- | --- |
-| `index-*.js` | 854.78 kB | 281.63 kB | First paint. CodeMirror (six language/feature packages), React DOM, and the entire shell. |
+| `index-*.js` | 884.76 kB | 294.35 kB | First paint. CodeMirror (seven language/feature packages, including `@codemirror/lang-sass` for SCSS highlighting), React DOM, and the entire shell. |
 | `index-*.css` | 30.45 kB | 4.92 kB | First paint. |
 | Latin-subset fonts (`*.woff2` / `*.woff`) | ~10–28 kB each | — | First paint, per weight actually used. |
 | `tsCompiler.worker-*.js` | 6,291.08 kB | — | First build of any project, off the main thread. Bundles the TypeScript compiler and its lib sources. |

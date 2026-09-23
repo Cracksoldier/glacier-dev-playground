@@ -56,6 +56,15 @@ describe("detectUnsupportedBrowser", () => {
     ]);
   });
 
+  it("explains that randomUUID needs a secure context when served over plain HTTP", () => {
+    vi.stubGlobal("crypto", {});
+    vi.stubGlobal("isSecureContext", false);
+
+    expect(detectUnsupportedBrowser()).toEqual([
+      expect.stringContaining("only available over HTTPS or on localhost"),
+    ]);
+  });
+
   it("reports every missing API at once", () => {
     vi.stubGlobal("Worker", undefined);
     vi.stubGlobal("crypto", {});

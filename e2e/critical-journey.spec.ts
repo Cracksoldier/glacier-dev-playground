@@ -60,9 +60,13 @@ test("the critical journey works end to end", async ({ page }) => {
     page.getByLabel("Console").getByText('"journey ok"'),
   ).toBeVisible();
 
-  // IndexedDB persistence. Asserted behaviorally rather than via the "Saved"
-  // status text, because WebKit's first IndexedDB open after a navigation is
-  // slow enough to make the transient status a race.
+  // IndexedDB persistence. "Saved" is only shown once the latest edit has
+  // actually been written (a pending save reads "Saving…"), so waiting for
+  // it before reloading can't race the autosave. The generous timeout covers
+  // WebKit's slow first IndexedDB open after a navigation.
+  await expect(page.getByRole("status")).toHaveText(/^Saved$/, {
+    timeout: 15_000,
+  });
   await page.reload();
   await expect(
     page.getByRole("textbox", { name: "HTML source" }),
