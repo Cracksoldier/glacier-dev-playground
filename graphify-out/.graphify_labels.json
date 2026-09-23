@@ -81,5 +81,12 @@
   "79": "WorkerStub",
   "80": "WorkerStub",
   "81": "critical-journey.spec.ts",
-  "82": "GlacierMark.tsx"
+  "82": "GlacierMark.tsx",
+  "83": "PlaygroundProject",
+  "84": "ExportDialog.test.tsx",
+  "85": "useEditorFocusShortcuts.ts",
+  "86": "scssCompiler.ts",
+  "87": "ResourcePresetsSection.tsx",
+  "88": "FakeMediaQueryList",
+  "89": "useSaveShortcut"
 }

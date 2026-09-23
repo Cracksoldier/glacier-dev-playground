@@ -226,11 +226,15 @@ describe("project/delete", () => {
 });
 
 describe("project/switch", () => {
-  it("changes the active project without bumping revision", () => {
+  it("changes the active project and bumps revision so the switch gets persisted", () => {
     let state = initialState();
     state = projectReducer(state, {
       type: "project/create",
       payload: { templateId: "empty" },
+    });
+    state = projectReducer(state, {
+      type: "project/markSaved",
+      payload: { revision: state.revision },
     });
     const revisionBeforeSwitch = state.revision;
     const targetId = state.projects[0].id;
@@ -241,7 +245,19 @@ describe("project/switch", () => {
     });
 
     expect(next.activeProjectId).toBe(targetId);
-    expect(next.revision).toBe(revisionBeforeSwitch);
+    expect(next.revision).toBe(revisionBeforeSwitch + 1);
+    expect(isProjectStoreDirty(next)).toBe(true);
+  });
+
+  it("is a no-op when switching to the already-active project", () => {
+    const state = initialState();
+
+    const next = projectReducer(state, {
+      type: "project/switch",
+      payload: { projectId: state.activeProjectId },
+    });
+
+    expect(next).toBe(state);
   });
 
   it("is a no-op for an unknown project id", () => {
@@ -539,6 +555,44 @@ describe("project/import", () => {
     });
 
     expect(next).toBe(state);
+  });
+});
+
+describe("project/loadPersisted", () => {
+  it("replaces a clean in-memory state like project/hydrate", () => {
+    const state = initialState();
+    const persisted = [
+      PROJECT_TEMPLATES.empty.create(),
+      PROJECT_TEMPLATES["js-interaction"].create(),
+    ];
+
+    const next = projectReducer(state, {
+      type: "project/loadPersisted",
+      payload: { projects: persisted, activeProjectId: persisted[1].id },
+    });
+
+    expect(next.projects).toEqual(persisted);
+    expect(next.activeProjectId).toBe(persisted[1].id);
+    expect(isProjectStoreDirty(next)).toBe(false);
+  });
+
+  it("merges persisted projects ahead of unsaved in-memory edits and stays dirty", () => {
+    let state = initialState();
+    state = projectReducer(state, {
+      type: "project/rename",
+      payload: { projectId: state.projects[0].id, title: "Edited early" },
+    });
+    const [edited] = state.projects;
+    const persisted = [PROJECT_TEMPLATES.empty.create()];
+
+    const next = projectReducer(state, {
+      type: "project/loadPersisted",
+      payload: { projects: persisted, activeProjectId: persisted[0].id },
+    });
+
+    expect(next.projects).toEqual([persisted[0], edited]);
+    expect(next.activeProjectId).toBe(edited.id);
+    expect(isProjectStoreDirty(next)).toBe(true);
   });
 });
 

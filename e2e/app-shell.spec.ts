@@ -47,6 +47,33 @@ test("resizes panels by dragging a separator", async ({ page }) => {
   expect(afterBox?.width).not.toBeCloseTo(beforeBox.width, 0);
 });
 
+test("stops shrinking a panel at its 10% minimum size", async ({ page }) => {
+  await page.goto("/");
+  const firstSeparator = page.getByRole("separator").first();
+  const panels = page.locator("[data-panel]");
+
+  const handleBox = await firstSeparator.boundingBox();
+  if (!handleBox) {
+    throw new Error("Expected the separator to have a bounding box");
+  }
+
+  await page.mouse.move(
+    handleBox.x + handleBox.width / 2,
+    handleBox.y + handleBox.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(0, handleBox.y + handleBox.height / 2, { steps: 20 });
+  await page.mouse.up();
+
+  const widths = await panels.evaluateAll((elements) =>
+    elements.map((element) => element.getBoundingClientRect().width),
+  );
+  const total = widths.reduce((sum, width) => sum + width, 0);
+  // Allow a small tolerance for separator width and sub-pixel rounding.
+  expect(widths[0] / total).toBeGreaterThan(0.09);
+  await expect(firstSeparator).toHaveAttribute("aria-valuenow", /^10(\.0+)?$/);
+});
+
 test("resizes panels with the keyboard", async ({ page }) => {
   await page.goto("/");
   const firstSeparator = page.getByRole("separator").first();

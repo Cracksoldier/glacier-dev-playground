@@ -143,7 +143,7 @@ describe("useProjectHydration", () => {
     });
   });
 
-  it("surfaces a notice without hydrating when the data is from a newer app version", async () => {
+  it("blocks saving without hydrating or overwriting when the data is from a newer app version", async () => {
     const repository = createFakeRepository();
     const { result } = useHarness(repository);
 
@@ -160,13 +160,34 @@ describe("useProjectHydration", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.hydration.status).toBe("ready");
+      expect(result.current.hydration.status).toBe("blocked");
     });
     expect(result.current.state.projects).toEqual(initialProjects);
+    expect(repository.savedSnapshots).toHaveLength(0);
     expect(result.current.hydration.notice).toEqual({
       recoveredCount: 0,
       rejectedNewerAppVersion: true,
     });
+  });
+
+  it("blocks saving without overwriting when every persisted record was unreadable", async () => {
+    const repository = createFakeRepository();
+    const { result } = useHarness(repository);
+
+    await act(async () => {
+      repository.resolveLoad({
+        snapshot: null,
+        recoveredCount: 2,
+        rejectedNewerAppVersion: false,
+      });
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    await waitFor(() => {
+      expect(result.current.hydration.status).toBe("blocked");
+    });
+    expect(repository.savedSnapshots).toHaveLength(0);
   });
 
   it("sets status to unavailable and does not dispatch when load fails", async () => {
@@ -188,7 +209,7 @@ describe("useProjectHydration", () => {
     expect(result.current.hydration.notice).toBeNull();
   });
 
-  it("skips hydration if the in-memory state already diverged before load resolved", async () => {
+  it("merges persisted projects with edits made before the load resolved", async () => {
     const repository = createFakeRepository();
     const { result } = useHarness(repository);
 
@@ -202,8 +223,8 @@ describe("useProjectHydration", () => {
       });
     });
 
-    const editedProjects = result.current.state.projects;
-    const persistedProject = makeProject("Should Not Overwrite");
+    const [editedProject] = result.current.state.projects;
+    const persistedProject = makeProject("Persisted Project");
 
     await act(async () => {
       repository.resolveLoad({
@@ -221,7 +242,14 @@ describe("useProjectHydration", () => {
     await waitFor(() => {
       expect(result.current.hydration.status).toBe("ready");
     });
-    expect(result.current.state.projects).toEqual(editedProjects);
+    expect(result.current.state.projects).toEqual([
+      persistedProject,
+      editedProject,
+    ]);
+    expect(result.current.state.activeProjectId).toBe(editedProject?.id);
+    expect(result.current.state.revision).not.toBe(
+      result.current.state.lastPersistedRevision,
+    );
   });
 
   it("resetLocalData wipes persisted data and resets to a fresh starter project", async () => {
@@ -242,12 +270,15 @@ describe("useProjectHydration", () => {
       expect(result.current.hydration.notice).not.toBeNull();
     });
 
+    expect(result.current.hydration.status).toBe("blocked");
+
     await act(async () => {
       await result.current.hydration.resetLocalData();
     });
 
     expect(result.current.state.projects).toHaveLength(1);
     expect(result.current.hydration.notice).toBeNull();
+    expect(result.current.hydration.status).toBe("ready");
   });
 
   it("dismissNotice clears the notice without touching state", async () => {

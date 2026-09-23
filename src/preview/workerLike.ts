@@ -7,5 +7,7 @@
 export interface WorkerLike {
   postMessage(data: unknown): void;
   set onmessage(handler: ((event: MessageEvent) => void) | null);
+  /** Fires when the worker script fails to load or throws an uncaught error. */
+  set onerror(handler: ((event: ErrorEvent) => void) | null);
   terminate(): void;
 }

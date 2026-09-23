@@ -98,6 +98,42 @@ describe("createIndexedDbProjectRepository", () => {
     expect(result.snapshot?.projects[0].id).toBe(validProject.id);
   });
 
+  it("keeps an unreadable record on disk across later saves until resetAllData()", async () => {
+    const databaseName = uniqueDatabaseName();
+    const repository = createIndexedDbProjectRepository({ databaseName });
+    const keptProject = makeProject("Kept");
+    const deletedProject = makeProject("Deleted");
+    await repository.saveSnapshot({
+      projects: [keptProject, deletedProject],
+      activeProjectId: keptProject.id,
+    });
+
+    const seedDb = await openDatabase(databaseName);
+    await seedDb.put(PROJECTS_STORE, {
+      // biome-ignore lint/suspicious/noExplicitAny: intentionally malformed test fixture
+      ...({ id: "corrupt-1", schemaVersion: 1, title: 42 } as any),
+    });
+    seedDb.close();
+
+    await repository.load();
+    await repository.saveSnapshot({
+      projects: [keptProject],
+      activeProjectId: keptProject.id,
+    });
+
+    const db = await openDatabase(databaseName);
+    const keysAfterSave = await db.getAllKeys(PROJECTS_STORE);
+    db.close();
+    expect([...keysAfterSave].sort()).toEqual(
+      ["corrupt-1", keptProject.id].sort(),
+    );
+
+    await repository.resetAllData();
+    const resetDb = await openDatabase(databaseName);
+    expect(await resetDb.getAllKeys(PROJECTS_STORE)).toEqual([]);
+    resetDb.close();
+  });
+
   it("falls back to the first project when the persisted active id is missing", async () => {
     const databaseName = uniqueDatabaseName();
     const repository = createIndexedDbProjectRepository({ databaseName });

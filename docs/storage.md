@@ -30,17 +30,19 @@ Recovery returns one of three outcomes:
 - `unsupported-future-version` — the record claims a schema version newer than this build understands.
 - `invalid` — the shape failed validation.
 
-Records that are not `ok` are skipped rather than discarded from disk, and counted in `LoadResult.recoveredCount`. A non-zero count surfaces as a persistence notice in the shell, which offers an explicit, confirmed "Reset local data" action. Data is never wiped automatically.
+Records that are not `ok` are skipped rather than discarded from disk, and counted in `LoadResult.recoveredCount`. The repository remembers their keys, and later saves leave them in place. A non-zero count surfaces as a persistence notice in the shell, which offers an explicit, confirmed "Reset local data" action. Data is never wiped automatically.
 
 `load()` also checks `meta.appSchemaVersion` before reading any project: if the persisted value is newer than this build's `PROJECT_SCHEMA_VERSION`, it returns `rejectedNewerAppVersion` and loads nothing, rather than partially interpreting data from a future version.
 
-If no valid project survives, the store hydrates with a fresh starter project instead of an empty workspace.
+If nothing has ever been persisted, the store starts with a fresh starter project and saves it. If data exists but none of it can be loaded — it was written by a newer app version, or every record is unreadable — the workspace still opens with a starter project, but saving is **blocked**: the toolbar shows "Storage unavailable", and a notice that can't be dismissed explains that changes won't be saved until the user resets local data. This keeps the unloadable data intact instead of overwriting it.
+
+If the user edits the starter project before the load finishes, the loaded projects are merged in ahead of the edited one rather than either side being dropped.
 
 ### Writing
 
-Autosave debounces writes by 800 ms after the last change. `Ctrl/Cmd + S` flushes the debounce immediately. `saveSnapshot` clears the `projects` store and rewrites every project plus both meta keys in a single transaction, so a partially-written snapshot is not observable.
+Autosave debounces writes by 800 ms after the last change. `Ctrl/Cmd + S` flushes the debounce immediately. `saveSnapshot` deletes stored projects that are missing from the snapshot (except unreadable records, see above), then rewrites every project plus both meta keys in a single transaction, so a partially-written snapshot is not observable.
 
-`lastPersistedRevision` on the store is what distinguishes "dirty" from "saved", and it advances only on a successful write — a failed save leaves the project dirty and keeps the unload warning armed.
+`lastPersistedRevision` on the store is what distinguishes "dirty" from "saved", and it advances only on a successful write. Switching the active project also counts as a change, because the active project id is persisted so the last active project reopens on startup. While the store is dirty — including the debounce window before a save starts — the toolbar shows "Saving…" and the unload warning is armed; a failed save leaves the project dirty and keeps the warning armed.
 
 ### When IndexedDB is unavailable
 

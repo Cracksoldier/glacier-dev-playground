@@ -98,6 +98,26 @@ describe("compileScript", () => {
     expect(result.emittedJs).toContain("export const y = x;");
   });
 
+  it("allows top-level await in module mode even without any import/export", () => {
+    const result = compileScript(
+      "const value: number = await Promise.resolve(1);\nconsole.log(value);",
+      { scriptLanguage: "typescript", executionMode: "module" },
+    );
+    expect(result.diagnostics.filter((d) => d.category === "error")).toEqual(
+      [],
+    );
+    expect(result.emittedJs).toContain("await Promise.resolve(1)");
+  });
+
+  it("still blocks top-level await in classic mode", () => {
+    const result = compileScript(
+      "const value: number = await Promise.resolve(1);",
+      { scriptLanguage: "typescript", executionMode: "classic" },
+    );
+    expect(result.diagnostics.some((d) => d.category === "error")).toBe(true);
+    expect(result.emittedJs).toBeNull();
+  });
+
   it("treats an absolute HTTPS import as untyped any with a non-blocking warning, not an error", () => {
     const result = compileScript(
       'import x from "https://esm.sh/lodash";\nconst n: number = x.whatever.deeply.nested;',

@@ -21,6 +21,13 @@ export interface ScssCompilerClient {
   dispose(): void;
 }
 
+const WORKER_FAILED_MESSAGE =
+  "The SCSS compiler stopped unexpectedly. Edit the stylesheet or press Run to retry.";
+
+function workerFailure(): ScssCompileResult {
+  return { type: "failure", error: { message: WORKER_FAILED_MESSAGE } };
+}
+
 function defaultCreateWorker(): WorkerLike {
   return new Worker(new URL("./scssCompiler.worker.ts", import.meta.url), {
     type: "module",
@@ -42,6 +49,17 @@ export function createScssCompilerClient(
   function ensureWorker(): WorkerLike {
     if (worker) return worker;
     const created = createWorker();
+    // A worker that failed to load (e.g. its chunk 404s after a redeploy) or
+    // crashed never answers again: settle every waiting compile instead of
+    // leaving builds pending forever, and let the next compile() spawn a
+    // fresh worker.
+    created.onerror = () => {
+      created.terminate();
+      if (worker === created) worker = null;
+      const waiting = [...pending.values()];
+      pending.clear();
+      for (const resolve of waiting) resolve(workerFailure());
+    };
     created.onmessage = (event) => {
       if (!isScssCompileResponse(event.data)) return;
       const resolve = pending.get(event.data.buildId);
@@ -61,12 +79,17 @@ export function createScssCompilerClient(
     compile(source, buildId) {
       return new Promise((resolve) => {
         pending.set(buildId, resolve);
-        ensureWorker().postMessage({
-          protocol: SCSS_WORKER_PROTOCOL,
-          version: SCSS_WORKER_VERSION,
-          buildId,
-          source,
-        });
+        try {
+          ensureWorker().postMessage({
+            protocol: SCSS_WORKER_PROTOCOL,
+            version: SCSS_WORKER_VERSION,
+            buildId,
+            source,
+          });
+        } catch {
+          pending.delete(buildId);
+          resolve(workerFailure());
+        }
       });
     },
     dispose() {

@@ -117,6 +117,14 @@ export function compileScript(
     target: ts.ScriptTarget.ES2022,
     lib: ["lib.es2022.d.ts", "lib.dom.d.ts", "lib.dom.iterable.d.ts"],
     module: ts.ModuleKind.ESNext,
+    // Module mode always runs as `<script type="module">`, so the source is a
+    // module even without any import/export — which is what makes top-level
+    // `await` legal there. "Auto" detection would treat such a file as a
+    // classic script and block it with TS1375.
+    moduleDetection:
+      options.executionMode === "module"
+        ? ts.ModuleDetectionKind.Force
+        : ts.ModuleDetectionKind.Auto,
     moduleResolution: ts.ModuleResolutionKind.Bundler,
     esModuleInterop: true,
     allowJs: true,

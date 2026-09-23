@@ -123,7 +123,7 @@ export function buildPreviewBridgeScript(executionId: string): string {
       var items = [];
       var itemLimit = Math.min(value.length, MAX_ITEMS);
       for (var i = 0; i < itemLimit; i += 1) {
-        items.push(serialize(value[i], depth + 1, nextSeen));
+        items.push(serializeProperty(value, i, depth + 1, nextSeen));
       }
       return { kind: "array", items: items, truncated: value.length > MAX_ITEMS };
     }
@@ -131,15 +131,43 @@ export function buildPreviewBridgeScript(executionId: string): string {
     var entries = [];
     var keyLimit = Math.min(keys.length, MAX_ITEMS);
     for (var k = 0; k < keyLimit; k += 1) {
-      entries.push([keys[k], serialize(value[keys[k]], depth + 1, nextSeen)]);
+      entries.push([
+        keys[k],
+        serializeProperty(value, keys[k], depth + 1, nextSeen),
+      ]);
     }
     return { kind: "object", entries: entries, truncated: keys.length > MAX_ITEMS };
+  }
+
+  // User values can throw on inspection (throwing getters, revoked
+  // Proxies, hostile instanceof hooks). Logging must never throw into user
+  // code, so every value — and every nested property read, which is where a
+  // getter actually runs — goes through one of these guards; one bad
+  // property degrades to a marker instead of losing the whole entry.
+  var UNSERIALIZABLE = { kind: "unsupported", tag: "unserializable" };
+
+  function serializeSafely(value, depth, seen) {
+    try {
+      return serialize(value, depth, seen);
+    } catch (serializeError) {
+      return UNSERIALIZABLE;
+    }
+  }
+
+  function serializeProperty(target, key, depth, seen) {
+    var propertyValue;
+    try {
+      propertyValue = target[key];
+    } catch (readError) {
+      return UNSERIALIZABLE;
+    }
+    return serializeSafely(propertyValue, depth, seen);
   }
 
   function serializeArgs(args) {
     var out = [];
     for (var i = 0; i < args.length; i += 1) {
-      out.push(serialize(args[i], 0, []));
+      out.push(serializeSafely(args[i], 0, []));
     }
     return out;
   }
@@ -187,7 +215,7 @@ export function buildPreviewBridgeScript(executionId: string): string {
 
   window.addEventListener("unhandledrejection", function (event) {
     post("unhandled-rejection", {
-      reason: serialize(event.reason, 0, []),
+      reason: serializeSafely(event.reason, 0, []),
       timestampMs: Date.now(),
     });
   });

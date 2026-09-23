@@ -46,6 +46,21 @@ describe("AppShell", () => {
     expect(screen.getByRole("main")).toBeInTheDocument();
   });
 
+  it("still renders when the browser blocks access to localStorage", () => {
+    const storageSpy = vi
+      .spyOn(window, "localStorage", "get")
+      .mockImplementation(() => {
+        throw new DOMException("Storage is blocked", "SecurityError");
+      });
+    try {
+      render(<AppShell />);
+      expect(screen.getByRole("main")).toBeInTheDocument();
+      expect(screen.getAllByRole("separator").length).toBeGreaterThan(0);
+    } finally {
+      storageSpy.mockRestore();
+    }
+  });
+
   it("renders disabled toolbar actions with accessible names and explanations", () => {
     render(<AppShell />);
     for (const name of DISABLED_TOOLBAR_ACTION_NAMES) {

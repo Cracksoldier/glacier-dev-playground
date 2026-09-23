@@ -358,4 +358,63 @@ describe("buildPreviewBridgeScript", () => {
       args: [{ kind: "unsupported", tag: "symbol" }],
     });
   });
+
+  it("never throws into user code when a logged property getter throws", () => {
+    const harness = runBridge();
+    const hostile = {
+      ok: 1,
+      get boom(): never {
+        throw new Error("getter exploded");
+      },
+    };
+
+    expect(() => harness.console.log("value:", hostile)).not.toThrow();
+
+    expect(harness.originalConsole.log).toHaveBeenCalled();
+    expect(harness.lastMessage().payload).toMatchObject({
+      args: [
+        { kind: "primitive", value: "value:" },
+        {
+          kind: "object",
+          entries: [
+            ["ok", { kind: "primitive", value: 1 }],
+            ["boom", { kind: "unsupported", tag: "unserializable" }],
+          ],
+        },
+      ],
+    });
+  });
+
+  it("never throws into user code when a logged value cannot be inspected at all", () => {
+    const harness = runBridge();
+    const { proxy, revoke } = Proxy.revocable({}, {});
+    revoke();
+
+    expect(() => harness.console.log(proxy)).not.toThrow();
+    expect(harness.lastMessage().payload).toMatchObject({
+      args: [{ kind: "unsupported", tag: "unserializable" }],
+    });
+  });
+
+  it("still reports an unhandled rejection whose reason cannot be inspected", () => {
+    const harness = runBridge();
+    const reason = {
+      get message(): never {
+        throw new Error("nope");
+      },
+    };
+
+    expect(() => harness.triggerUnhandledRejection(reason)).not.toThrow();
+    expect(harness.lastMessage()).toMatchObject({
+      type: "unhandled-rejection",
+      payload: {
+        reason: {
+          kind: "object",
+          entries: [
+            ["message", { kind: "unsupported", tag: "unserializable" }],
+          ],
+        },
+      },
+    });
+  });
 });

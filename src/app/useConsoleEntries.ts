@@ -6,6 +6,13 @@ import type {
   SerializedValue,
 } from "../preview/previewMessage";
 
+/**
+ * Upper bound on retained console entries. A preview that logs in a tight
+ * loop or a fast interval would otherwise grow this list (and the rendered
+ * console) without limit; once full, the oldest entries are dropped.
+ */
+export const MAX_CONSOLE_ENTRIES = 1000;
+
 export interface ConsoleEntry {
   id: string;
   type: PreviewMessage["type"] | "scss-compile-error" | "script-diagnostic";
@@ -61,7 +68,14 @@ function reducer(
         id: crypto.randomUUID(),
         relativeMs: action.entry.timestampMs - state.runStartMs,
       };
-      return { ...state, entries: [...state.entries, entry] };
+      const entries = [...state.entries, entry];
+      return {
+        ...state,
+        entries:
+          entries.length > MAX_CONSOLE_ENTRIES
+            ? entries.slice(-MAX_CONSOLE_ENTRIES)
+            : entries,
+      };
     }
     default: {
       const exhaustiveCheck: never = action;
