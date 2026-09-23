@@ -22,7 +22,9 @@ export const MAX_SERIALIZE_STRING_LENGTH = 2000;
  * Responsibilities, all before any user script runs: tee `console.*` calls
  * to both the real console and the parent (via `postMessage`), capture
  * uncaught errors (`window.onerror`, which also fires for inline-script
- * syntax errors) and unhandled promise rejections, and announce readiness.
+ * syntax errors), unhandled promise rejections, and stylesheet `<link>`
+ * load failures, and announce readiness. `previewDocument.ts` places it at
+ * the top of `<head>`, ahead of every piece of user content.
  * `postMessage(msg, "*")` is required, not a laxity: the sandboxed iframe's
  * opaque origin means it cannot assert the parent's real origin string, so
  * the parent is responsible for validating `event.source`/protocol/
@@ -219,6 +221,26 @@ export function buildPreviewBridgeScript(executionId: string): string {
       timestampMs: Date.now(),
     });
   });
+
+  // Stylesheet <link> load failures don't bubble, so they're caught in the
+  // capture phase. This must be registered before the first <link> tag is
+  // parsed (Firefox can fire a 404's error event before a script at the end
+  // of <body> runs), which is why it lives here rather than in the loader.
+  // Always non-fatal: a missing stylesheet never blocks the user script.
+  window.addEventListener(
+    "error",
+    function (event) {
+      var target = event.target;
+      if (target && target.tagName === "LINK") {
+        post("resource-error", {
+          url: target.href || "",
+          message: "Failed to load stylesheet.",
+          timestampMs: Date.now(),
+        });
+      }
+    },
+    true,
+  );
 
   window.__glacierPreviewBridge = { post: post };
 

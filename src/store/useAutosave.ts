@@ -13,8 +13,9 @@ export interface UseAutosaveResult {
 
 /**
  * Debounces persistence of `state` whenever it's dirty relative to the last
- * successful save. `saveNow` flushes the debounce immediately (used by the
- * Ctrl/Cmd+S shortcut).
+ * successful save. `saveNow` (the Ctrl/Cmd+S shortcut) flushes a pending
+ * debounce immediately, or — when nothing is pending but the store is still
+ * dirty, e.g. after a failed save — starts a new save attempt.
  */
 export function useAutosave(
   state: ProjectStoreState,
@@ -25,8 +26,10 @@ export function useAutosave(
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("saved");
 
   const stateRef = useRef(state);
+  const hydrationReadyRef = useRef(hydrationReady);
   useEffect(() => {
     stateRef.current = state;
+    hydrationReadyRef.current = hydrationReady;
   });
 
   const debouncerRef = useRef<ReturnType<typeof createDebouncer<void>>>(null);
@@ -71,7 +74,19 @@ export function useAutosave(
   }, []);
 
   const saveNow = useCallback(() => {
-    debouncerRef.current?.flush();
+    const debouncer = debouncerRef.current;
+    if (debouncer === null) return;
+    const current = stateRef.current;
+    // With nothing pending but the store still dirty (e.g. after a failed
+    // save), schedule-then-flush starts a fresh attempt immediately.
+    if (
+      !debouncer.isPending() &&
+      hydrationReadyRef.current &&
+      current.revision !== current.lastPersistedRevision
+    ) {
+      debouncer.schedule();
+    }
+    debouncer.flush();
   }, []);
 
   return { saveStatus, saveNow };

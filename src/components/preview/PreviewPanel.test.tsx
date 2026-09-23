@@ -203,17 +203,21 @@ describe("PreviewPanel", () => {
       ),
     );
 
-    const iframeCountBeforeClick = container.querySelectorAll("iframe").length;
+    const iframesBeforeClick = new Set(container.querySelectorAll("iframe"));
 
     await user.click(screen.getByRole("button", { name: "Trust and run" }));
 
     await waitFor(() => {
       expect(screen.queryByRole("status")).not.toBeInTheDocument();
     });
+    // A new build creates a fresh candidate iframe (replacing any stale
+    // pending one), so look for an iframe that wasn't there before the click.
     await waitFor(() =>
-      expect(container.querySelectorAll("iframe").length).toBeGreaterThan(
-        iframeCountBeforeClick,
-      ),
+      expect(
+        [...container.querySelectorAll("iframe")].some(
+          (iframe) => !iframesBeforeClick.has(iframe),
+        ),
+      ).toBe(true),
     );
   });
 

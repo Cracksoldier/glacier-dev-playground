@@ -18,6 +18,10 @@ import {
 
 export function openDatabase(
   name: string = DATABASE_NAME,
+  options?: {
+    /** Called once this connection has been closed by `blocking` or terminated by the browser. */
+    onClosed?: () => void;
+  },
 ): Promise<IDBPDatabase<GlacierDBSchema>> {
   return openDB<GlacierDBSchema>(name, DATABASE_VERSION, {
     upgrade(db, oldVersion) {
@@ -33,6 +37,10 @@ export function openDatabase(
     blocking(_currentVersion, _blockedVersion, event) {
       const db = event.target as IDBDatabase | null;
       db?.close();
+      options?.onClosed?.();
+    },
+    terminated() {
+      options?.onClosed?.();
     },
   });
 }

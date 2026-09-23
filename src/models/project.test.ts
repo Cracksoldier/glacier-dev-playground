@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { nowIso, PROJECT_SCHEMA_VERSION } from "./project";
 
 describe("project schema", () => {
-  it("pins the current schema version to 1", () => {
-    expect(PROJECT_SCHEMA_VERSION).toBe(1);
+  it("pins the current schema version to 2", () => {
+    expect(PROJECT_SCHEMA_VERSION).toBe(2);
   });
 
   it("nowIso returns an ISO 8601 timestamp", () => {

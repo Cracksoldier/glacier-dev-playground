@@ -54,12 +54,27 @@ export function createIndexedDbProjectRepository(options?: {
    */
   let unreadableKeys = new Set<IDBValidKey>();
 
-  async function open() {
-    try {
-      return await openDatabase(databaseName);
-    } catch (error) {
-      throw new StorageUnavailableError(undefined, { cause: error });
+  /**
+   * One shared connection per repository instead of one per call: every
+   * autosave used to open a fresh connection that was never closed. Dropped
+   * (so the next call reopens) when opening fails, or when the connection is
+   * closed to unblock a delete/upgrade or terminated by the browser.
+   */
+  let connection: ReturnType<typeof openDatabase> | null = null;
+
+  function open(): ReturnType<typeof openDatabase> {
+    if (connection === null) {
+      const opening = openDatabase(databaseName, {
+        onClosed: () => {
+          if (connection === opening) connection = null;
+        },
+      }).catch((error: unknown) => {
+        if (connection === opening) connection = null;
+        throw new StorageUnavailableError(undefined, { cause: error });
+      });
+      connection = opening;
     }
+    return connection;
   }
 
   return {

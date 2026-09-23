@@ -162,4 +162,49 @@ describe("useAutosave", () => {
     expect(repository.savedSnapshots).toHaveLength(1);
     expect(result.current.autosave.saveStatus).toBe("saved");
   });
+
+  it("saveNow retries a failed save even with no new edit pending", async () => {
+    const repository = createFakeRepository();
+    repository.saveResult = "failure";
+    const { result } = useHarness(repository, true);
+
+    act(() => {
+      result.current.dispatch({
+        type: "project/rename",
+        payload: {
+          projectId: result.current.state.activeProjectId,
+          title: "Renamed",
+        },
+      });
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
+    });
+    expect(result.current.autosave.saveStatus).toBe("save-failed");
+
+    repository.saveResult = "success";
+    await act(async () => {
+      result.current.autosave.saveNow();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(repository.savedSnapshots).toHaveLength(2);
+    expect(result.current.autosave.saveStatus).toBe("saved");
+    expect(result.current.state.lastPersistedRevision).toBe(
+      result.current.state.revision,
+    );
+  });
+
+  it("saveNow does nothing when the store is already saved", async () => {
+    const repository = createFakeRepository();
+    const { result } = useHarness(repository, true);
+
+    await act(async () => {
+      result.current.autosave.saveNow();
+      await Promise.resolve();
+    });
+
+    expect(repository.savedSnapshots).toHaveLength(0);
+  });
 });

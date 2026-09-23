@@ -691,6 +691,62 @@ describe("PreviewFrame trust gate", () => {
     expect(beginBuildMock).toHaveBeenCalledTimes(1);
   });
 
+  it("tears down the existing preview when the project becomes gated (e.g. a replace import)", async () => {
+    const project = makeProject({ autoRun: false });
+    const ref = createRef<PreviewRunHandle>();
+    const { container, rerender } = render(
+      <PreviewFrame project={project} ref={ref} />,
+    );
+    await runAndFlush(ref);
+    expect(container.querySelectorAll("iframe")).toHaveLength(1);
+
+    rerender(
+      <PreviewFrame
+        project={{
+          ...project,
+          trusted: false,
+          resources: [makeResource({ type: "script", enabled: true })],
+        }}
+        ref={ref}
+      />,
+    );
+
+    expect(container.querySelectorAll("iframe")).toHaveLength(0);
+  });
+
+  it("does not show a build that became gated while it was compiling", async () => {
+    let resolveCompile: (result: TsCompileResult) => void = () => {};
+    tsCompileMock.mockImplementationOnce(
+      () =>
+        new Promise<TsCompileResult>((resolve) => {
+          resolveCompile = resolve;
+        }),
+    );
+    const project = makeProject({ autoRun: false });
+    const ref = createRef<PreviewRunHandle>();
+    const { container, rerender } = render(
+      <PreviewFrame project={project} ref={ref} />,
+    );
+    await runAndFlush(ref);
+
+    rerender(
+      <PreviewFrame
+        project={{
+          ...project,
+          trusted: false,
+          resources: [makeResource({ type: "script", enabled: true })],
+        }}
+        ref={ref}
+      />,
+    );
+    await act(async () => {
+      resolveCompile({ diagnostics: [], emittedJs: "", lineMap: null });
+      await Promise.resolve();
+    });
+
+    expect(container.querySelectorAll("iframe")).toHaveLength(0);
+  });
+
   it("runs normally via runNow() once the project becomes trusted", () => {
     const project = makeUntrustedProject({ autoRun: false });
     const ref = createRef<PreviewRunHandle>();
@@ -747,6 +803,117 @@ describe("PreviewFrame resource loading gate", () => {
 
   afterEach(() => {
     HTMLIFrameElement.prototype.addEventListener = originalAddEventListener;
+  });
+
+  it("assigns srcdoc before connecting the candidate iframe, so an initial about:blank load can't count as the document's load", async () => {
+    const srcdocAtInsertion: string[] = [];
+    const appendChildSpy = vi
+      .spyOn(Node.prototype, "appendChild")
+      .mockImplementation(function (this: Node, node: Node) {
+        if (node instanceof HTMLIFrameElement) {
+          srcdocAtInsertion.push(node.srcdoc);
+        }
+        // insertBefore(node, null) is exactly an append, without recursing
+        // into this spy.
+        return Node.prototype.insertBefore.call(this, node, null);
+      } as typeof Node.prototype.appendChild);
+    try {
+      const ref = createRef<PreviewRunHandle>();
+      render(
+        <PreviewFrame project={makeProject({ autoRun: false })} ref={ref} />,
+      );
+      await runAndFlush(ref);
+    } finally {
+      appendChildSpy.mockRestore();
+    }
+
+    expect(srcdocAtInsertion).toEqual(["<html></html>"]);
+  });
+
+  it("discards a still-pending candidate as soon as a newer build begins, even after it has loaded", async () => {
+    const ref = createRef<PreviewRunHandle>();
+    const { container } = render(
+      <PreviewFrame project={makeProject({ autoRun: false })} ref={ref} />,
+    );
+
+    await runAndFlush(ref);
+    const firstCandidate = container.querySelector("iframe");
+    fireLoad(firstCandidate);
+
+    await runAndFlush(ref);
+
+    const iframes = container.querySelectorAll("iframe");
+    expect(firstCandidate?.isConnected).toBe(false);
+    expect(iframes).toHaveLength(1);
+    expect(iframes[0]).not.toBe(firstCandidate);
+  });
+
+  async function renderWithPromotedFirstBuild(onMessage: () => void) {
+    const ref = createRef<PreviewRunHandle>();
+    const { container } = render(
+      <PreviewFrame
+        project={makeProject({ autoRun: false })}
+        onMessage={onMessage}
+        ref={ref}
+      />,
+    );
+    await runAndFlush(ref);
+    const visible = container.querySelector("iframe");
+    fireLoad(visible);
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: makeResourcesReadyMessage("execution-1"),
+        source: visible?.contentWindow,
+      }),
+    );
+    expect(visible?.style.visibility).toBe("visible");
+    return { ref, visible };
+  }
+
+  it("drops the visible frame's messages while a newer build may still replace it", async () => {
+    const onMessage = vi.fn();
+    const { ref, visible } = await renderWithPromotedFirstBuild(onMessage);
+    onMessage.mockClear();
+
+    tsCompileMock.mockImplementationOnce(() => new Promise(() => {}));
+    await runAndFlush(ref);
+    staleExecutionId = "execution-1";
+
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: makeReadyMessage("execution-1"),
+        source: visible?.contentWindow,
+      }),
+    );
+
+    expect(onMessage).not.toHaveBeenCalled();
+  });
+
+  it("forwards the visible frame's messages again once a newer build fails to compile", async () => {
+    const onMessage = vi.fn();
+    const { ref, visible } = await renderWithPromotedFirstBuild(onMessage);
+    onMessage.mockClear();
+
+    tsCompileMock.mockResolvedValueOnce({
+      diagnostics: [{ message: "Unexpected token", category: "error" }],
+      emittedJs: null,
+      lineMap: null,
+    });
+    await runAndFlush(ref);
+    staleExecutionId = "execution-1";
+
+    const message = makeReadyMessage("execution-1");
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: message,
+        source: visible?.contentWindow,
+      }),
+    );
+
+    expect(onMessage).toHaveBeenCalledExactlyOnceWith(
+      message,
+      expect.anything(),
+    );
   });
 
   it("does not promote the candidate until both native load and resources-ready have arrived (load first)", async () => {

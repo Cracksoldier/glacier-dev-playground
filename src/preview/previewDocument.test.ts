@@ -34,28 +34,43 @@ function makeResource(
 }
 
 describe("buildPreviewDocument", () => {
-  it("orders sections: doctype, head metadata, headContent, style, body html, inert script placeholder, bridge+loader script", () => {
+  it("orders sections: doctype, head metadata, bridge, headContent, style, body html, inert script placeholder, loader script", () => {
     const document = buildPreviewDocument(makeSource(), "execution-1", []);
 
     const doctypeIndex = document.indexOf("<!DOCTYPE html>");
     const charsetIndex = document.indexOf('meta charset="UTF-8"');
     const viewportIndex = document.indexOf("viewport");
+    const bridgeIndex = document.indexOf("glacier-dev-playground-preview");
     const headContentIndex = document.indexOf('name="test" content="head"');
     const styleIndex = document.indexOf("<style>");
     const bodyHtmlIndex = document.indexOf("<p>hello</p>");
     const placeholderIndex = document.indexOf("data-glacier-user-script");
     const scriptContentIndex = document.indexOf('console.log("hi")');
-    const bridgeIndex = document.indexOf("glacier-dev-playground-preview");
+    const loaderIndex = document.indexOf("SCRIPT_RESOURCES");
 
     expect(doctypeIndex).toBe(0);
     expect(charsetIndex).toBeGreaterThan(doctypeIndex);
     expect(viewportIndex).toBeGreaterThan(charsetIndex);
-    expect(headContentIndex).toBeGreaterThan(viewportIndex);
+    expect(bridgeIndex).toBeGreaterThan(viewportIndex);
+    expect(headContentIndex).toBeGreaterThan(bridgeIndex);
     expect(styleIndex).toBeGreaterThan(headContentIndex);
     expect(bodyHtmlIndex).toBeGreaterThan(styleIndex);
     expect(placeholderIndex).toBeGreaterThan(bodyHtmlIndex);
     expect(scriptContentIndex).toBeGreaterThan(placeholderIndex);
-    expect(bridgeIndex).toBeGreaterThan(scriptContentIndex);
+    expect(loaderIndex).toBeGreaterThan(scriptContentIndex);
+  });
+
+  it("installs the bridge before any stylesheet <link>, so their load failures are observable", () => {
+    const document = buildPreviewDocument(makeSource(), "execution-1", [
+      makeResource({
+        type: "stylesheet",
+        url: "https://example.com/style.css",
+      }),
+    ]);
+
+    expect(document.indexOf("glacier-dev-playground-preview")).toBeLessThan(
+      document.indexOf('<link rel="stylesheet"'),
+    );
   });
 
   it("embeds the given execution ID into the bridge script", () => {

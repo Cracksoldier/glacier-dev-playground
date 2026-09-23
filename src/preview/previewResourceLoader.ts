@@ -42,9 +42,9 @@ function resourceArrayLiteral(resources: LoaderResourceDescriptor[]): string {
  * user script or posts `"resources-ready"` — `PreviewFrame.tsx` decides
  * fatal-vs-non-fatal by cross-referencing the failed url against its own
  * resource list, not from anything this script encodes. Stylesheet
- * `<link>` load failures are also reported here (via a capture-phase
- * `error` listener, since `<link>` load-failure events don't bubble) but
- * are always non-fatal and never block the user script.
+ * `<link>` load failures are reported by the bridge instead
+ * (`previewBridge.ts`), which runs in `<head>` before any `<link>` tag —
+ * this script runs at the end of `<body>`, too late to observe them.
  */
 export function buildPreviewResourceLoaderScript(
   options: PreviewResourceLoaderOptions,
@@ -78,20 +78,6 @@ export function buildPreviewResourceLoaderScript(
       timestampMs: Date.now(),
     });
   }
-
-  window.addEventListener(
-    "error",
-    function (event) {
-      var target = event.target;
-      if (target && target.tagName === "LINK") {
-        reportResourceError(
-          target.href || "",
-          "Failed to load stylesheet.",
-        );
-      }
-    },
-    true,
-  );
 
   function applyAttributes(element, resource) {
     if (resource.integrity) element.integrity = resource.integrity;

@@ -10,7 +10,7 @@ The portable project format, and the only format that can be imported back.
 
 ```jsonc
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "title": "...",
   "createdAt": "...",
   "updatedAt": "...",

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PlaygroundProject } from "../models/project";
+import { PROJECT_SCHEMA_VERSION } from "../models/project";
 import { serializeProjectForExport } from "./projectExportJson";
 
 function testProject(
@@ -49,7 +50,7 @@ describe("serializeProjectForExport", () => {
 
     expect(json).toContain("\n");
     expect(parsed).toEqual({
-      schemaVersion: 1,
+      schemaVersion: PROJECT_SCHEMA_VERSION,
       title: "My Project",
       createdAt: "2026-01-01T00:00:00.000Z",
       updatedAt: "2026-01-02T00:00:00.000Z",

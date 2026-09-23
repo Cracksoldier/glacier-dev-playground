@@ -64,16 +64,21 @@ function stylesheetLinkSegment(resource: ExternalResource): DocumentSegment {
  * `source.script` beforehand — this module has no TS-compilation awareness
  * of its own either.
  *
+ * The bridge script (`previewBridge.ts`) is the first `<script>` in
+ * `<head>`, so console/error capture is installed before any user content —
+ * head markup, stylesheet `<link>`s, or inline scripts in the HTML panel —
+ * runs or starts loading.
+ *
  * The user's script is emitted as an inert `<script type="text/plain"
  * data-glacier-user-script>` placeholder rather than an executing tag — the
- * bridge+loader script (`previewResourceLoader.ts`) reads its `.textContent`
- * and only actually executes it once every enabled external resource has
- * finished loading. Because the placeholder sits *before* the bridge+loader
- * `<script>` in document order, its line offset is knowable without first
- * generating the loader script that depends on it: segments are built in two
- * groups — everything through the placeholder's closing tag, then (once that
- * group's cumulative line count gives the loader the placeholder's start
- * line) the bridge+loader segment and the closing tags.
+ * loader script (`previewResourceLoader.ts`) at the end of `<body>` reads its
+ * `.textContent` and only actually executes it once every enabled external
+ * resource has finished loading. Because the placeholder sits *before* the
+ * loader `<script>` in document order, its line offset is knowable without
+ * first generating the loader script that depends on it: segments are built
+ * in two groups — everything through the placeholder's closing tag, then
+ * (once that group's cumulative line count gives the loader the
+ * placeholder's start line) the loader segment and the closing tags.
  */
 function buildDocumentSegments(
   source: ProjectSource,
@@ -104,6 +109,10 @@ function buildDocumentSegments(
         '<meta name="viewport" content="width=device-width, initial-scale=1">',
       ].join("\n"),
     },
+    // First executable thing in the document, so console/error capture is
+    // live before any user-authored head content, <link> tag, or inline
+    // <script> in the HTML body runs or starts loading.
+    { content: `<script>${buildPreviewBridgeScript(executionId)}</script>` },
     { content: source.headContent },
     ...stylesheetResources.map(stylesheetLinkSegment),
     { content: "<style>" },
@@ -137,19 +146,18 @@ function buildDocumentSegments(
     ...leadingSegments,
     scriptBlockSegment,
     { content: "</script>" },
-    {
-      content: `<script>${buildPreviewBridgeScript(executionId)}${loaderScript}</script>`,
-    },
+    { content: `<script>${loaderScript}</script>` },
     { content: ["</body>", "</html>"].join("\n") },
   ];
 }
 
 /**
  * Assembles the full HTML document rendered inside the sandboxed preview
- * iframe, including the console/error capture bridge (`previewBridge.ts`)
- * and the resource-loading gate (`previewResourceLoader.ts`) injected after
- * the user's HTML body and inert script placeholder, so interception is
- * active — and resource loading begins — before any user code runs.
+ * iframe, including the console/error capture bridge (`previewBridge.ts`) at
+ * the top of `<head>`, so interception is active before any user content
+ * runs, and the resource-loading gate (`previewResourceLoader.ts`) after the
+ * user's HTML body and inert script placeholder, which runs the user script
+ * once every enabled resource has loaded.
  */
 export function buildPreviewDocument(
   source: ProjectSource,
@@ -180,11 +188,12 @@ export interface PreviewLineOffsets {
  * {@link buildPreviewDocument} assembles. Used by `mapErrorToSource.ts` to
  * translate a `runtime-error` message's browser-reported line number back
  * into a source panel + line — the range (not just a start line) is what
- * lets it tell a block's own lines apart from the boilerplate/bridge-script
- * lines that follow it. The execution id passed to the bridge script never
- * changes its own line count (it's inlined as a single-line string
- * literal), so a placeholder value here always yields the same ranges a
- * real build would. Resources only affect line counts of segments before
+ * lets it tell a block's own lines apart from the boilerplate, bridge, and
+ * loader script lines around it. The execution id passed to the bridge
+ * script never changes its line count (it's inlined as a single-line string
+ * literal) — which matters because the bridge precedes every tracked block —
+ * so a placeholder value here always yields the same ranges a real build
+ * would. Resources only affect line counts of segments before
  * the tracked blocks that follow them (stylesheet `<link>` tags sit before
  * the tracked style block), so passing the real resource list keeps offsets
  * accurate regardless of how many are enabled.

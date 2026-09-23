@@ -2,9 +2,10 @@ import type { ExternalResource } from "./resource";
 
 /**
  * Version of the {@link PlaygroundProject} shape. Bump this and add a
- * migration step in a later milestone whenever the shape changes.
+ * migration step (`PROJECT_MIGRATIONS` in `projectMigrations.ts`) whenever
+ * the shape changes. v2 made `trusted` a required field.
  */
-export const PROJECT_SCHEMA_VERSION = 1;
+export const PROJECT_SCHEMA_VERSION = 2;
 
 export type ProjectId = string;
 
@@ -49,11 +50,9 @@ export interface PlaygroundProject {
   resources: ExternalResource[];
   settings: ProjectSettings;
   /**
-   * Whether this project's script is allowed to execute without an
-   * approval prompt. Every template/creation path in this milestone sets
-   * this to `true`; only M10's future import flow will ever construct a
-   * project with `false`. M9 does not build any enforcement gate on this
-   * field — it exists so M10 can wire one in without a schema change.
+   * Whether this project's script/module resources may run without an
+   * approval prompt (see `trustGate.ts`). Locally created projects are
+   * trusted; imported ones start untrusted until the user approves them.
    */
   trusted: boolean;
 }

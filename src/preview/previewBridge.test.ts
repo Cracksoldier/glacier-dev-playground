@@ -46,6 +46,9 @@ interface Harness {
     error?: Error,
   ) => void;
   triggerUnhandledRejection: (reason: unknown) => void;
+  triggerWindowError: (event: {
+    target: { tagName: string; href?: string };
+  }) => void;
   NodeCtor: new () => Record<string, unknown>;
   lastMessage: () => Record<string, unknown>;
   messagesOfType: (type: string) => Record<string, unknown>[];
@@ -103,6 +106,11 @@ function runBridge(executionId = "execution-1"): Harness {
         ([type]) => type === "unhandledrejection",
       );
       entry?.[1]({ reason });
+    },
+    triggerWindowError: (event) => {
+      for (const [type, handler] of eventListeners) {
+        if (type === "error") handler(event);
+      }
     },
     NodeCtor: NodeCtor as unknown as new () => Record<string, unknown>,
     lastMessage: () => {
@@ -416,5 +424,30 @@ describe("buildPreviewBridgeScript", () => {
         },
       },
     });
+  });
+
+  it("reports a non-fatal resource-error for a failing stylesheet link", () => {
+    const harness = runBridge();
+
+    harness.triggerWindowError({
+      target: { tagName: "LINK", href: "https://example.com/style.css" },
+    });
+
+    const errors = harness.messagesOfType("resource-error");
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toMatchObject({
+      payload: {
+        url: "https://example.com/style.css",
+        message: "Failed to load stylesheet.",
+      },
+    });
+  });
+
+  it("ignores window error events from non-link targets", () => {
+    const harness = runBridge();
+
+    harness.triggerWindowError({ target: { tagName: "IMG" } });
+
+    expect(harness.messagesOfType("resource-error")).toHaveLength(0);
   });
 });

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { PlaygroundProject } from "../models/project";
 import { PROJECT_TEMPLATES } from "../models/templates";
 import { openDatabase } from "./db";
@@ -16,6 +16,10 @@ function uniqueDatabaseName(): string {
 function makeProject(title: string): PlaygroundProject {
   return { ...PROJECT_TEMPLATES.empty.create(), title };
 }
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("createIndexedDbProjectRepository", () => {
   it("load() returns a null snapshot when nothing has been persisted", async () => {
@@ -169,6 +173,49 @@ describe("createIndexedDbProjectRepository", () => {
       recoveredCount: 0,
       rejectedNewerAppVersion: true,
     });
+  });
+
+  it("reuses one IndexedDB connection across calls instead of opening one per call", async () => {
+    const openSpy = vi.spyOn(indexedDB, "open");
+    const repository = createIndexedDbProjectRepository({
+      databaseName: uniqueDatabaseName(),
+    });
+    const project = makeProject("A");
+
+    await repository.load();
+    await repository.saveSnapshot({
+      projects: [project],
+      activeProjectId: project.id,
+    });
+    await repository.saveSnapshot({
+      projects: [project],
+      activeProjectId: project.id,
+    });
+
+    expect(openSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("reopens the connection after it was closed to unblock a database delete", async () => {
+    const databaseName = uniqueDatabaseName();
+    const repository = createIndexedDbProjectRepository({ databaseName });
+    const project = makeProject("A");
+    await repository.saveSnapshot({
+      projects: [project],
+      activeProjectId: project.id,
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.deleteDatabase(databaseName);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+
+    await repository.saveSnapshot({
+      projects: [project],
+      activeProjectId: project.id,
+    });
+    const result = await repository.load();
+    expect(result.snapshot?.projects.map((p) => p.id)).toEqual([project.id]);
   });
 
   it("resetAllData() clears both stores", async () => {

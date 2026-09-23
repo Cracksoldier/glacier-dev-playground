@@ -11,14 +11,14 @@ Database `glacier-dev-playground`, opened through `idb` rather than raw IndexedD
 | `projects` | `ProjectId` | A whole `PlaygroundProject` record. |
 | `meta` | `string` | `{ key, value }`, holding `activeProjectId` and `appSchemaVersion`. |
 
-The connection registers a `blocking` callback that closes itself when it is holding up a delete or upgrade. Without it, `saveSnapshot`'s clear-then-rewrite and test cleanup via `indexedDB.deleteDatabase` can hang.
+Each repository keeps one shared connection rather than opening one per call. The connection registers a `blocking` callback that closes itself when it is holding up a delete or upgrade — without it, `saveSnapshot` and test cleanup via `indexedDB.deleteDatabase` can hang — and the repository then reopens on its next call.
 
 ### Two independent version numbers
 
 They are deliberately separate and must not be conflated:
 
 - **`DATABASE_VERSION`** (`src/persistence/schema.ts`) — the *structural* version passed to `openDB`. Bump it only when an object store or index is added, removed, or renamed. Currently `1`.
-- **`PROJECT_SCHEMA_VERSION`** (`src/models/project.ts`) — the *record shape* version of a single project. Bump it whenever the `PlaygroundProject` shape changes, and add a migration step in the same change. Currently `1`.
+- **`PROJECT_SCHEMA_VERSION`** (`src/models/project.ts`) — the *record shape* version of a single project. Bump it whenever the `PlaygroundProject` shape changes, and add a migration step in the same change. Currently `2` (v2 made `trusted` required).
 
 ### Reading: recovery, not trust
 
@@ -26,7 +26,7 @@ Records read from storage may have been written by a different app version or ed
 
 Recovery returns one of three outcomes:
 
-- `ok` — validated, and migrated forward through `PROJECT_MIGRATIONS` if it was written at an older schema version. The migration map is keyed by the version being migrated *away from*, and is empty today because the shape has been version 1 since inception.
+- `ok` — migrated forward through `PROJECT_MIGRATIONS` if it was written at an older schema version, then validated field by field, nested source, settings, and resources included (`src/models/projectValidation.ts`, shared with import). The migration map is keyed by the version being migrated *away from*. Its one step, v1 → v2, sets `trusted: true` on records that predate the field and keeps an explicit value; from v2 on, a missing or non-boolean `trusted` makes the record invalid rather than silently trusted.
 - `unsupported-future-version` — the record claims a schema version newer than this build understands.
 - `invalid` — the shape failed validation.
 

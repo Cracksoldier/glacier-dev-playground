@@ -136,6 +136,16 @@ function PreviewFrame({
   const hostRef = useRef<HTMLDivElement>(null);
   const visibleFrameRef = useRef<HTMLIFrameElement | null>(null);
   const visibleResolvedBuildRef = useRef<ResolvedPreviewBuild | null>(null);
+  const visibleExecutionIdRef = useRef<string | null>(null);
+  /**
+   * Execution id of the newest build that may still replace the visible
+   * frame, or `null` once it has either replaced it or ended without doing
+   * so (a compile error or fatal resource failure). The visible frame's own
+   * messages are only accepted while this is `null`: a preview that is
+   * about to be replaced must not log into the new run's console, but one
+   * left standing after a failed build is still live and interactive.
+   */
+  const supersedingExecutionIdRef = useRef<string | null>(null);
   const pendingCandidateRef = useRef<PendingCandidate | null>(null);
   const disposedRef = useRef(false);
 
@@ -185,8 +195,19 @@ function PreviewFrame({
     const previous = visibleFrameRef.current;
     visibleFrameRef.current = candidate.iframe;
     visibleResolvedBuildRef.current = candidate.resolvedBuild;
+    visibleExecutionIdRef.current = candidate.executionId;
+    if (supersedingExecutionIdRef.current === candidate.executionId) {
+      supersedingExecutionIdRef.current = null;
+    }
     pendingCandidateRef.current = null;
     previous?.remove();
+  }, []);
+
+  /** Marks `executionId`'s build as finished without replacing the visible frame. */
+  const endBuildWithoutReplacing = useCallback((executionId: string) => {
+    if (supersedingExecutionIdRef.current === executionId) {
+      supersedingExecutionIdRef.current = null;
+    }
   }, []);
 
   const coordinatorRef = useRef<ReturnType<
@@ -226,6 +247,14 @@ function PreviewFrame({
 
       const { compilationId, executionId, source, resources } =
         coordinator.beginBuild(projectRef.current);
+      // Beginning a build makes any still-pending candidate stale, so it can
+      // never be promoted — and once it has loaded, nothing else would remove
+      // it (its late "resources-ready" is dropped as stale). Discard it now
+      // instead of leaking a hidden iframe, and its running script, into the
+      // DOM ahead of every later preview.
+      pendingCandidateRef.current?.iframe.remove();
+      pendingCandidateRef.current = null;
+      supersedingExecutionIdRef.current = executionId;
       onBuildStartRef.current?.(executionId);
 
       let resolvedStylesheet = source.stylesheet;
@@ -243,6 +272,7 @@ function PreviewFrame({
 
         if (result.type === "failure") {
           onScssCompileErrorRef.current?.(result.error, compilationId);
+          endBuildWithoutReplacing(executionId);
           return;
         }
         onScssCompileSuccessRef.current?.(result.css, compilationId);
@@ -261,7 +291,10 @@ function PreviewFrame({
       if (disposedRef.current || coordinator.isStale(executionId)) return;
 
       onScriptDiagnosticsRef.current?.(scriptResult.diagnostics, compilationId);
-      if (scriptResult.diagnostics.some((d) => d.category === "error")) return;
+      if (scriptResult.diagnostics.some((d) => d.category === "error")) {
+        endBuildWithoutReplacing(executionId);
+        return;
+      }
 
       // JS-mode keeps the authored source as the executed payload — the
       // worker's JS emit is diagnostic-only, never trusted as the executed
@@ -290,6 +323,16 @@ function PreviewFrame({
         resources,
       );
 
+      // The project may have become gated while this build was compiling
+      // (e.g. a "replace" import) — never show code built before that.
+      if (
+        !options?.bypassTrustGate &&
+        requiresTrustApproval(projectRef.current)
+      ) {
+        endBuildWithoutReplacing(executionId);
+        return;
+      }
+
       const iframe = createPreviewIframe();
       iframe.style.visibility = "hidden";
 
@@ -317,10 +360,13 @@ function PreviewFrame({
         loaded: false,
         resourcesReady: false,
       };
-      host.appendChild(iframe);
+      // `srcdoc` must be set before insertion: connecting an iframe without
+      // one starts an initial about:blank navigation whose own `load` event
+      // would satisfy the gate above before the real document has loaded.
       iframe.srcdoc = documentHtml;
+      host.appendChild(iframe);
     },
-    [tryPromote],
+    [tryPromote, endBuildWithoutReplacing],
   );
 
   const debouncerRef = useRef<ReturnType<typeof createDebouncer<void>> | null>(
@@ -392,6 +438,20 @@ function PreviewFrame({
     };
   }, []);
 
+  // Becoming gated (e.g. a "replace" import into the active project, which
+  // keeps its id so this component doesn't remount) must not leave the
+  // previous code's preview showing — or running — under the trust warning.
+  const isGated = requiresTrustApproval(project);
+  useEffect(() => {
+    if (!isGated) return;
+    visibleFrameRef.current?.remove();
+    visibleFrameRef.current = null;
+    visibleResolvedBuildRef.current = null;
+    visibleExecutionIdRef.current = null;
+    pendingCandidateRef.current?.iframe.remove();
+    pendingCandidateRef.current = null;
+  }, [isGated]);
+
   useEffect(() => {
     function handleMessage(event: MessageEvent) {
       const source = event.source;
@@ -405,7 +465,17 @@ function PreviewFrame({
       if (!isPreviewMessage(event.data)) return;
 
       const coordinator = coordinatorRef.current;
-      if (!coordinator || coordinator.isStale(event.data.executionId)) return;
+      if (!coordinator) return;
+      if (isFromVisibleFrame) {
+        if (
+          event.data.executionId !== visibleExecutionIdRef.current ||
+          supersedingExecutionIdRef.current !== null
+        ) {
+          return;
+        }
+      } else if (coordinator.isStale(event.data.executionId)) {
+        return;
+      }
 
       const resolvedBuild = isFromVisibleFrame
         ? visibleResolvedBuildRef.current
@@ -428,6 +498,7 @@ function PreviewFrame({
             if (pendingCandidateRef.current === pendingCandidate) {
               pendingCandidateRef.current = null;
             }
+            endBuildWithoutReplacing(pendingCandidate.executionId);
             // Reported via onResourceLoadError, not onMessage — a fatal
             // resource-error only ever comes from a pending (never-visible)
             // candidate (resources-ready never follows it), so there's no
@@ -446,7 +517,7 @@ function PreviewFrame({
 
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
-  }, [tryPromote]);
+  }, [tryPromote, endBuildWithoutReplacing]);
 
   return <div ref={hostRef} className={styles.host} />;
 }

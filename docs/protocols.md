@@ -33,9 +33,9 @@ Preview code can log anything, including values that are cyclic, enormous, or no
 - `node` — `tagName`, optional `id`/`className`, and a short `preview` string. DOM nodes never cross the boundary as references.
 - `function` — name only.
 - `circular` — a back-reference that was cut.
-- `unsupported` — anything else, tagged by kind.
+- `unsupported` — anything else, tagged by kind; a value (or property) whose inspection throws, such as a throwing getter or a revoked Proxy, is tagged `unserializable` instead of throwing into the user's code.
 
-Bounds, all enforced in the bridge: depth ≤ 6, 100 items or keys per container, and 2000 characters per string. They exist so that logging a cyclic or very large value cannot hang the parent application — a behavior asserted directly in `e2e/console.spec.ts`.
+Bounds, all enforced in the bridge: depth ≤ 6, 100 items or keys per container, and 2000 characters per string. They exist so that logging a cyclic or very large value cannot hang the parent application — a behavior asserted directly in `e2e/console.spec.ts`. On the parent side, the console keeps only the most recent 1000 entries (`MAX_CONSOLE_ENTRIES`), so a preview logging in a loop cannot grow memory without bound.
 
 ## Main thread ↔ SCSS worker (`src/preview/scssWorkerProtocol.ts`)
 
