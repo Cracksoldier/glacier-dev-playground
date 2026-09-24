@@ -5,12 +5,14 @@
   transition: background-color var(--glacier-transition-fast);
 }
 
-.handle[aria-orientation="horizontal"] {
+/* `aria-orientation` is the separator line's own orientation, so it is the
+   opposite of its group's: a vertical line splits side-by-side panels. */
+.handle[aria-orientation="vertical"] {
   width: 6px;
   cursor: col-resize;
 }
 
-.handle[aria-orientation="vertical"] {
+.handle[aria-orientation="horizontal"] {
   height: 6px;
   cursor: row-resize;
 }

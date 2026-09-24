@@ -6,6 +6,9 @@ import {
   ExportIcon,
   ImportIcon,
   KeyboardIcon,
+  LayoutDefaultIcon,
+  LayoutPreviewIcon,
+  LayoutSideIcon,
   NewProjectIcon,
   ProjectSwitcherIcon,
   ResetIcon,
@@ -21,6 +24,7 @@ import ProjectSwitcherPopover from "../components/projects/ProjectSwitcherPopove
 import ResetProjectDialog from "../components/projects/ResetProjectDialog";
 import type { SaveStatus } from "../models/saveStatus";
 import type { EditorPreferences } from "../preferences/editorPreferences";
+import type { WorkspaceLayout } from "../preferences/workspaceLayoutPreferences";
 import { useProjectStore } from "../store/ProjectStoreContext";
 import EditorPreferencesPopover from "./EditorPreferencesPopover";
 import styles from "./Toolbar.module.css";
@@ -46,16 +50,30 @@ const SAVE_STATUS_LABEL: Record<SaveStatus, string> = {
   "storage-unavailable": "Storage unavailable",
 };
 
+const WORKSPACE_LAYOUT_OPTIONS: readonly {
+  layout: WorkspaceLayout;
+  label: string;
+  Icon: typeof LayoutDefaultIcon;
+}[] = [
+  { layout: "default", label: "Default layout", Icon: LayoutDefaultIcon },
+  { layout: "side", label: "Side layout", Icon: LayoutSideIcon },
+  { layout: "preview", label: "Preview only", Icon: LayoutPreviewIcon },
+];
+
 interface ToolbarProps {
   editorPreferences: EditorPreferences;
   onUpdateEditorPreferences: (partial: Partial<EditorPreferences>) => void;
   onRun: () => void;
+  workspaceLayout: WorkspaceLayout;
+  onWorkspaceLayoutChange: (layout: WorkspaceLayout) => void;
 }
 
 function Toolbar({
   editorPreferences,
   onUpdateEditorPreferences,
   onRun,
+  workspaceLayout,
+  onWorkspaceLayoutChange,
 }: ToolbarProps) {
   const disabledHintId = useId();
   const { activeProject, saveStatus, actions } = useProjectStore();
@@ -127,6 +145,21 @@ function Toolbar({
         >
           <AutoRunIcon />
         </button>
+        <fieldset aria-label="Workspace layout" className={styles.layoutGroup}>
+          {WORKSPACE_LAYOUT_OPTIONS.map(({ layout, label, Icon }) => (
+            <button
+              key={layout}
+              type="button"
+              className={styles.button}
+              aria-label={label}
+              aria-pressed={workspaceLayout === layout}
+              title={label}
+              onClick={() => onWorkspaceLayoutChange(layout)}
+            >
+              <Icon />
+            </button>
+          ))}
+        </fieldset>
         <button
           type="button"
           className={styles.button}

@@ -12,6 +12,12 @@ export interface NarrowTabOptions {
   setActiveTab: (tab: ActiveTab) => void;
 }
 
+export interface PreviewOnlyOptions {
+  isPreviewOnly: boolean;
+  /** Leaves the preview-only workspace layout so the editors are rendered. */
+  exitPreviewOnly: () => void;
+}
+
 /**
  * Keyed by `KeyboardEvent.code` (the physical key), not `.key` (the produced
  * character): with Alt held, macOS Option produces "¡", "™", … and layouts
@@ -30,7 +36,9 @@ const TAB_FOR_CODE: Partial<Record<string, ActiveTab>> = {
  *
  * On narrow layouts the target panel may be hidden behind another tab, where
  * `focus()` is a no-op — so the tab is selected first and the focus call
- * deferred to the next frame, once the panel is actually rendered.
+ * deferred to the next frame, once the panel is actually rendered. The
+ * preview-only workspace layout hides the editors the same way, so an editor
+ * shortcut leaves it first.
  */
 export function useEditorFocusShortcuts(
   htmlEditorRef: RefObject<CodeMirrorEditorHandle | null>,
@@ -38,9 +46,12 @@ export function useEditorFocusShortcuts(
   jsEditorRef: RefObject<CodeMirrorEditorHandle | null>,
   previewRef: RefObject<FocusableHandle | null>,
   narrowTabs?: NarrowTabOptions,
+  previewOnly?: PreviewOnlyOptions,
 ): void {
   const isNarrow = narrowTabs?.isNarrow ?? false;
   const setActiveTab = narrowTabs?.setActiveTab;
+  const isPreviewOnly = previewOnly?.isPreviewOnly ?? false;
+  const exitPreviewOnly = previewOnly?.exitPreviewOnly;
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -71,6 +82,12 @@ export function useEditorFocusShortcuts(
         return;
       }
 
+      if (isPreviewOnly && exitPreviewOnly && tab !== "preview") {
+        exitPreviewOnly();
+        window.requestAnimationFrame(() => targetRef.current?.focus());
+        return;
+      }
+
       targetRef.current.focus();
     }
 
@@ -85,5 +102,7 @@ export function useEditorFocusShortcuts(
     previewRef,
     isNarrow,
     setActiveTab,
+    isPreviewOnly,
+    exitPreviewOnly,
   ]);
 }

@@ -169,18 +169,29 @@ export function KeyboardIcon(props: IconProps) {
   );
 }
 
-export function ExpandIcon(props: IconProps) {
+export function LayoutDefaultIcon(props: IconProps) {
   return (
     <IconBase {...props}>
-      <path d="M13 3h8v8M21 3l-7 7M11 21H3v-8M3 21l7-7" />
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M3 12h18M9 4v8M15 4v8" />
     </IconBase>
   );
 }
 
-export function CollapseIcon(props: IconProps) {
+export function LayoutSideIcon(props: IconProps) {
   return (
     <IconBase {...props}>
-      <path d="M14 10h7V3M21 3l-7 7M10 14H3v7M3 21l7-7" />
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M15 4v16M15 9.33h6M15 14.67h6" />
+    </IconBase>
+  );
+}
+
+export function LayoutPreviewIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <path d="M7 8h10v8H7z" />
     </IconBase>
   );
 }

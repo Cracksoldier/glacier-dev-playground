@@ -1,6 +1,12 @@
 import type { ReactNode } from "react";
-import { useRef, useState } from "react";
-import { Group, Panel, useDefaultLayout } from "react-resizable-panels";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Group,
+  type Layout,
+  Panel,
+  useDefaultLayout,
+  useGroupRef,
+} from "react-resizable-panels";
 import ResizeHandle from "../components/common/ResizeHandle";
 import ConsoleBody from "../components/console/ConsoleBody";
 import ConsolePanel from "../components/console/ConsolePanel";
@@ -30,14 +36,50 @@ import { useEditorPreferences } from "./useEditorPreferences";
 import { useNarrowLayout } from "./useNarrowLayout";
 import { useScssCompileStatus } from "./useScssCompileStatus";
 import { useTsCompileStatus } from "./useTsCompileStatus";
+import {
+  useWorkspaceLayout,
+  type WorkspaceArrangement,
+} from "./useWorkspaceLayout";
 import WorkspaceTabs, { tabId, tabPanelId } from "./WorkspaceTabs";
 
-const WORKSPACE_PANEL_IDS = [
-  "html-editor",
-  "css-editor",
-  "js-editor",
-  "preview",
-];
+const OUTER_PANEL_IDS = ["editors", "preview"];
+const EDITOR_PANEL_IDS = ["html-editor", "css-editor", "js-editor"];
+
+/**
+ * Per-arrangement group orientations and default sizes (percentages). The
+ * panel tree is identical in every arrangement — only these change — so
+ * switching layouts never remounts the editors or the preview iframe.
+ */
+const ARRANGEMENTS: Record<
+  WorkspaceArrangement,
+  {
+    outerOrientation: "horizontal" | "vertical";
+    editorsOrientation: "horizontal" | "vertical";
+    outerSizes: Layout;
+  }
+> = {
+  default: {
+    outerOrientation: "vertical",
+    editorsOrientation: "horizontal",
+    outerSizes: { editors: 50, preview: 50 },
+  },
+  side: {
+    outerOrientation: "horizontal",
+    editorsOrientation: "vertical",
+    outerSizes: { editors: 30, preview: 70 },
+  },
+};
+
+const EDITOR_SIZES: Layout = {
+  "html-editor": 100 / 3,
+  "css-editor": 100 / 3,
+  "js-editor": 100 / 3,
+};
+const EDITOR_DEFAULT_SIZE = `${100 / 3}%`;
+
+function layoutStorageId(arrangement: WorkspaceArrangement, group: string) {
+  return `glacier:workspace-layout:v2:${arrangement}:${group}`;
+}
 
 /**
  * Wrapper the narrow-layout CSS shows/hides. It is deliberately a plain div
@@ -87,14 +129,59 @@ function AppShell() {
  * itself renders — `AppShell` can't call the hook directly.
  */
 function AppShellContent() {
-  const { defaultLayout, onLayoutChanged } = useDefaultLayout({
-    id: "glacier:workspace-layout:v1",
-    panelIds: WORKSPACE_PANEL_IDS,
+  const {
+    layout: workspaceLayout,
+    arrangement,
+    setLayout: setWorkspaceLayout,
+  } = useWorkspaceLayout();
+  const arrangementConfig = ARRANGEMENTS[arrangement];
+  // Sizes are saved per arrangement, and only after user drags/key presses,
+  // so the programmatic restore below never overwrites the other
+  // arrangement's saved sizes.
+  const outerLayout = useDefaultLayout({
+    id: layoutStorageId(arrangement, "outer"),
+    panelIds: OUTER_PANEL_IDS,
     storage: workspaceLayoutStorage,
+    onlySaveAfterUserInteractions: true,
   });
+  const editorsLayout = useDefaultLayout({
+    id: layoutStorageId(arrangement, "editors"),
+    panelIds: EDITOR_PANEL_IDS,
+    storage: workspaceLayoutStorage,
+    onlySaveAfterUserInteractions: true,
+  });
+  const outerGroupRef = useGroupRef();
+  const editorsGroupRef = useGroupRef();
+  // `defaultLayout` is only read when a Group mounts, and the Groups stay
+  // mounted across arrangement changes — so restore the new arrangement's
+  // sizes imperatively. Runs after the Groups' own effects have re-registered
+  // their panels for the new orientation.
+  const appliedArrangementRef = useRef(arrangement);
+  useEffect(() => {
+    if (appliedArrangementRef.current === arrangement) return;
+    appliedArrangementRef.current = arrangement;
+    outerGroupRef.current?.setLayout(
+      outerLayout.defaultLayout ?? ARRANGEMENTS[arrangement].outerSizes,
+    );
+    editorsGroupRef.current?.setLayout(
+      editorsLayout.defaultLayout ?? EDITOR_SIZES,
+    );
+  }, [
+    arrangement,
+    outerLayout.defaultLayout,
+    editorsLayout.defaultLayout,
+    outerGroupRef,
+    editorsGroupRef,
+  ]);
   const { preferences, updatePreferences } = useEditorPreferences();
   const { activeTab, setActiveTab } = useActiveTab();
   const isNarrow = useNarrowLayout();
+  // Narrow screens always use tabs, whatever the desktop layout choice.
+  const isPreviewOnly = !isNarrow && workspaceLayout === "preview";
+  const exitPreviewOnly = useCallback(
+    () => setWorkspaceLayout(arrangement),
+    [setWorkspaceLayout, arrangement],
+  );
   const [previewPresentation, setPreviewPresentation] =
     useState<PreviewPresentation>("default");
   const { activeProject } = useProjectStore();
@@ -108,6 +195,7 @@ function AppShellContent() {
     jsEditorRef,
     previewRunHandleRef,
     { isNarrow, setActiveTab },
+    { isPreviewOnly, exitPreviewOnly },
   );
   useRunShortcut(() => previewRunHandleRef.current?.runNow());
 
@@ -158,6 +246,8 @@ function AppShellContent() {
           editorPreferences={preferences}
           onUpdateEditorPreferences={updatePreferences}
           onRun={() => previewRunHandleRef.current?.runNow()}
+          workspaceLayout={workspaceLayout}
+          onWorkspaceLayoutChange={setWorkspaceLayout}
         />
       </header>
       <PersistenceNotice />
@@ -165,79 +255,99 @@ function AppShellContent() {
         <div
           className={styles.workspace}
           data-preview-presentation={previewPresentation}
+          data-workspace-arrangement={arrangement}
+          data-workspace-layout={isPreviewOnly ? "preview" : arrangement}
         >
           <Group
-            orientation="horizontal"
+            orientation={arrangementConfig.outerOrientation}
             className={styles.group}
-            defaultLayout={defaultLayout}
-            onLayoutChanged={onLayoutChanged}
+            defaultLayout={outerLayout.defaultLayout}
+            onLayoutChanged={outerLayout.onLayoutChanged}
+            groupRef={outerGroupRef}
           >
             <Panel
-              id="html-editor"
-              defaultSize="25%"
-              minSize="10%"
-              className={styles.panel}
+              id="editors"
+              defaultSize={`${arrangementConfig.outerSizes.editors}%`}
+              minSize="15%"
+              className={`${styles.panel} ${styles.editorsPanel}`}
             >
-              <TabPanel
-                tab="html"
-                isNarrow={isNarrow}
-                className={styles.tabPanel}
+              <Group
+                orientation={arrangementConfig.editorsOrientation}
+                defaultLayout={editorsLayout.defaultLayout}
+                onLayoutChanged={editorsLayout.onLayoutChanged}
+                groupRef={editorsGroupRef}
               >
-                <HtmlEditorPanel
-                  preferences={preferences}
-                  hasError={hasHtmlError}
-                  ref={htmlEditorRef}
-                />
-              </TabPanel>
+                <Panel
+                  id="html-editor"
+                  defaultSize={EDITOR_DEFAULT_SIZE}
+                  minSize="10%"
+                  className={styles.panel}
+                >
+                  <TabPanel
+                    tab="html"
+                    isNarrow={isNarrow}
+                    className={styles.tabPanel}
+                  >
+                    <HtmlEditorPanel
+                      preferences={preferences}
+                      hasError={hasHtmlError}
+                      ref={htmlEditorRef}
+                    />
+                  </TabPanel>
+                </Panel>
+                <ResizeHandle label="Resize HTML and CSS editor panels" />
+                <Panel
+                  id="css-editor"
+                  defaultSize={EDITOR_DEFAULT_SIZE}
+                  minSize="10%"
+                  className={styles.panel}
+                >
+                  <TabPanel
+                    tab="css"
+                    isNarrow={isNarrow}
+                    className={styles.tabPanel}
+                  >
+                    <CssEditorPanel
+                      preferences={preferences}
+                      hasError={hasCssError}
+                      diagnosticError={scssStatus.lastError}
+                      compiledCss={scssStatus.compiledCss}
+                      isStale={scssStatus.isStale}
+                      ref={cssEditorRef}
+                    />
+                  </TabPanel>
+                </Panel>
+                <ResizeHandle label="Resize CSS and JavaScript editor panels" />
+                <Panel
+                  id="js-editor"
+                  defaultSize={EDITOR_DEFAULT_SIZE}
+                  minSize="10%"
+                  className={styles.panel}
+                >
+                  <TabPanel
+                    tab="js"
+                    isNarrow={isNarrow}
+                    className={styles.tabPanel}
+                  >
+                    <JsEditorPanel
+                      preferences={preferences}
+                      hasError={hasJsError}
+                      diagnosticErrors={jsDiagnosticErrors}
+                      isStale={tsStatus.isStale}
+                      ref={jsEditorRef}
+                    />
+                  </TabPanel>
+                </Panel>
+              </Group>
             </Panel>
-            <ResizeHandle label="Resize HTML and CSS editor panels" />
-            <Panel
-              id="css-editor"
-              defaultSize="25%"
-              minSize="10%"
-              className={styles.panel}
-            >
-              <TabPanel
-                tab="css"
-                isNarrow={isNarrow}
-                className={styles.tabPanel}
-              >
-                <CssEditorPanel
-                  preferences={preferences}
-                  hasError={hasCssError}
-                  diagnosticError={scssStatus.lastError}
-                  compiledCss={scssStatus.compiledCss}
-                  isStale={scssStatus.isStale}
-                  ref={cssEditorRef}
-                />
-              </TabPanel>
-            </Panel>
-            <ResizeHandle label="Resize CSS and JavaScript editor panels" />
-            <Panel
-              id="js-editor"
-              defaultSize="25%"
-              minSize="10%"
-              className={styles.panel}
-            >
-              <TabPanel
-                tab="js"
-                isNarrow={isNarrow}
-                className={styles.tabPanel}
-              >
-                <JsEditorPanel
-                  preferences={preferences}
-                  hasError={hasJsError}
-                  diagnosticErrors={jsDiagnosticErrors}
-                  isStale={tsStatus.isStale}
-                  ref={jsEditorRef}
-                />
-              </TabPanel>
-            </Panel>
-            <ResizeHandle label="Resize JavaScript editor and preview panels" />
+            <ResizeHandle
+              label="Resize editor and preview regions"
+              className={styles.outerSeparator}
+            />
             <Panel
               id="preview"
-              defaultSize="25%"
-              minSize="10%"
+              defaultSize={`${arrangementConfig.outerSizes.preview}%`}
+              minSize="15%"
               className={`${styles.panel} ${styles.previewPanel}`}
             >
               <TabPanel

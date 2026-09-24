@@ -257,6 +257,49 @@ describe("useEditorFocusShortcuts", () => {
     expect(setActiveTab).not.toHaveBeenCalled();
   });
 
+  it("leaves preview-only before focusing an editor", async () => {
+    const cssFocus = vi.fn();
+    const exitPreviewOnly = vi.fn();
+    renderHook(() =>
+      useEditorFocusShortcuts(
+        makeRef(vi.fn()),
+        makeRef(cssFocus),
+        makeRef(vi.fn()),
+        makePreviewRef(vi.fn()),
+        { isNarrow: false, setActiveTab: vi.fn() },
+        { isPreviewOnly: true, exitPreviewOnly },
+      ),
+    );
+
+    dispatchKeydown({ key: "2", code: "Digit2", altKey: true });
+
+    expect(exitPreviewOnly).toHaveBeenCalledTimes(1);
+    // Focus is deferred until the editors are shown again.
+    expect(cssFocus).not.toHaveBeenCalled();
+    await new Promise(requestAnimationFrame);
+    expect(cssFocus).toHaveBeenCalledTimes(1);
+  });
+
+  it("stays in preview-only when focusing the preview on Alt+4", () => {
+    const previewFocus = vi.fn();
+    const exitPreviewOnly = vi.fn();
+    renderHook(() =>
+      useEditorFocusShortcuts(
+        makeRef(vi.fn()),
+        makeRef(vi.fn()),
+        makeRef(vi.fn()),
+        makePreviewRef(previewFocus),
+        { isNarrow: false, setActiveTab: vi.fn() },
+        { isPreviewOnly: true, exitPreviewOnly },
+      ),
+    );
+
+    dispatchKeydown({ key: "4", code: "Digit4", altKey: true });
+
+    expect(previewFocus).toHaveBeenCalledTimes(1);
+    expect(exitPreviewOnly).not.toHaveBeenCalled();
+  });
+
   it("removes the listener on unmount", () => {
     const htmlFocus = vi.fn();
     const { unmount } = renderHook(() =>
