@@ -1,11 +1,6 @@
 import { type Ref, useEffect, useId, useImperativeHandle, useRef } from "react";
 import type { UseConsoleEntriesResult } from "../../app/useConsoleEntries";
-import {
-  CollapseIcon,
-  ExpandIcon,
-  FullWindowIcon,
-  WarningIcon,
-} from "../../components/common/icons";
+import { FullWindowIcon, WarningIcon } from "../../components/common/icons";
 import { requiresTrustApproval } from "../../models/trustGate";
 import { mapRuntimeErrorLine } from "../../preview/mapErrorToSource";
 import { computePreviewLineOffsets } from "../../preview/previewDocument";
@@ -21,11 +16,11 @@ import PreviewFrame, {
 import styles from "./PreviewPanel.module.css";
 
 /**
- * How much of the workspace the preview takes over. `expanded` keeps the
- * editor panels visible but shrunk; `full-window` covers the whole viewport.
- * Never a separate browser window.
+ * Whether the preview covers the whole viewport (`full-window`). Never a
+ * separate browser window. Showing only the preview inside the workspace is
+ * the toolbar's "Preview only" layout instead.
  */
-export type PreviewPresentation = "default" | "expanded" | "full-window";
+export type PreviewPresentation = "default" | "full-window";
 
 interface PreviewPanelProps {
   consoleEntries: UseConsoleEntriesResult;
@@ -216,19 +211,6 @@ function PreviewPanel({
           Preview
         </h2>
         <div className={styles.actions}>
-          <button
-            type="button"
-            className={styles.actionButton}
-            aria-label="Expand preview"
-            aria-pressed={presentation === "expanded"}
-            onClick={() =>
-              onPresentationChange(
-                presentation === "expanded" ? "default" : "expanded",
-              )
-            }
-          >
-            {presentation === "expanded" ? <CollapseIcon /> : <ExpandIcon />}
-          </button>
           <button
             type="button"
             className={styles.actionButton}

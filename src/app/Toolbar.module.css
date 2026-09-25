@@ -87,6 +87,31 @@
   color: var(--glacier-text-disabled);
 }
 
+/* Layout choice only applies to the desktop workspace; narrow screens always
+   use tabs, so the control is hidden there (same breakpoint as
+   `useNarrowLayout`). */
+.layoutGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--glacier-space-1);
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0 var(--glacier-space-1);
+  border: none;
+  border-inline: 1px solid var(--glacier-panel-border);
+}
+
+.layoutGroup .button[aria-pressed="true"] {
+  background: var(--glacier-panel-bg);
+  color: var(--glacier-accent-cyan);
+}
+
+@media (max-width: 767.98px) {
+  .layoutGroup {
+    display: none;
+  }
+}
+
 .status {
   margin-left: auto;
   display: flex;

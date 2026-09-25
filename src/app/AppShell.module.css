@@ -33,9 +33,14 @@
   min-height: 0;
 }
 
-/* Marker class that exempts the preview from the expanded-preview squeeze. */
+/* Marker classes for the workspace-layout rules below. */
+.editorsPanel,
 .previewPanel {
   min-width: 0;
+}
+
+.outerSeparator {
+  flex-shrink: 0;
 }
 
 /* The tab panel wrapper is a plain div nested inside `Panel`, never `Panel`
@@ -95,15 +100,38 @@
   }
 }
 
-/* Expanded preview: squeeze the editor panels toward their minimum instead of
-   resizing them imperatively, so the user's persisted split is left intact.
-   The selector targets react-resizable-panels' own outer `[data-panel]`
-   element, which is the one that actually holds the column width — the
-   `className` we pass lands on a child of it. `!important` is unavoidable
-   there because the library writes `max-width`/`flex-grow` inline. */
-[data-preview-presentation="expanded"] [data-panel]:not(:has(> .previewPanel)) {
-  /* biome-ignore lint/complexity/noImportantStyles: the only way to override react-resizable-panels' inline sizing without its imperative API */
-  max-width: 10% !important;
+/* Workspace layouts. The panel tree is the same in every layout, so the
+   editors and preview iframe are never remounted; only orientation (set on
+   the Groups), CSS order and visibility change. The selectors target
+   react-resizable-panels' own outer `[data-panel]` element — the `className`
+   we pass lands on a child of it.
+
+   Side: preview first, editors last. The library orders panels and
+   separators by their rendered position when they register (which it redoes
+   on every orientation change), so the flipped visual order is also the one
+   its drag math uses. */
+[data-workspace-arrangement="side"] [data-panel]:has(> .previewPanel) {
+  order: 0;
+}
+
+[data-workspace-arrangement="side"] .outerSeparator {
+  order: 1;
+}
+
+[data-workspace-arrangement="side"] [data-panel]:has(> .editorsPanel) {
+  order: 2;
+}
+
+/* Preview only: the editors stay mounted but hidden, and the preview — then
+   the group's only visible flex child — takes all of its space. `!important`
+   is unavoidable because the library writes `display` inline. */
+[data-workspace-layout="preview"] [data-panel]:has(> .editorsPanel) {
+  /* biome-ignore lint/complexity/noImportantStyles: the only way to override react-resizable-panels' inline display */
+  display: none !important;
+}
+
+[data-workspace-layout="preview"] .outerSeparator {
+  display: none;
 }
 
 /* Full-window preview stays in place in the tree and is only repositioned, so

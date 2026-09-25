@@ -31,8 +31,7 @@ test("resizes panels by dragging a separator", async ({ page }) => {
   await page.goto("/");
   const separators = page.getByRole("separator");
   const firstSeparator = separators.first();
-  const panels = page.locator("[data-panel]");
-  const firstPanel = panels.first();
+  const firstPanel = page.locator("#html-editor");
 
   const beforeBox = await firstPanel.boundingBox();
   const handleBox = await firstSeparator.boundingBox();
@@ -58,7 +57,9 @@ test("resizes panels by dragging a separator", async ({ page }) => {
 test("stops shrinking a panel at its 10% minimum size", async ({ page }) => {
   await page.goto("/");
   const firstSeparator = page.getByRole("separator").first();
-  const panels = page.locator("[data-panel]");
+  // The editor columns only — the enclosing editors/preview panels are split
+  // along the other axis.
+  const panels = page.locator("#html-editor, #css-editor, #js-editor");
 
   const handleBox = await firstSeparator.boundingBox();
   if (!handleBox) {

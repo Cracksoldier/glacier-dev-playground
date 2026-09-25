@@ -3,19 +3,30 @@ import userEvent from "@testing-library/user-event";
 import { useEffect } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_EDITOR_PREFERENCES } from "../preferences/editorPreferences";
+import type { WorkspaceLayout } from "../preferences/workspaceLayoutPreferences";
 import {
   ProjectStoreProvider,
   useProjectStore,
 } from "../store/ProjectStoreContext";
 import Toolbar from "./Toolbar";
 
-function renderToolbar(onRun = vi.fn()) {
+function renderToolbar({
+  onRun = vi.fn(),
+  workspaceLayout = "default",
+  onWorkspaceLayoutChange = vi.fn(),
+}: {
+  onRun?: () => void;
+  workspaceLayout?: WorkspaceLayout;
+  onWorkspaceLayoutChange?: (layout: WorkspaceLayout) => void;
+} = {}) {
   return render(
     <ProjectStoreProvider>
       <Toolbar
         editorPreferences={DEFAULT_EDITOR_PREFERENCES}
         onUpdateEditorPreferences={vi.fn()}
         onRun={onRun}
+        workspaceLayout={workspaceLayout}
+        onWorkspaceLayoutChange={onWorkspaceLayoutChange}
       />
     </ProjectStoreProvider>,
   );
@@ -57,6 +68,8 @@ describe("Toolbar", () => {
             editorPreferences={DEFAULT_EDITOR_PREFERENCES}
             onUpdateEditorPreferences={vi.fn()}
             onRun={vi.fn()}
+            workspaceLayout="default"
+            onWorkspaceLayoutChange={vi.fn()}
           />
         </ProjectStoreProvider>,
       );
@@ -123,7 +136,7 @@ describe("Toolbar", () => {
   it("fires onRun when the Run button is clicked", async () => {
     const user = userEvent.setup();
     const onRun = vi.fn();
-    renderToolbar(onRun);
+    renderToolbar({ onRun });
 
     await user.click(screen.getByRole("button", { name: "Run" }));
 
@@ -142,5 +155,34 @@ describe("Toolbar", () => {
     expect(autoRunButton.getAttribute("aria-pressed")).not.toBe(
       initiallyPressed,
     );
+  });
+
+  it("marks the current workspace layout as pressed", () => {
+    renderToolbar({ workspaceLayout: "side" });
+
+    const group = screen.getByRole("group", { name: "Workspace layout" });
+    expect(group).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Default layout" }),
+    ).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByRole("button", { name: "Side layout" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(
+      screen.getByRole("button", { name: "Preview only" }),
+    ).toHaveAttribute("aria-pressed", "false");
+  });
+
+  it("reports the chosen workspace layout", async () => {
+    const user = userEvent.setup();
+    const onWorkspaceLayoutChange = vi.fn();
+    renderToolbar({ onWorkspaceLayoutChange });
+
+    await user.click(screen.getByRole("button", { name: "Preview only" }));
+    expect(onWorkspaceLayoutChange).toHaveBeenLastCalledWith("preview");
+
+    await user.click(screen.getByRole("button", { name: "Side layout" }));
+    expect(onWorkspaceLayoutChange).toHaveBeenLastCalledWith("side");
   });
 });

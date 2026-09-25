@@ -40,32 +40,6 @@ async function width(locator: ReturnType<typeof htmlPanel>) {
   return box.width;
 }
 
-test("expanding the preview shrinks the editor panels without removing them", async ({
-  page,
-}) => {
-  const expandButton = page.getByRole("button", { name: "Expand preview" });
-  await expect(expandButton).toHaveAttribute("aria-pressed", "false");
-
-  const editorWidthBefore = await width(htmlPanel(page));
-  const previewWidthBefore = await width(previewPanel(page));
-
-  await expandButton.click();
-  await expect(expandButton).toHaveAttribute("aria-pressed", "true");
-
-  const editorWidthExpanded = await width(htmlPanel(page));
-  const previewWidthExpanded = await width(previewPanel(page));
-  expect(editorWidthExpanded).toBeLessThan(editorWidthBefore);
-  expect(previewWidthExpanded).toBeGreaterThan(previewWidthBefore);
-  // Squeezed, not hidden: the editors stay usable while expanded.
-  await expect(
-    page.getByRole("textbox", { name: "HTML source" }),
-  ).toBeVisible();
-
-  await expandButton.click();
-  await expect(expandButton).toHaveAttribute("aria-pressed", "false");
-  expect(await width(htmlPanel(page))).toBeCloseTo(editorWidthBefore, 0);
-});
-
 test("full-window preview covers the viewport and Escape restores the layout", async ({
   page,
 }) => {
@@ -105,11 +79,6 @@ test("presentation changes never rebuild the preview", async ({ page }) => {
   await expect(nonce).not.toBeEmpty();
   const originalNonce = await nonce.textContent();
 
-  await page.getByRole("button", { name: "Expand preview" }).click();
-  await expect(previewFrame(page).locator("#nonce")).toHaveText(
-    originalNonce ?? "",
-  );
-
   await page.getByRole("button", { name: "Full-window preview" }).click();
   await expect(previewFrame(page).locator("#nonce")).toHaveText(
     originalNonce ?? "",
@@ -127,7 +96,6 @@ test("no presentation mode ever opens a browser window", async ({
 }) => {
   expect(context.pages()).toHaveLength(1);
 
-  await page.getByRole("button", { name: "Expand preview" }).click();
   await page.getByRole("button", { name: "Full-window preview" }).click();
   await page.keyboard.press("Escape");
 

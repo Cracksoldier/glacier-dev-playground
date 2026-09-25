@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "e2e/app-shell.spec.ts": {
-    "mtime": 1790192797.2662146,
-    "ast_hash": "bfe0001cb8deb42e5d9ce724dff5d26f",
+    "mtime": 1790264524.7644365,
+    "ast_hash": "aa7fdb7155944afed34ab0fa325cd503",
     "semantic_hash": ""
   },
   "e2e/project-management.spec.ts": {
@@ -50,13 +50,13 @@
     "semantic_hash": ""
   },
   "src/app/AppShell.test.tsx": {
-    "mtime": 1790191453.2331238,
-    "ast_hash": "628bf85dcc8fdf35f4e34d264671dbfb",
+    "mtime": 1790264505.6337578,
+    "ast_hash": "1f614b6f0f3196a2c42ca40f4038bc6b",
     "semantic_hash": ""
   },
   "src/app/AppShell.tsx": {
-    "mtime": 1790191453.2331629,
-    "ast_hash": "d7eed2426a5d5f4fbe6256c77676dc59",
+    "mtime": 1790264403.8747854,
+    "ast_hash": "1dbaae591837c528fd8632005783ad7f",
     "semantic_hash": ""
   },
   "src/app/PersistenceNotice.test.tsx": {
@@ -70,13 +70,13 @@
     "semantic_hash": ""
   },
   "src/app/Toolbar.test.tsx": {
-    "mtime": 1790192797.268408,
-    "ast_hash": "8b5ded9a7f9f9a38e816dd1b608d463b",
+    "mtime": 1790264434.70232,
+    "ast_hash": "dce7ca764c4415dade14d66c02d46a6f",
     "semantic_hash": ""
   },
   "src/app/Toolbar.tsx": {
-    "mtime": 1790192797.269196,
-    "ast_hash": "0088e4fa8b6bdb304fec2a7191c961f6",
+    "mtime": 1790264445.4240484,
+    "ast_hash": "04adda68a11de3c66991dd2877286ccd",
     "semantic_hash": ""
   },
   "src/app/useConsoleVisibility.test.ts": {
@@ -130,8 +130,8 @@
     "semantic_hash": "56f878814fb7310ed60f75ed43fc01cf"
   },
   "src/components/common/icons.tsx": {
-    "mtime": 1790097364.0483139,
-    "ast_hash": "ab93d97151b4e0a84f0fd8ea44c06d04",
+    "mtime": 1790264279.4247108,
+    "ast_hash": "647c17d255e90c5f858f8ecbcf055bcb",
     "semantic_hash": ""
   },
   "src/components/console/ConsolePanel.tsx": {
@@ -440,8 +440,8 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1790191453.2305338,
-    "ast_hash": "adc9b7fc789ffc827a6de3c959464051",
+    "mtime": 1790264657.6218097,
+    "ast_hash": "98d798a1ea203e8b570187be53f73c34",
     "semantic_hash": ""
   },
   "README.md": {
@@ -500,13 +500,13 @@
     "semantic_hash": ""
   },
   "src/app/useEditorFocusShortcuts.test.ts": {
-    "mtime": 1790192024.5193748,
-    "ast_hash": "3726f55ad95fb7fbf59f85edfbb9b11f",
+    "mtime": 1790264315.619568,
+    "ast_hash": "0e3f0fc6bedd8b4987fbc90ebb1f4a93",
     "semantic_hash": ""
   },
   "src/app/useEditorFocusShortcuts.ts": {
-    "mtime": 1790191759.0477417,
-    "ast_hash": "8e7ab9f2c04e54b15b13ff9a54cca90f",
+    "mtime": 1790264315.619352,
+    "ast_hash": "e81ba0d19542f2bec9fb4002bb8fd370",
     "semantic_hash": ""
   },
   "src/app/useEditorPreferences.test.ts": {
@@ -610,13 +610,13 @@
     "semantic_hash": ""
   },
   "src/components/preview/PreviewPanel.test.tsx": {
-    "mtime": 1790191550.3261354,
-    "ast_hash": "da5bca4b449a06495f4d32dcfa817561",
+    "mtime": 1790264297.2450032,
+    "ast_hash": "1349ae18b66dfaa9645ce7f8b3ca8254",
     "semantic_hash": ""
   },
   "src/components/preview/PreviewPanel.tsx": {
-    "mtime": 1790097390.028658,
-    "ast_hash": "1f85282085a532bd03fb4b64c7224423",
+    "mtime": 1790264288.1092885,
+    "ast_hash": "3aebcf832d655e93733e225e421e99b1",
     "semantic_hash": ""
   },
   "src/preferences/editorPreferences.test.ts": {
@@ -1140,8 +1140,8 @@
     "semantic_hash": ""
   },
   "e2e/preview-presentation.spec.ts": {
-    "mtime": 1790098413.5087237,
-    "ast_hash": "61c9b4a6734568dd3775c67a11028d7c",
+    "mtime": 1790264517.0823,
+    "ast_hash": "ec3c60fae953e27d44f17fe30ff1de73",
     "semantic_hash": ""
   },
   "e2e/accessibility-scan.spec.ts": {
@@ -1262,6 +1262,46 @@
   "src/preview/tsCompiler.noEmit.test.ts": {
     "mtime": 1790192668.7420037,
     "ast_hash": "1a6a3c2170add15d1522b5d4e5103fbc",
+    "semantic_hash": ""
+  },
+  "e2e/workspace-layout.spec.ts": {
+    "mtime": 1790264582.4187984,
+    "ast_hash": "3397ec67992baa84c6f2c1e3cd7cb6cb",
+    "semantic_hash": ""
+  },
+  "src/app/useWorkspaceLayout.test.ts": {
+    "mtime": 1790264271.0695648,
+    "ast_hash": "4620bf3692b9764f05ce77e30e700c28",
+    "semantic_hash": ""
+  },
+  "src/app/useWorkspaceLayout.ts": {
+    "mtime": 1790264265.4594672,
+    "ast_hash": "0853bc82070f4950d3519c8c4a6c81c9",
+    "semantic_hash": ""
+  },
+  "src/preferences/workspaceLayoutPreferences.test.ts": {
+    "mtime": 1790264260.8763874,
+    "ast_hash": "ed6674978c20da9f9522690c01090a80",
+    "semantic_hash": ""
+  },
+  "src/preferences/workspaceLayoutPreferences.ts": {
+    "mtime": 1790264254.3972747,
+    "ast_hash": "c0ff512bf5e7ec707a42378460b17b96",
+    "semantic_hash": ""
+  },
+  "default_layout.png": {
+    "mtime": 1790263743.8874393,
+    "ast_hash": "6c9a818bd1ac4e38c3339b6f084e07c7",
+    "semantic_hash": ""
+  },
+  "preview_layout.png": {
+    "mtime": 1790263777.2538664,
+    "ast_hash": "2be730af340887cfab50328dc7c40e57",
+    "semantic_hash": ""
+  },
+  "side_layout.png": {
+    "mtime": 1790263914.5797772,
+    "ast_hash": "0e855177ffd6aa801036d788c2e54491",
     "semantic_hash": ""
   }
 }

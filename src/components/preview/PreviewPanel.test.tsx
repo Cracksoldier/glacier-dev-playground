@@ -221,26 +221,27 @@ describe("PreviewPanel", () => {
     );
   });
 
-  it("reflects the current presentation on the toggle buttons", () => {
+  it("reflects the current presentation on the full-window toggle", () => {
     render(
       <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
         <PreviewPanel
           consoleEntries={createConsoleEntriesStub()}
-          presentation="expanded"
+          presentation="full-window"
           onPresentationChange={vi.fn()}
         />
       </ProjectStoreProvider>,
     );
 
     expect(
-      screen.getByRole("button", { name: "Expand preview" }),
-    ).toHaveAttribute("aria-pressed", "true");
-    expect(
       screen.getByRole("button", { name: "Full-window preview" }),
-    ).toHaveAttribute("aria-pressed", "false");
+    ).toHaveAttribute("aria-pressed", "true");
+    // Superseded by the toolbar's "Preview only" workspace layout.
+    expect(
+      screen.queryByRole("button", { name: "Expand preview" }),
+    ).not.toBeInTheDocument();
   });
 
-  it("toggles expanded on and back off", async () => {
+  it("toggles full-window on and back off", async () => {
     const userEvent = await import("@testing-library/user-event");
     const user = userEvent.default.setup();
     const onPresentationChange = vi.fn();
@@ -254,19 +255,23 @@ describe("PreviewPanel", () => {
       </ProjectStoreProvider>,
     );
 
-    await user.click(screen.getByRole("button", { name: "Expand preview" }));
-    expect(onPresentationChange).toHaveBeenCalledWith("expanded");
+    await user.click(
+      screen.getByRole("button", { name: "Full-window preview" }),
+    );
+    expect(onPresentationChange).toHaveBeenCalledWith("full-window");
 
     rerender(
       <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
         <PreviewPanel
           consoleEntries={createConsoleEntriesStub()}
-          presentation="expanded"
+          presentation="full-window"
           onPresentationChange={onPresentationChange}
         />
       </ProjectStoreProvider>,
     );
-    await user.click(screen.getByRole("button", { name: "Expand preview" }));
+    await user.click(
+      screen.getByRole("button", { name: "Full-window preview" }),
+    );
     expect(onPresentationChange).toHaveBeenLastCalledWith("default");
   });
 
@@ -297,7 +302,7 @@ describe("PreviewPanel", () => {
       <ProjectStoreProvider repository={createInMemoryProjectRepository()}>
         <PreviewPanel
           consoleEntries={createConsoleEntriesStub()}
-          presentation="expanded"
+          presentation="default"
           onPresentationChange={onPresentationChange}
         />
       </ProjectStoreProvider>,

@@ -42,12 +42,14 @@
   "40": ".getClientRects",
   "41": "PreviewFrame.tsx",
   "42": "ResetProjectDialog.tsx",
+  "43": "buildCoordinator.ts",
   "44": "PreviewFrame.test.tsx",
   "45": "scssWorkerProtocol.ts",
   "46": "ProjectSwitcherPopover.tsx",
   "47": "templates.ts",
   "48": "PreviewPanel.tsx",
   "49": "project.ts",
+  "50": "previewResourceLoader.ts",
   "51": "PreviewPanel.consoleWiring.test.tsx",
   "52": "AppShell.tsx",
   "53": "IndexedDB",
@@ -67,6 +69,7 @@
   "67": "CI validate job (check/test/build/verify-base-path)",
   "68": "useAutosave.ts",
   "69": "project.ts",
+  "70": "ResourcePresetsSection.tsx",
   "71": "previewResourceLoader.ts",
   "72": "preview-presentation.spec.ts",
   "73": "architecture.md",
@@ -76,9 +79,6 @@
   "78": "performance.spec.ts",
   "81": "critical-journey.spec.ts",
   "83": "PlaygroundProject",
-  "84": "ExportDialog.test.tsx",
   "85": "useEditorFocusShortcuts.ts",
-  "86": "scssCompiler.ts",
-  "87": "ResourcePresetsSection.tsx",
-  "89": "useSaveShortcut"
+  "87": "ResourcePresetsSection.tsx"
 }
