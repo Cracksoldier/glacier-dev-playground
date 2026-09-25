@@ -1,4 +1,10 @@
 import { type PlaygroundProject, PROJECT_SCHEMA_VERSION } from "./project";
+import {
+  type FieldValidationResult,
+  validateProjectResources,
+  validateProjectSettings,
+  validateProjectSource,
+} from "./projectValidation";
 
 /**
  * Transforms a raw persisted record from schema version N to N+1.
@@ -8,12 +14,17 @@ export type ProjectMigrationStep = (
   input: Record<string, unknown>,
 ) => Record<string, unknown>;
 
-/**
- * Empty today: the persisted schema has been version 1 since inception.
- * Add an entry here (keyed by the version being migrated away from) the
- * next time {@link PROJECT_SCHEMA_VERSION} bumps.
- */
-export const PROJECT_MIGRATIONS: Record<number, ProjectMigrationStep> = {};
+/** Add an entry here (keyed by the version being migrated away from) whenever {@link PROJECT_SCHEMA_VERSION} bumps. */
+export const PROJECT_MIGRATIONS: Record<number, ProjectMigrationStep> = {
+  // v1 -> v2: `trusted` was added while records were still written as v1,
+  // so a v1 record may or may not carry it. Records from before the field
+  // existed were all created locally, so they default to trusted; an
+  // explicit value (including an imported project's `false`) is kept.
+  1: (input) => ({
+    ...input,
+    trusted: typeof input.trusted === "boolean" ? input.trusted : true,
+  }),
+};
 
 export type ProjectRecoveryResult =
   | { status: "ok"; project: PlaygroundProject }
@@ -24,19 +35,22 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function hasValidShape(
+function validateProjectRecordShape(
   record: Record<string, unknown>,
-): record is Record<string, unknown> & PlaygroundProject {
-  return (
-    typeof record.id === "string" &&
-    typeof record.title === "string" &&
-    typeof record.createdAt === "string" &&
-    typeof record.updatedAt === "string" &&
-    isPlainObject(record.source) &&
-    Array.isArray(record.resources) &&
-    isPlainObject(record.settings) &&
-    typeof record.trusted === "boolean"
-  );
+): FieldValidationResult {
+  for (const field of ["id", "title", "createdAt", "updatedAt"] as const) {
+    if (typeof record[field] !== "string") {
+      return { valid: false, reason: `${field}: expected a string.` };
+    }
+  }
+  if (typeof record.trusted !== "boolean") {
+    return { valid: false, reason: "trusted: expected a boolean." };
+  }
+  const sourceResult = validateProjectSource(record.source);
+  if (!sourceResult.valid) return sourceResult;
+  const settingsResult = validateProjectSettings(record.settings);
+  if (!settingsResult.valid) return settingsResult;
+  return validateProjectResources(record.resources);
 }
 
 /**
@@ -84,18 +98,12 @@ export function recoverProjectRecord(
     ...record,
     schemaVersion: currentVersion,
   };
-  // `trusted` was added after schemaVersion 1 shipped without a version bump
-  // (see PlaygroundProject#trusted) — records persisted before this field
-  // existed must be defaulted here rather than via a migration step.
-  if (typeof migrated.trusted !== "boolean") {
-    migrated.trusted = true;
-  }
-  if (!hasValidShape(migrated)) {
-    return {
-      status: "invalid",
-      reason: "Record does not match the expected project shape.",
-    };
+  const shape = validateProjectRecordShape(migrated);
+  if (!shape.valid) {
+    return { status: "invalid", reason: shape.reason };
   }
 
-  return { status: "ok", project: migrated };
+  // Every field of PlaygroundProject, nested ones included, was validated
+  // just above — this is the documented unknown-to-typed boundary.
+  return { status: "ok", project: migrated as unknown as PlaygroundProject };
 }

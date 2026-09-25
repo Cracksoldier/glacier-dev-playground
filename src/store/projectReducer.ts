@@ -18,9 +18,13 @@ import {
 export interface ProjectStoreState {
   projects: PlaygroundProject[];
   activeProjectId: ProjectId;
-  /** Incremented on every content-mutating action. Navigation (switch) does not bump it. */
+  /**
+   * Incremented on every action that changes persisted state — project
+   * content and the active project id (which is persisted so the last
+   * active project reopens on startup).
+   */
   revision: number;
-  /** Revision as of the last successful save. Never changes in this milestone — there is no save operation yet. */
+  /** Revision as of the last successful save; the store is dirty while it differs from `revision`. */
   lastPersistedRevision: number;
 }
 
@@ -67,6 +71,10 @@ export type ProjectStoreAction =
       type: "project/hydrate";
       payload: { projects: PlaygroundProject[]; activeProjectId: ProjectId };
     }
+  | {
+      type: "project/loadPersisted";
+      payload: { projects: PlaygroundProject[]; activeProjectId: ProjectId };
+    }
   | { type: "project/markSaved"; payload: { revision: number } };
 
 export function createInitialProjectStoreState(): ProjectStoreState {
@@ -99,6 +107,40 @@ function regenerateResourceIds(
     ...resource,
     id: crypto.randomUUID(),
   }));
+}
+
+/**
+ * Replaces the whole store with a persisted snapshot as a clean (saved)
+ * state, reseeding a starter project when the snapshot is empty.
+ */
+function replaceWithSnapshot(
+  state: ProjectStoreState,
+  snapshot: { projects: PlaygroundProject[]; activeProjectId: ProjectId },
+): ProjectStoreState {
+  const { projects, activeProjectId } = snapshot;
+
+  if (projects.length === 0) {
+    const starter = createStarterProject();
+    return {
+      ...state,
+      projects: [starter],
+      activeProjectId: starter.id,
+      revision: 0,
+      lastPersistedRevision: 0,
+    };
+  }
+
+  const resolvedActiveProjectId = projects.some((p) => p.id === activeProjectId)
+    ? activeProjectId
+    : projects[0].id;
+
+  return {
+    ...state,
+    projects,
+    activeProjectId: resolvedActiveProjectId,
+    revision: 0,
+    lastPersistedRevision: 0,
+  };
 }
 
 export function projectReducer(
@@ -198,9 +240,13 @@ export function projectReducer(
     case "project/switch": {
       const { projectId } = action.payload;
       const exists = state.projects.some((p) => p.id === projectId);
-      if (!exists) return state;
+      if (!exists || projectId === state.activeProjectId) return state;
 
-      return { ...state, activeProjectId: projectId };
+      return {
+        ...state,
+        activeProjectId: projectId,
+        revision: state.revision + 1,
+      };
     }
 
     case "project/resetFromTemplate": {
@@ -336,32 +382,26 @@ export function projectReducer(
       };
     }
 
-    case "project/hydrate": {
-      const { projects, activeProjectId } = action.payload;
+    case "project/hydrate":
+      return replaceWithSnapshot(state, action.payload);
 
-      if (projects.length === 0) {
-        const starter = createStarterProject();
-        return {
-          ...state,
-          projects: [starter],
-          activeProjectId: starter.id,
-          revision: 0,
-          lastPersistedRevision: 0,
-        };
+    case "project/loadPersisted": {
+      if (state.revision === state.lastPersistedRevision) {
+        return replaceWithSnapshot(state, action.payload);
       }
 
-      const resolvedActiveProjectId = projects.some(
-        (p) => p.id === activeProjectId,
-      )
-        ? activeProjectId
-        : projects[0].id;
-
+      // The user already edited the in-memory fallback while the load was in
+      // flight. Replacing it would lose those edits, and keeping only it would
+      // make the next autosave (which deletes every stored project missing
+      // from its snapshot) delete every persisted project — so keep both, and
+      // stay dirty so the merged list gets saved.
+      const persistedIds = new Set(action.payload.projects.map((p) => p.id));
       return {
         ...state,
-        projects,
-        activeProjectId: resolvedActiveProjectId,
-        revision: 0,
-        lastPersistedRevision: 0,
+        projects: [
+          ...action.payload.projects,
+          ...state.projects.filter((p) => !persistedIds.has(p.id)),
+        ],
       };
     }
 

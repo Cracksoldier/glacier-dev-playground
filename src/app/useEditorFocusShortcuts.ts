@@ -12,11 +12,16 @@ export interface NarrowTabOptions {
   setActiveTab: (tab: ActiveTab) => void;
 }
 
-const TAB_FOR_KEY: Record<string, ActiveTab> = {
-  "1": "html",
-  "2": "css",
-  "3": "js",
-  "4": "preview",
+/**
+ * Keyed by `KeyboardEvent.code` (the physical key), not `.key` (the produced
+ * character): with Alt held, macOS Option produces "¡", "™", … and layouts
+ * like AZERTY need Shift for digits, so `.key` is never "1"–"4" there.
+ */
+const TAB_FOR_CODE: Partial<Record<string, ActiveTab>> = {
+  Digit1: "html",
+  Digit2: "css",
+  Digit3: "js",
+  Digit4: "preview",
 };
 
 /**
@@ -39,20 +44,21 @@ export function useEditorFocusShortcuts(
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
+      const tab = TAB_FOR_CODE[event.code];
       const isFocusCombo =
         event.altKey &&
         !event.ctrlKey &&
         !event.metaKey &&
         !event.shiftKey &&
-        ["1", "2", "3", "4"].includes(event.key);
+        tab !== undefined;
       if (!isFocusCombo) return;
 
       const targetRef =
-        event.key === "1"
+        tab === "html"
           ? htmlEditorRef
-          : event.key === "2"
+          : tab === "css"
             ? cssEditorRef
-            : event.key === "3"
+            : tab === "js"
               ? jsEditorRef
               : previewRef;
       if (!targetRef.current) return;
@@ -60,7 +66,7 @@ export function useEditorFocusShortcuts(
       event.preventDefault();
 
       if (isNarrow && setActiveTab) {
-        setActiveTab(TAB_FOR_KEY[event.key]);
+        setActiveTab(tab);
         window.requestAnimationFrame(() => targetRef.current?.focus());
         return;
       }

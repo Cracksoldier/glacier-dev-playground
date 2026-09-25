@@ -13,6 +13,7 @@ import PreviewPanel, {
   type PreviewPresentation,
 } from "../components/preview/PreviewPanel";
 import type { ActiveTab } from "../preferences/layoutPreferences";
+import { workspaceLayoutStorage } from "../preferences/layoutStorage";
 import type { MappedSourceLocation } from "../preview/mapErrorToSource";
 import {
   ProjectStoreProvider,
@@ -89,7 +90,7 @@ function AppShellContent() {
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
     id: "glacier:workspace-layout:v1",
     panelIds: WORKSPACE_PANEL_IDS,
-    storage: window.localStorage,
+    storage: workspaceLayoutStorage,
   });
   const { preferences, updatePreferences } = useEditorPreferences();
   const { activeTab, setActiveTab } = useActiveTab();
@@ -173,8 +174,8 @@ function AppShellContent() {
           >
             <Panel
               id="html-editor"
-              defaultSize={25}
-              minSize={10}
+              defaultSize="25%"
+              minSize="10%"
               className={styles.panel}
             >
               <TabPanel
@@ -192,8 +193,8 @@ function AppShellContent() {
             <ResizeHandle label="Resize HTML and CSS editor panels" />
             <Panel
               id="css-editor"
-              defaultSize={25}
-              minSize={10}
+              defaultSize="25%"
+              minSize="10%"
               className={styles.panel}
             >
               <TabPanel
@@ -214,8 +215,8 @@ function AppShellContent() {
             <ResizeHandle label="Resize CSS and JavaScript editor panels" />
             <Panel
               id="js-editor"
-              defaultSize={25}
-              minSize={10}
+              defaultSize="25%"
+              minSize="10%"
               className={styles.panel}
             >
               <TabPanel
@@ -235,8 +236,8 @@ function AppShellContent() {
             <ResizeHandle label="Resize JavaScript editor and preview panels" />
             <Panel
               id="preview"
-              defaultSize={25}
-              minSize={10}
+              defaultSize="25%"
+              minSize="10%"
               className={`${styles.panel} ${styles.previewPanel}`}
             >
               <TabPanel

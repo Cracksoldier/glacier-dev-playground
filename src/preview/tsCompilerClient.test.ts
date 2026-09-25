@@ -12,11 +12,15 @@ import type { WorkerLike } from "./workerLike";
 function createFakeWorker() {
   const posted: unknown[] = [];
   let onmessageHandler: ((event: MessageEvent) => void) | null = null;
+  let onerrorHandler: ((event: ErrorEvent) => void) | null = null;
   const terminate = vi.fn();
   const worker: WorkerLike = {
     postMessage: (data) => posted.push(data),
     set onmessage(handler: ((event: MessageEvent) => void) | null) {
       onmessageHandler = handler;
+    },
+    set onerror(handler: ((event: ErrorEvent) => void) | null) {
+      onerrorHandler = handler;
     },
     terminate,
   };
@@ -26,6 +30,9 @@ function createFakeWorker() {
     terminate,
     respond(data: unknown) {
       onmessageHandler?.({ data } as MessageEvent);
+    },
+    crash() {
+      onerrorHandler?.(new ErrorEvent("error"));
     },
   };
 }
@@ -190,5 +197,91 @@ describe("createTsCompilerClient", () => {
     const client = createTsCompilerClient(createWorker);
     expect(() => client.dispose()).not.toThrow();
     expect(createWorker).not.toHaveBeenCalled();
+  });
+
+  it("settles every pending compile with a failure when the worker errors, then spawns a fresh worker", async () => {
+    const first = createFakeWorker();
+    const second = createFakeWorker();
+    const createWorker = vi
+      .fn()
+      .mockReturnValueOnce(first.worker)
+      .mockReturnValueOnce(second.worker);
+    const client = createTsCompilerClient(createWorker);
+
+    const a = client.compile(
+      "const a = 1;",
+      "javascript",
+      "classic",
+      "build-1",
+    );
+    const b = client.compile(
+      "const a = 1;",
+      "javascript",
+      "classic",
+      "build-2",
+    );
+    first.crash();
+
+    await expect(a).resolves.toEqual({
+      diagnostics: [
+        {
+          message: expect.stringContaining("stopped unexpectedly"),
+          category: "error",
+        },
+      ],
+      emittedJs: null,
+      lineMap: null,
+    });
+    await expect(b).resolves.toEqual({
+      diagnostics: [
+        {
+          message: expect.stringContaining("stopped unexpectedly"),
+          category: "error",
+        },
+      ],
+      emittedJs: null,
+      lineMap: null,
+    });
+    expect(first.terminate).toHaveBeenCalledTimes(1);
+
+    const retried = client.compile(
+      "const a = 1;",
+      "javascript",
+      "classic",
+      "build-3",
+    );
+    expect(createWorker).toHaveBeenCalledTimes(2);
+    second.respond({
+      protocol: TS_WORKER_PROTOCOL,
+      version: TS_WORKER_VERSION,
+      buildId: "build-3",
+      diagnostics: [],
+      emittedJs: "const a = 1;",
+      lineMap: null,
+    });
+    await expect(retried).resolves.toEqual({
+      diagnostics: [],
+      emittedJs: "const a = 1;",
+      lineMap: null,
+    });
+  });
+
+  it("resolves with a failure instead of throwing when the worker cannot be created", async () => {
+    const client = createTsCompilerClient(() => {
+      throw new Error("Worker construction blocked");
+    });
+
+    await expect(
+      client.compile("const a = 1;", "javascript", "classic", "build-1"),
+    ).resolves.toEqual({
+      diagnostics: [
+        {
+          message: expect.stringContaining("stopped unexpectedly"),
+          category: "error",
+        },
+      ],
+      emittedJs: null,
+      lineMap: null,
+    });
   });
 });

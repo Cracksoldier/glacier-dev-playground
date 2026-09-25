@@ -100,7 +100,7 @@ test("an invalid JSON import leaves the active project untouched", async ({
 test("a downloaded standalone HTML export runs correctly when opened directly, with no parent-app bridge code", async ({
   page,
   context,
-}) => {
+}, testInfo) => {
   await page.getByRole("button", { name: "New project" }).click();
   await page.getByLabel("Title").fill("Standalone Export");
   await page.getByRole("button", { name: "Create" }).click();
@@ -118,8 +118,11 @@ test("a downloaded standalone HTML export runs correctly when opened directly, w
   const downloadPromise = page.waitForEvent("download");
   await exportDialog.getByRole("button", { name: "Download HTML" }).click();
   const download = await downloadPromise;
-  const path = await download.path();
-  if (!path) throw new Error("expected a download path");
+  // Saved under an .html name: Playwright's own download path has no
+  // extension, so over file:// it could render as plain text — which also
+  // contains "standalone ran" in the script source, proving nothing.
+  const path = testInfo.outputPath("standalone-export.html");
+  await download.saveAs(path);
   const html = readFileSync(path, "utf-8");
 
   expect(html).not.toContain("postMessage");
@@ -127,7 +130,8 @@ test("a downloaded standalone HTML export runs correctly when opened directly, w
 
   const standalonePage = await context.newPage();
   await standalonePage.goto(`file://${path}`);
-  await expect(standalonePage.getByText("standalone ran")).toBeVisible();
+  // The markup says "loading"; only an executed script changes it.
+  await expect(standalonePage.locator("#out")).toHaveText("standalone ran");
   await standalonePage.close();
 });
 

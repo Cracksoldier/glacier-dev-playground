@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { PlaygroundProject } from "../models/project";
 import { PROJECT_TEMPLATES } from "../models/templates";
 import { openDatabase } from "./db";
@@ -16,6 +16,10 @@ function uniqueDatabaseName(): string {
 function makeProject(title: string): PlaygroundProject {
   return { ...PROJECT_TEMPLATES.empty.create(), title };
 }
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("createIndexedDbProjectRepository", () => {
   it("load() returns a null snapshot when nothing has been persisted", async () => {
@@ -98,6 +102,42 @@ describe("createIndexedDbProjectRepository", () => {
     expect(result.snapshot?.projects[0].id).toBe(validProject.id);
   });
 
+  it("keeps an unreadable record on disk across later saves until resetAllData()", async () => {
+    const databaseName = uniqueDatabaseName();
+    const repository = createIndexedDbProjectRepository({ databaseName });
+    const keptProject = makeProject("Kept");
+    const deletedProject = makeProject("Deleted");
+    await repository.saveSnapshot({
+      projects: [keptProject, deletedProject],
+      activeProjectId: keptProject.id,
+    });
+
+    const seedDb = await openDatabase(databaseName);
+    await seedDb.put(PROJECTS_STORE, {
+      // biome-ignore lint/suspicious/noExplicitAny: intentionally malformed test fixture
+      ...({ id: "corrupt-1", schemaVersion: 1, title: 42 } as any),
+    });
+    seedDb.close();
+
+    await repository.load();
+    await repository.saveSnapshot({
+      projects: [keptProject],
+      activeProjectId: keptProject.id,
+    });
+
+    const db = await openDatabase(databaseName);
+    const keysAfterSave = await db.getAllKeys(PROJECTS_STORE);
+    db.close();
+    expect([...keysAfterSave].sort()).toEqual(
+      ["corrupt-1", keptProject.id].sort(),
+    );
+
+    await repository.resetAllData();
+    const resetDb = await openDatabase(databaseName);
+    expect(await resetDb.getAllKeys(PROJECTS_STORE)).toEqual([]);
+    resetDb.close();
+  });
+
   it("falls back to the first project when the persisted active id is missing", async () => {
     const databaseName = uniqueDatabaseName();
     const repository = createIndexedDbProjectRepository({ databaseName });
@@ -133,6 +173,49 @@ describe("createIndexedDbProjectRepository", () => {
       recoveredCount: 0,
       rejectedNewerAppVersion: true,
     });
+  });
+
+  it("reuses one IndexedDB connection across calls instead of opening one per call", async () => {
+    const openSpy = vi.spyOn(indexedDB, "open");
+    const repository = createIndexedDbProjectRepository({
+      databaseName: uniqueDatabaseName(),
+    });
+    const project = makeProject("A");
+
+    await repository.load();
+    await repository.saveSnapshot({
+      projects: [project],
+      activeProjectId: project.id,
+    });
+    await repository.saveSnapshot({
+      projects: [project],
+      activeProjectId: project.id,
+    });
+
+    expect(openSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("reopens the connection after it was closed to unblock a database delete", async () => {
+    const databaseName = uniqueDatabaseName();
+    const repository = createIndexedDbProjectRepository({ databaseName });
+    const project = makeProject("A");
+    await repository.saveSnapshot({
+      projects: [project],
+      activeProjectId: project.id,
+    });
+
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.deleteDatabase(databaseName);
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+
+    await repository.saveSnapshot({
+      projects: [project],
+      activeProjectId: project.id,
+    });
+    const result = await repository.load();
+    expect(result.snapshot?.projects.map((p) => p.id)).toEqual([project.id]);
   });
 
   it("resetAllData() clears both stores", async () => {

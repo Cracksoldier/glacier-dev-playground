@@ -76,10 +76,15 @@ test("captures console.log/info/warn/error/debug calls with correct severity", a
 test("console.clear() clears prior entries", async ({ page }) => {
   await createProject(page, "Empty Project", "Console Clear");
 
-  await setEditorContent(page, "Script source", 'console.log("before clear");');
-  await expect(consolePanel(page).getByText('"before clear"')).toBeVisible();
+  // All in one run: a new run clears the console by default anyway, so only
+  // an in-band clear can remove an entry logged earlier in the same run.
+  await setEditorContent(
+    page,
+    "Script source",
+    'console.log("before clear");\nconsole.clear();\nconsole.log("after clear");',
+  );
 
-  await setEditorContent(page, "Script source", "console.clear();");
+  await expect(consolePanel(page).getByText('"after clear"')).toBeVisible();
   await expect(consolePanel(page).getByText('"before clear"')).toHaveCount(0);
 });
 
@@ -159,36 +164,35 @@ test("starting a new run clears prior entries by default", async ({ page }) => {
 test("a superseded run's console messages never appear", async ({ page }) => {
   await createProject(page, "Empty Project", "Superseded Console");
 
-  await setEditorContent(
-    page,
-    "Script source",
+  const intervalScript = (marker: string) =>
     [
       "let n = 0;",
       "setInterval(() => {",
       "  n += 1;",
-      '  console.log("tick " + n);',
+      `  console.log("${marker} " + n);`,
       "}, 50);",
-    ].join("\n"),
-  );
+    ].join("\n");
 
+  await setEditorContent(page, "Script source", intervalScript("old tick"));
   await expect(
     consolePanel(page)
-      .getByText(/tick \d+/)
+      .getByText(/old tick \d+/)
       .first(),
-  ).toBeVisible({
-    timeout: 2000,
-  });
+  ).toBeVisible({ timeout: 2000 });
 
-  // Force a new run; the previous iframe (and its interval/log calls) must
-  // be torn down, and none of its stale messages should ever render.
-  await page.getByRole("button", { name: "Run", exact: true }).click();
-  await expect(consolePanel(page).getByText(/tick \d+/)).toHaveCount(0);
+  // A new run with a distinct marker: the previous iframe (and its
+  // interval) must be torn down, and none of its messages may appear again
+  // once the new run is logging.
+  await setEditorContent(page, "Script source", intervalScript("new tick"));
+  await expect(
+    consolePanel(page)
+      .getByText(/new tick \d+/)
+      .first(),
+  ).toBeVisible({ timeout: 2000 });
+  await expect(consolePanel(page).getByText(/old tick \d+/)).toHaveCount(0);
 
   await page.waitForTimeout(300);
-  const tickCount = await consolePanel(page)
-    .getByText(/tick \d+/)
-    .count();
-  expect(tickCount).toBeGreaterThan(0);
+  await expect(consolePanel(page).getByText(/old tick \d+/)).toHaveCount(0);
 });
 
 test("a circular reference doesn't freeze the app and renders a [Circular] marker", async ({

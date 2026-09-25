@@ -179,6 +179,38 @@ describe("ExportDialog", () => {
     expect(triggerBlobDownloadMock).toHaveBeenCalledTimes(1);
   });
 
+  it.each([["Download HTML"], ["Download ZIP"]])(
+    "reports an unexpected failure from %s instead of staying busy",
+    async (buttonName) => {
+      tsCompileMock.mockRejectedValueOnce(new Error("worker exploded"));
+      const user = userEvent.setup();
+      render(
+        <ExportDialog
+          isOpen
+          onClose={vi.fn()}
+          project={testProject({
+            source: {
+              html: "<p>hi</p>",
+              stylesheet: "",
+              stylesheetLanguage: "css",
+              script: "const a: number = 1;",
+              scriptLanguage: "typescript",
+              executionMode: "classic",
+              headContent: "",
+            },
+          })}
+        />,
+      );
+
+      await user.click(screen.getByRole("button", { name: buttonName }));
+
+      expect(await screen.findByRole("alert")).toHaveTextContent(
+        "Couldn't build the export.",
+      );
+      expect(screen.getByRole("button", { name: buttonName })).toBeEnabled();
+    },
+  );
+
   it("copies standalone HTML to the clipboard when available", async () => {
     const user = userEvent.setup();
     const writeText = vi.fn().mockResolvedValue(undefined);

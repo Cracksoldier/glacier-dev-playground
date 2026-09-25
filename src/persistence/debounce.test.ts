@@ -65,4 +65,19 @@ describe("createDebouncer", () => {
 
     expect(fn).not.toHaveBeenCalled();
   });
+
+  it("isPending reports whether a call is waiting to run", () => {
+    const debouncer = createDebouncer(500, vi.fn());
+    expect(debouncer.isPending()).toBe(false);
+
+    debouncer.schedule("a");
+    expect(debouncer.isPending()).toBe(true);
+
+    vi.advanceTimersByTime(500);
+    expect(debouncer.isPending()).toBe(false);
+
+    debouncer.schedule("b");
+    debouncer.flush();
+    expect(debouncer.isPending()).toBe(false);
+  });
 });

@@ -2,7 +2,12 @@ import { type Dispatch, useCallback, useEffect, useRef, useState } from "react";
 import type { ProjectRepository } from "../persistence/projectRepository";
 import type { ProjectStoreAction, ProjectStoreState } from "./projectReducer";
 
-export type HydrationStatus = "loading" | "ready" | "unavailable";
+/**
+ * `blocked` means persisted data exists but can't be loaded (written by a
+ * newer app version, or every record unreadable). Saving stays disabled so
+ * that data is never overwritten until the user explicitly resets it.
+ */
+export type HydrationStatus = "loading" | "ready" | "blocked" | "unavailable";
 
 export interface PersistenceNotice {
   /** Number of persisted records skipped this load (invalid shape or unsupported future version). */
@@ -20,10 +25,10 @@ export interface UseProjectHydrationResult {
 
 /**
  * Loads persisted projects once on mount and hydrates the reducer with them.
- * If the in-memory fallback state has already been mutated by the time the
- * load resolves (the user started editing during the async gap), hydration
- * is skipped so the newer edits aren't clobbered — the next autosave tick
- * persists them instead.
+ * If the in-memory fallback state has already been edited by the time the
+ * load resolves (the user started editing during the async gap), the reducer
+ * merges the persisted projects with the edited ones rather than dropping
+ * either side — see `project/loadPersisted`.
  */
 export function useProjectHydration(
   state: ProjectStoreState,
@@ -54,6 +59,10 @@ export function useProjectHydration(
         }
 
         if (result.snapshot === null) {
+          if (result.rejectedNewerAppVersion || result.recoveredCount > 0) {
+            setStatus("blocked");
+            return;
+          }
           setStatus("ready");
           void repository.saveSnapshot({
             projects: stateRef.current.projects,
@@ -62,9 +71,7 @@ export function useProjectHydration(
           return;
         }
 
-        if (stateRef.current.revision === 0) {
-          dispatch({ type: "project/hydrate", payload: result.snapshot });
-        }
+        dispatch({ type: "project/loadPersisted", payload: result.snapshot });
         setStatus("ready");
       } catch {
         if (!cancelled) setStatus("unavailable");
@@ -84,6 +91,7 @@ export function useProjectHydration(
       payload: { projects: [], activeProjectId: "" },
     });
     setNotice(null);
+    setStatus((current) => (current === "blocked" ? "ready" : current));
   }, [repository, dispatch]);
 
   const dismissNotice = useCallback(() => setNotice(null), []);

@@ -22,7 +22,7 @@ Glacier DEV Playground is a single-route React 19 + TypeScript SPA built with Vi
 2. The preview panel debounces the change (or waits for **Run** in manual mode) and asks the build coordinator for a new execution id.
 3. Stylesheet and script are compiled in parallel. CSS and JavaScript pass through untouched; SCSS goes to the SCSS worker and TypeScript *and* JavaScript go to the TypeScript worker (see the tradeoff below).
 4. A blocking diagnostic aborts the build: the console reports it, the editor shows a marker, and the previous successful preview stays on screen marked stale.
-5. On success, the preview document is assembled — user `<head>` content, external resources in their configured order, compiled CSS, the injected console bridge, and the compiled script — and written into the sandboxed iframe.
+5. On success, the preview document is assembled — the injected console bridge first, so it captures everything that follows, then user `<head>` content, external resources in their configured order, compiled CSS, the user's HTML, and the compiled script — and written into the sandboxed iframe.
 6. The iframe reports `ready`, console output, runtime errors, unhandled rejections, and failed resources back over `postMessage`. See [protocols.md](./protocols.md).
 
 The build coordinator stamps each run with an execution id and discards any result whose id is no longer current (`isStale`). That is what makes a fast sequence of edits promote only the final compile, and what stops a superseded run's timers and console output from reaching the UI.
@@ -33,7 +33,7 @@ Measured from `npm run build` at the M12 release gate:
 
 | Chunk | Size | Gzip | Fetched |
 | --- | --- | --- | --- |
-| `index-*.js` | 854.78 kB | 281.63 kB | First paint. CodeMirror (six language/feature packages), React DOM, and the entire shell. |
+| `index-*.js` | 884.76 kB | 294.35 kB | First paint. CodeMirror (seven language/feature packages, including `@codemirror/lang-sass` for SCSS highlighting), React DOM, and the entire shell. |
 | `index-*.css` | 30.45 kB | 4.92 kB | First paint. |
 | Latin-subset fonts (`*.woff2` / `*.woff`) | ~10–28 kB each | — | First paint, per weight actually used. |
 | `tsCompiler.worker-*.js` | 6,291.08 kB | — | First build of any project, off the main thread. Bundles the TypeScript compiler and its lib sources. |

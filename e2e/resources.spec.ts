@@ -224,7 +224,10 @@ test("user code waits for a slow script resource to finish before it runs", asyn
   });
   await closeResourcesDialog(page);
 
-  await expect(previewFrame(page).getByText("ready")).toBeVisible();
+  // exact: a substring match would also accept "not ready".
+  await expect(
+    previewFrame(page).getByText("ready", { exact: true }),
+  ).toBeVisible();
 });
 
 test("a failing script resource blocks user-code execution, reports a console error, and leaves the previous successful preview visible", async ({

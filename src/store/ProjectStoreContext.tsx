@@ -72,6 +72,8 @@ interface ProjectStoreContextValue {
   isDirty: boolean;
   saveStatus: SaveStatus;
   persistenceNotice: PersistenceNotice | null;
+  /** True while unloadable persisted data blocks saving until the user resets local data. */
+  isSavingBlocked: boolean;
   actions: ProjectStoreActions;
 }
 
@@ -104,10 +106,17 @@ export function ProjectStoreProvider({
     resolvedRepository,
     hydration.status === "ready",
   );
+  const isDirty = isProjectStoreDirty(state);
+  const isSavingBlocked = hydration.status === "blocked";
+  // A dirty store with a debounced save still pending counts as "saving" —
+  // otherwise the toolbar would claim "Saved" and the leave-page warning
+  // would stay unarmed while the latest edit exists only in memory.
   const saveStatus: SaveStatus =
-    hydration.status === "unavailable"
+    hydration.status === "unavailable" || isSavingBlocked
       ? "storage-unavailable"
-      : autosave.saveStatus;
+      : isDirty && autosave.saveStatus === "saved"
+        ? "saving"
+        : autosave.saveStatus;
 
   useSaveShortcut(autosave.saveNow);
   useBeforeUnloadWarning(saveStatus);
@@ -161,12 +170,13 @@ export function ProjectStoreProvider({
     () => ({
       projects: state.projects,
       activeProject: getActiveProject(state),
-      isDirty: isProjectStoreDirty(state),
+      isDirty,
       saveStatus,
       persistenceNotice: hydration.notice,
+      isSavingBlocked,
       actions,
     }),
-    [state, saveStatus, hydration.notice, actions],
+    [state, isDirty, saveStatus, hydration.notice, isSavingBlocked, actions],
   );
 
   return (

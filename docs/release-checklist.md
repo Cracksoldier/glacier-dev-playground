@@ -25,7 +25,7 @@ npx playwright install --with-deps chromium firefox webkit
 npx playwright test --project=firefox --project=webkit
 ```
 
-WebKit only launches on a Debian-family host. On other Linux distributions it installs but fails on missing system libraries — rely on the CI run instead, and say so rather than reporting it as passed. See [browser-support.md](./browser-support.md).
+On Linux, WebKit only launches on a Debian-family host (macOS and Windows are fine). On other Linux distributions it installs but fails on missing system libraries — rely on the CI run instead, and say so rather than reporting it as passed. See [browser-support.md](./browser-support.md).
 
 ## 3. Bundle review
 

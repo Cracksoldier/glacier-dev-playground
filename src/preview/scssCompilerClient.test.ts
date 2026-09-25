@@ -17,11 +17,15 @@ import {
 function createFakeWorker() {
   const posted: unknown[] = [];
   let onmessageHandler: ((event: MessageEvent) => void) | null = null;
+  let onerrorHandler: ((event: ErrorEvent) => void) | null = null;
   const terminate = vi.fn();
   const worker: WorkerLike = {
     postMessage: (data) => posted.push(data),
     set onmessage(handler: ((event: MessageEvent) => void) | null) {
       onmessageHandler = handler;
+    },
+    set onerror(handler: ((event: ErrorEvent) => void) | null) {
+      onerrorHandler = handler;
     },
     terminate,
   };
@@ -31,6 +35,9 @@ function createFakeWorker() {
     terminate,
     respond(data: unknown) {
       onmessageHandler?.({ data } as MessageEvent);
+    },
+    crash() {
+      onerrorHandler?.(new ErrorEvent("error"));
     },
   };
 }
@@ -156,5 +163,51 @@ describe("createScssCompilerClient", () => {
     const client = createScssCompilerClient(createWorker);
     expect(() => client.dispose()).not.toThrow();
     expect(createWorker).not.toHaveBeenCalled();
+  });
+
+  it("settles every pending compile with a failure when the worker errors, then spawns a fresh worker", async () => {
+    const first = createFakeWorker();
+    const second = createFakeWorker();
+    const createWorker = vi
+      .fn()
+      .mockReturnValueOnce(first.worker)
+      .mockReturnValueOnce(second.worker);
+    const client = createScssCompilerClient(createWorker);
+
+    const a = client.compile(".a {}", "build-1");
+    const b = client.compile(".a {}", "build-2");
+    first.crash();
+
+    await expect(a).resolves.toEqual({
+      type: "failure",
+      error: { message: expect.stringContaining("stopped unexpectedly") },
+    });
+    await expect(b).resolves.toEqual({
+      type: "failure",
+      error: { message: expect.stringContaining("stopped unexpectedly") },
+    });
+    expect(first.terminate).toHaveBeenCalledTimes(1);
+
+    const retried = client.compile(".a {}", "build-3");
+    expect(createWorker).toHaveBeenCalledTimes(2);
+    second.respond({
+      protocol: SCSS_WORKER_PROTOCOL,
+      version: SCSS_WORKER_VERSION,
+      buildId: "build-3",
+      type: "success",
+      css: ".a {}",
+    });
+    await expect(retried).resolves.toEqual({ type: "success", css: ".a {}" });
+  });
+
+  it("resolves with a failure instead of throwing when the worker cannot be created", async () => {
+    const client = createScssCompilerClient(() => {
+      throw new Error("Worker construction blocked");
+    });
+
+    await expect(client.compile(".a {}", "build-1")).resolves.toEqual({
+      type: "failure",
+      error: { message: expect.stringContaining("stopped unexpectedly") },
+    });
   });
 });

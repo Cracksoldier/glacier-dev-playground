@@ -1,5 +1,13 @@
 import { expect, test } from "@playwright/test";
 
+/** Milliseconds of the leading `<number>(s|ms)` in a CSS transition value. */
+function durationMs(value: string): number {
+  const match = /^(\d*\.?\d+)(ms|s)\b/.exec(value);
+  if (!match) throw new Error(`Unparseable transition value: "${value}"`);
+  const amount = Number(match[1]);
+  return match[2] === "s" ? amount * 1000 : amount;
+}
+
 test("loads the Glacier application shell", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("banner")).toBeVisible();
@@ -45,6 +53,33 @@ test("resizes panels by dragging a separator", async ({ page }) => {
 
   const afterBox = await firstPanel.boundingBox();
   expect(afterBox?.width).not.toBeCloseTo(beforeBox.width, 0);
+});
+
+test("stops shrinking a panel at its 10% minimum size", async ({ page }) => {
+  await page.goto("/");
+  const firstSeparator = page.getByRole("separator").first();
+  const panels = page.locator("[data-panel]");
+
+  const handleBox = await firstSeparator.boundingBox();
+  if (!handleBox) {
+    throw new Error("Expected the separator to have a bounding box");
+  }
+
+  await page.mouse.move(
+    handleBox.x + handleBox.width / 2,
+    handleBox.y + handleBox.height / 2,
+  );
+  await page.mouse.down();
+  await page.mouse.move(0, handleBox.y + handleBox.height / 2, { steps: 20 });
+  await page.mouse.up();
+
+  const widths = await panels.evaluateAll((elements) =>
+    elements.map((element) => element.getBoundingClientRect().width),
+  );
+  const total = widths.reduce((sum, width) => sum + width, 0);
+  // Allow a small tolerance for separator width and sub-pixel rounding.
+  expect(widths[0] / total).toBeGreaterThan(0.09);
+  await expect(firstSeparator).toHaveAttribute("aria-valuenow", /^10(\.0+)?$/);
 });
 
 test("resizes panels with the keyboard", async ({ page }) => {
@@ -99,6 +134,9 @@ test("uses non-zero transition durations without prefers-reduced-motion", async 
     };
   });
 
-  expect(transitionTokens.fast).not.toBe("0ms");
-  expect(transitionTokens.base).not.toBe("0ms");
+  // Parsed rather than compared as strings: the build minifies "120ms" to
+  // ".12s", and the reduced-motion value serializes as "0s", not "0ms" — a
+  // string inequality check against "0ms" would let leaked zero durations pass.
+  expect(durationMs(transitionTokens.fast)).toBeGreaterThan(0);
+  expect(durationMs(transitionTokens.base)).toBeGreaterThan(0);
 });

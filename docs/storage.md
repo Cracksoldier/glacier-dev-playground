@@ -1,6 +1,6 @@
 # Storage
 
-All user data stays on the device. Projects live in IndexedDB; UI preferences live in `localStorage`. Nothing is uploaded anywhere.
+The app keeps everything it manages on the device and never uploads it: projects live in IndexedDB, UI preferences in `localStorage`. This is about the app's own data handling — code running in the preview, and external resources you add, can still make their own network requests (see [security.md](./security.md)).
 
 ## IndexedDB
 
@@ -11,14 +11,14 @@ Database `glacier-dev-playground`, opened through `idb` rather than raw IndexedD
 | `projects` | `ProjectId` | A whole `PlaygroundProject` record. |
 | `meta` | `string` | `{ key, value }`, holding `activeProjectId` and `appSchemaVersion`. |
 
-The connection registers a `blocking` callback that closes itself when it is holding up a delete or upgrade. Without it, `saveSnapshot`'s clear-then-rewrite and test cleanup via `indexedDB.deleteDatabase` can hang.
+Each repository keeps one shared connection rather than opening one per call. The connection registers a `blocking` callback that closes itself when it is holding up a delete or upgrade — without it, `saveSnapshot` and test cleanup via `indexedDB.deleteDatabase` can hang — and the repository then reopens on its next call.
 
 ### Two independent version numbers
 
 They are deliberately separate and must not be conflated:
 
 - **`DATABASE_VERSION`** (`src/persistence/schema.ts`) — the *structural* version passed to `openDB`. Bump it only when an object store or index is added, removed, or renamed. Currently `1`.
-- **`PROJECT_SCHEMA_VERSION`** (`src/models/project.ts`) — the *record shape* version of a single project. Bump it whenever the `PlaygroundProject` shape changes, and add a migration step in the same change. Currently `1`.
+- **`PROJECT_SCHEMA_VERSION`** (`src/models/project.ts`) — the *record shape* version of a single project. Bump it whenever the `PlaygroundProject` shape changes, and add a migration step in the same change. Currently `2` (v2 made `trusted` required).
 
 ### Reading: recovery, not trust
 
@@ -26,21 +26,23 @@ Records read from storage may have been written by a different app version or ed
 
 Recovery returns one of three outcomes:
 
-- `ok` — validated, and migrated forward through `PROJECT_MIGRATIONS` if it was written at an older schema version. The migration map is keyed by the version being migrated *away from*, and is empty today because the shape has been version 1 since inception.
+- `ok` — migrated forward through `PROJECT_MIGRATIONS` if it was written at an older schema version, then validated field by field, nested source, settings, and resources included (`src/models/projectValidation.ts`, shared with import). The migration map is keyed by the version being migrated *away from*. Its one step, v1 → v2, sets `trusted: true` on records that predate the field and keeps an explicit value; from v2 on, a missing or non-boolean `trusted` makes the record invalid rather than silently trusted.
 - `unsupported-future-version` — the record claims a schema version newer than this build understands.
 - `invalid` — the shape failed validation.
 
-Records that are not `ok` are skipped rather than discarded from disk, and counted in `LoadResult.recoveredCount`. A non-zero count surfaces as a persistence notice in the shell, which offers an explicit, confirmed "Reset local data" action. Data is never wiped automatically.
+Records that are not `ok` are skipped rather than discarded from disk, and counted in `LoadResult.recoveredCount`. The repository remembers their keys, and later saves leave them in place. A non-zero count surfaces as a persistence notice in the shell, which offers an explicit, confirmed "Reset local data" action. Data is never wiped automatically.
 
 `load()` also checks `meta.appSchemaVersion` before reading any project: if the persisted value is newer than this build's `PROJECT_SCHEMA_VERSION`, it returns `rejectedNewerAppVersion` and loads nothing, rather than partially interpreting data from a future version.
 
-If no valid project survives, the store hydrates with a fresh starter project instead of an empty workspace.
+If nothing has ever been persisted, the store starts with a fresh starter project and saves it. If data exists but none of it can be loaded — it was written by a newer app version, or every record is unreadable — the workspace still opens with a starter project, but saving is **blocked**: the toolbar shows "Storage unavailable", and a notice that can't be dismissed explains that changes won't be saved until the user resets local data. This keeps the unloadable data intact instead of overwriting it.
+
+If the user edits the starter project before the load finishes, the loaded projects are merged in ahead of the edited one rather than either side being dropped.
 
 ### Writing
 
-Autosave debounces writes by 800 ms after the last change. `Ctrl/Cmd + S` flushes the debounce immediately. `saveSnapshot` clears the `projects` store and rewrites every project plus both meta keys in a single transaction, so a partially-written snapshot is not observable.
+Autosave debounces writes by 800 ms after the last change. `Ctrl/Cmd + S` flushes the debounce immediately. `saveSnapshot` deletes stored projects that are missing from the snapshot (except unreadable records, see above), then rewrites every project plus both meta keys in a single transaction, so a partially-written snapshot is not observable.
 
-`lastPersistedRevision` on the store is what distinguishes "dirty" from "saved", and it advances only on a successful write — a failed save leaves the project dirty and keeps the unload warning armed.
+`lastPersistedRevision` on the store is what distinguishes "dirty" from "saved", and it advances only on a successful write. Switching the active project also counts as a change, because the active project id is persisted so the last active project reopens on startup. While the store is dirty — including the debounce window before a save starts — the toolbar shows "Saving…" and the unload warning is armed; a failed save leaves the project dirty and keeps the warning armed.
 
 ### When IndexedDB is unavailable
 

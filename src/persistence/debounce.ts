@@ -5,6 +5,8 @@ export interface Debouncer<T> {
   flush(): void;
   /** Discards any pending call without running it. */
   cancel(): void;
+  /** True while a scheduled call is waiting to run. */
+  isPending(): boolean;
 }
 
 export function createDebouncer<T>(
@@ -37,6 +39,9 @@ export function createDebouncer<T>(
       clearTimeout(timeoutId);
       timeoutId = undefined;
       pendingValue = undefined;
+    },
+    isPending() {
+      return timeoutId !== undefined;
     },
   };
 }

@@ -1,6 +1,6 @@
 # Export and import
 
-The Export dialog offers four actions. All of them compile the project first — SCSS to CSS, TypeScript to JavaScript — so an export never ships something that needs a build step to run. A compile failure aborts the export and reports the error in the dialog rather than producing a broken artifact.
+The Export dialog offers four actions. JSON export saves the project exactly as authored, SCSS and TypeScript included, so it can be imported again. The other three — HTML download, clipboard copy, and ZIP — compile the project first (SCSS to CSS, TypeScript to JavaScript), so they never ship something that needs a build step to run. A compile failure aborts that export and reports the error in the dialog rather than producing a broken artifact.
 
 Filenames are derived from the project title: lowercased, non-alphanumeric runs collapsed to single hyphens, trimmed, falling back to `project` when nothing alphanumeric remains.
 
@@ -10,7 +10,7 @@ The portable project format, and the only format that can be imported back.
 
 ```jsonc
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "title": "...",
   "createdAt": "...",
   "updatedAt": "...",
@@ -60,7 +60,7 @@ The original sources appear exactly once, under `src/`, and the compiled output 
 
 ## Import
 
-Import accepts the JSON format above and creates a **new** project; it never mutates or replaces the active one. A rejected file leaves the workspace exactly as it was.
+Import accepts the JSON format above. By default it adds the file as a **new** project; alternatively, after an explicit confirmation, it replaces the active project's title, source, resources, and settings (the project keeps its id and creation date). A rejected file leaves the workspace exactly as it was.
 
 Validation, in order:
 

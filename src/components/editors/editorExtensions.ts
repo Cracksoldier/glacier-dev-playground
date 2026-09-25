@@ -13,6 +13,7 @@ import {
 import { css } from "@codemirror/lang-css";
 import { html } from "@codemirror/lang-html";
 import { javascript } from "@codemirror/lang-javascript";
+import { sass } from "@codemirror/lang-sass";
 import {
   bracketMatching,
   indentOnInput,
@@ -65,11 +66,10 @@ export function buildSharedExtensions(): Extension[] {
 }
 
 /**
- * Language support per panel. CSS and SCSS share `@codemirror/lang-css`
- * (there is no brace/semicolon-syntax SCSS package — `@codemirror/lang-sass`
- * targets indentation-based Sass syntax and would misparse SCSS). SCSS
- * *compilation* is out of scope for this milestone; only highlighting and
- * basic completion are required here.
+ * Language support per panel. SCSS uses `@codemirror/lang-sass`, whose
+ * `sass()` parses the brace/semicolon SCSS syntax by default (`indented:
+ * false`), so nesting, variables, and mixins highlight properly; plain CSS
+ * uses `@codemirror/lang-css`. Compilation happens elsewhere (the SCSS worker).
  */
 export function buildLanguageExtensions(
   kind: EditorLanguageKind,
@@ -79,7 +79,7 @@ export function buildLanguageExtensions(
     case "html":
       return [html()];
     case "css":
-      return [css()];
+      return [variant.stylesheetLanguage === "scss" ? sass() : css()];
     case "javascript":
       return [
         javascript({

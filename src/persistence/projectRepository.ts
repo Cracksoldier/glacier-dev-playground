@@ -47,13 +47,34 @@ export function createIndexedDbProjectRepository(options?: {
   databaseName?: string;
 }): ProjectRepository {
   const databaseName = options?.databaseName;
+  /**
+   * Keys of records the last `load()` could not recover. `saveSnapshot`
+   * leaves them on disk rather than deleting them as "not in the snapshot",
+   * so unreadable data is only ever removed by an explicit `resetAllData()`.
+   */
+  let unreadableKeys = new Set<IDBValidKey>();
 
-  async function open() {
-    try {
-      return await openDatabase(databaseName);
-    } catch (error) {
-      throw new StorageUnavailableError(undefined, { cause: error });
+  /**
+   * One shared connection per repository instead of one per call: every
+   * autosave used to open a fresh connection that was never closed. Dropped
+   * (so the next call reopens) when opening fails, or when the connection is
+   * closed to unblock a delete/upgrade or terminated by the browser.
+   */
+  let connection: ReturnType<typeof openDatabase> | null = null;
+
+  function open(): ReturnType<typeof openDatabase> {
+    if (connection === null) {
+      const opening = openDatabase(databaseName, {
+        onClosed: () => {
+          if (connection === opening) connection = null;
+        },
+      }).catch((error: unknown) => {
+        if (connection === opening) connection = null;
+        throw new StorageUnavailableError(undefined, { cause: error });
+      });
+      connection = opening;
     }
+    return connection;
   }
 
   return {
@@ -76,10 +97,16 @@ export function createIndexedDbProjectRepository(options?: {
         };
       }
 
-      const rawProjects = await db.getAll(PROJECTS_STORE);
+      // Keys and values are read in one transaction, so both arrays share
+      // the store's key order and index `i` pairs a record with its key.
+      const readTx = db.transaction(PROJECTS_STORE);
+      const [rawKeys, rawProjects] = await Promise.all([
+        readTx.store.getAllKeys(),
+        readTx.store.getAll(),
+      ]);
       const projects: PlaygroundProject[] = [];
-      let recoveredCount = 0;
-      for (const raw of rawProjects) {
+      const skippedKeys = new Set<IDBValidKey>();
+      rawProjects.forEach((raw, index) => {
         // `raw` is typed as PlaygroundProject by idb's schema, but a record on
         // disk may have been written by a different app version or edited
         // out-of-band — recover it as unknown data before trusting it.
@@ -87,9 +114,11 @@ export function createIndexedDbProjectRepository(options?: {
         if (result.status === "ok") {
           projects.push(result.project);
         } else {
-          recoveredCount += 1;
+          skippedKeys.add(rawKeys[index]);
         }
-      }
+      });
+      unreadableKeys = skippedKeys;
+      const recoveredCount = skippedKeys.size;
 
       if (projects.length === 0) {
         return {
@@ -120,9 +149,17 @@ export function createIndexedDbProjectRepository(options?: {
     async saveSnapshot(snapshot: ProjectSnapshot): Promise<void> {
       const db = await open();
       const tx = db.transaction([PROJECTS_STORE, META_STORE], "readwrite");
-      await tx.objectStore(PROJECTS_STORE).clear();
+      const projectsStore = tx.objectStore(PROJECTS_STORE);
+      const snapshotIds = new Set<IDBValidKey>(
+        snapshot.projects.map((project) => project.id),
+      );
+      for (const key of await projectsStore.getAllKeys()) {
+        if (!snapshotIds.has(key) && !unreadableKeys.has(key)) {
+          await projectsStore.delete(key);
+        }
+      }
       for (const project of snapshot.projects) {
-        await tx.objectStore(PROJECTS_STORE).put(project);
+        await projectsStore.put(project);
       }
       await tx.objectStore(META_STORE).put({
         key: META_ACTIVE_PROJECT_ID_KEY,
@@ -141,6 +178,7 @@ export function createIndexedDbProjectRepository(options?: {
       await tx.objectStore(PROJECTS_STORE).clear();
       await tx.objectStore(META_STORE).clear();
       await tx.done;
+      unreadableKeys = new Set();
     },
   };
 }

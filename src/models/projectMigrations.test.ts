@@ -22,6 +22,7 @@ function validRawProject(overrides: Record<string, unknown> = {}) {
     },
     resources: [],
     settings: { autoRun: true, previewDebounceMs: 400, preserveConsole: false },
+    trusted: true,
     ...overrides,
   };
 }
@@ -107,26 +108,64 @@ describe("recoverProjectRecord", () => {
     }
   });
 
-  it("defaults a missing trusted field to true for pre-existing records", () => {
-    const result = recoverProjectRecord(validRawProject(), 1, {});
+  it("migrates a v1 record that predates the trusted field to v2 as trusted", () => {
+    const { trusted: _omitted, ...legacy } = validRawProject();
+
+    const result = recoverProjectRecord(legacy);
 
     expect(result.status).toBe("ok");
     if (result.status === "ok") {
+      expect(result.project.schemaVersion).toBe(2);
       expect(result.project.trusted).toBe(true);
     }
   });
 
-  it("preserves an explicit trusted: false value", () => {
-    const result = recoverProjectRecord(
-      validRawProject({ trusted: false }),
-      1,
-      {},
-    );
+  it("keeps an explicit trusted: false when migrating a v1 record", () => {
+    const result = recoverProjectRecord(validRawProject({ trusted: false }));
 
     expect(result.status).toBe("ok");
     if (result.status === "ok") {
       expect(result.project.trusted).toBe(false);
     }
+  });
+
+  it("rejects a current-version record whose trusted field is missing or malformed, instead of trusting it", () => {
+    const { trusted: _omitted, ...missing } = validRawProject({
+      schemaVersion: 2,
+    });
+
+    expect(recoverProjectRecord(missing)).toEqual({
+      status: "invalid",
+      reason: "trusted: expected a boolean.",
+    });
+    expect(
+      recoverProjectRecord(
+        validRawProject({ schemaVersion: 2, trusted: "false" }),
+      ),
+    ).toEqual({ status: "invalid", reason: "trusted: expected a boolean." });
+  });
+
+  it("rejects a record with a malformed nested field", () => {
+    const base = validRawProject();
+
+    expect(
+      recoverProjectRecord({ ...base, source: { ...base.source, html: 42 } }),
+    ).toEqual({ status: "invalid", reason: "source.html: expected a string." });
+    expect(
+      recoverProjectRecord({
+        ...base,
+        settings: { ...base.settings, autoRun: "yes" },
+      }),
+    ).toEqual({
+      status: "invalid",
+      reason: "settings.autoRun: expected a boolean.",
+    });
+    expect(
+      recoverProjectRecord({ ...base, resources: [{ id: "r1" }] }),
+    ).toEqual({
+      status: "invalid",
+      reason: "resources[0].name: expected a string.",
+    });
   });
 
   it("never throws on arbitrary garbage input", () => {

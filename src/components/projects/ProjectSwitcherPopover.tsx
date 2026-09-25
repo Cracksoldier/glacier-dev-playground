@@ -110,7 +110,6 @@ function ProjectSwitcherPopover({
         isOpen={isOpen}
         onClose={onClose}
         anchorRef={anchorRef}
-        role="menu"
         aria-label="Projects"
         className={styles.popover}
       >

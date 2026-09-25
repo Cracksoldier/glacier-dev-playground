@@ -14,7 +14,7 @@ describe("buildLanguageExtensions", () => {
     expect(state.facet(language)?.name).toBe("html");
   });
 
-  it("maps css to the CSS language for both css and scss variants", () => {
+  it("uses the CSS language for css and the SCSS (brace-syntax) language for scss", () => {
     const cssState = EditorState.create({
       extensions: buildLanguageExtensions("css", { stylesheetLanguage: "css" }),
     });
@@ -24,7 +24,13 @@ describe("buildLanguageExtensions", () => {
       }),
     });
     expect(cssState.facet(language)?.name).toBe("css");
-    expect(scssState.facet(language)?.name).toBe("css");
+    expect(scssState.facet(language)?.name).toBe("sass");
+    expect(
+      scssState
+        .facet(language)
+        ?.parser.parse("$c: red; .a { .b { color: $c; } }")
+        .toString(),
+    ).not.toContain("⚠");
   });
 
   it("maps javascript to the JavaScript language", () => {

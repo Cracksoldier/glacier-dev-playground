@@ -5,10 +5,11 @@ import { useProjectStore } from "../store/ProjectStoreContext";
 import styles from "./PersistenceNotice.module.css";
 
 function PersistenceNotice() {
-  const { saveStatus, persistenceNotice, actions } = useProjectStore();
+  const { saveStatus, persistenceNotice, isSavingBlocked, actions } =
+    useProjectStore();
   const [isConfirmingReset, setIsConfirmingReset] = useState(false);
 
-  if (saveStatus === "storage-unavailable") {
+  if (!persistenceNotice && saveStatus === "storage-unavailable") {
     return (
       <div className={styles.notice} role="alert">
         <WarningIcon />
@@ -23,9 +24,12 @@ function PersistenceNotice() {
   if (!persistenceNotice) return null;
 
   const { recoveredCount, rejectedNewerAppVersion } = persistenceNotice;
-  const message = rejectedNewerAppVersion
+  const problem = rejectedNewerAppVersion
     ? "Saved data was written by a newer version of this app and could not be loaded."
     : `${recoveredCount} saved project${recoveredCount === 1 ? "" : "s"} could not be read and ${recoveredCount === 1 ? "was" : "were"} skipped.`;
+  const message = isSavingBlocked
+    ? `${problem} The saved data has been left untouched, so changes you make now won't be saved until you reset local data.`
+    : problem;
 
   return (
     <>
@@ -40,13 +44,15 @@ function PersistenceNotice() {
           >
             Reset local data
           </button>
-          <button
-            type="button"
-            className={styles.dismissButton}
-            onClick={actions.dismissPersistenceNotice}
-          >
-            Dismiss
-          </button>
+          {!isSavingBlocked && (
+            <button
+              type="button"
+              className={styles.dismissButton}
+              onClick={actions.dismissPersistenceNotice}
+            >
+              Dismiss
+            </button>
+          )}
         </div>
       </div>
       <ConfirmDialog

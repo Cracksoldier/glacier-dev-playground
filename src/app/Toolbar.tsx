@@ -89,7 +89,6 @@ function Toolbar({
           type="button"
           className={styles.button}
           aria-label="Switch project"
-          aria-haspopup="menu"
           aria-expanded={isSwitcherOpen}
           title="Switch project"
           onClick={() => setSwitcherOpen((open) => !open)}
@@ -169,7 +168,6 @@ function Toolbar({
           type="button"
           className={styles.button}
           aria-label="Editor preferences"
-          aria-haspopup="menu"
           aria-expanded={isEditorPreferencesOpen}
           title="Editor preferences"
           onClick={() => setEditorPreferencesOpen((open) => !open)}

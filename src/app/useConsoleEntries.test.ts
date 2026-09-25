@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ConsoleEntryInput } from "./useConsoleEntries";
-import { useConsoleEntries } from "./useConsoleEntries";
+import { MAX_CONSOLE_ENTRIES, useConsoleEntries } from "./useConsoleEntries";
 
 function makeEntry(
   overrides: Partial<ConsoleEntryInput> = {},
@@ -102,5 +102,20 @@ describe("useConsoleEntries", () => {
 
     const [first, second] = result.current.entries;
     expect(first.id).not.toBe(second.id);
+  });
+
+  it("keeps only the most recent MAX_CONSOLE_ENTRIES entries", () => {
+    const { result } = renderHook(() => useConsoleEntries());
+
+    act(() => {
+      for (let index = 0; index < MAX_CONSOLE_ENTRIES + 5; index += 1) {
+        result.current.append(makeEntry({ message: `entry ${index}` }));
+      }
+    });
+
+    const { entries } = result.current;
+    expect(entries).toHaveLength(MAX_CONSOLE_ENTRIES);
+    expect(entries[0].message).toBe("entry 5");
+    expect(entries.at(-1)?.message).toBe(`entry ${MAX_CONSOLE_ENTRIES + 4}`);
   });
 });

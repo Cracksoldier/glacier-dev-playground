@@ -14,12 +14,20 @@ export const DEFAULT_EDITOR_PREFERENCES: EditorPreferences = {
   lineNumbers: true,
 };
 
+export const MIN_EDITOR_FONT_SIZE = 10;
+export const MAX_EDITOR_FONT_SIZE = 24;
+export const EDITOR_TAB_WIDTH_OPTIONS: readonly number[] = [2, 4];
+
 function isEditorPreferences(value: unknown): value is EditorPreferences {
   if (typeof value !== "object" || value === null) return false;
   const candidate = value as Record<string, unknown>;
   return (
     typeof candidate.fontSize === "number" &&
+    Number.isInteger(candidate.fontSize) &&
+    candidate.fontSize >= MIN_EDITOR_FONT_SIZE &&
+    candidate.fontSize <= MAX_EDITOR_FONT_SIZE &&
     typeof candidate.tabWidth === "number" &&
+    EDITOR_TAB_WIDTH_OPTIONS.includes(candidate.tabWidth) &&
     typeof candidate.wordWrap === "boolean" &&
     typeof candidate.lineNumbers === "boolean"
   );

@@ -60,9 +60,13 @@ test("the critical journey works end to end", async ({ page }) => {
     page.getByLabel("Console").getByText('"journey ok"'),
   ).toBeVisible();
 
-  // IndexedDB persistence. Asserted behaviorally rather than via the "Saved"
-  // status text, because WebKit's first IndexedDB open after a navigation is
-  // slow enough to make the transient status a race.
+  // IndexedDB persistence. "Saved" is only shown once the latest edit has
+  // actually been written (a pending save reads "Saving…"), so waiting for
+  // it before reloading can't race the autosave. The generous timeout covers
+  // WebKit's slow first IndexedDB open after a navigation.
+  await expect(page.getByRole("status")).toHaveText(/^Saved$/, {
+    timeout: 15_000,
+  });
   await page.reload();
   await expect(
     page.getByRole("textbox", { name: "HTML source" }),
@@ -103,5 +107,49 @@ test("preview code cannot reach the parent document or its storage", async ({
   ).toBeVisible();
   await expect(
     page.getByLabel("Console").getByText(/"storage":"blocked"/),
+  ).toBeVisible();
+});
+
+test("console output from an inline script in the HTML panel is captured", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  // Inline scripts in the HTML panel run while the body is parsed, before
+  // the user script — the console bridge must already be installed by then.
+  await setEditorContent(
+    page,
+    "HTML source",
+    '<script>console.log("from inline html script");</script><p>body</p>',
+  );
+
+  await expect(
+    page.getByLabel("Console").getByText('"from inline html script"'),
+  ).toBeVisible();
+});
+
+test("a stylesheet resource that fails to load is reported in the console", async ({
+  page,
+}) => {
+  // Firefox can fire a 404 stylesheet's error event before a script at the
+  // end of <body> runs, so this only passes if the listener is installed in
+  // <head>, ahead of the <link> tag.
+  await page.route("https://cdn.example.com/missing.css", (route) =>
+    route.fulfill({ status: 404, body: "not found" }),
+  );
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Resources", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Resources" });
+  await dialog.getByRole("button", { name: "Add resource" }).click();
+  await dialog.getByLabel("Name").fill("Missing CSS");
+  await dialog.getByLabel("URL").fill("https://cdn.example.com/missing.css");
+  await dialog.getByLabel("Type", { exact: true }).selectOption("Stylesheet");
+  await dialog.getByRole("button", { name: "Add resource" }).click();
+  await dialog.getByRole("button", { name: "Add resource" }).first().focus();
+  await page.keyboard.press("Escape");
+
+  await expect(
+    page.getByLabel("Console").getByText("Failed to load stylesheet."),
   ).toBeVisible();
 });

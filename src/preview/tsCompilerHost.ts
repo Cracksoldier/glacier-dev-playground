@@ -72,16 +72,16 @@ export function createTsCompilerHost(
   const rootScriptKind = scriptKindForRootFileName(rootFileName);
 
   const host: ts.CompilerHost = {
+    // `languageVersionOrOptions` is forwarded whole, not reduced to its
+    // `languageVersion`: the options object also carries the program's
+    // `moduleDetection` result (`setExternalModuleIndicator`), without which
+    // module-mode sources with no import/export would parse as scripts.
     getSourceFile(fileName, languageVersionOrOptions) {
-      const languageVersion =
-        typeof languageVersionOrOptions === "object"
-          ? languageVersionOrOptions.languageVersion
-          : languageVersionOrOptions;
       if (fileName === rootFileName) {
         return ts.createSourceFile(
           fileName,
           sourceText,
-          languageVersion,
+          languageVersionOrOptions,
           true,
           rootScriptKind,
         );
@@ -92,7 +92,7 @@ export function createTsCompilerHost(
           buildRemoteModuleDeclarationText(
             remoteModuleSpecifierFromFileName(fileName),
           ),
-          languageVersion,
+          languageVersionOrOptions,
           true,
         );
       }

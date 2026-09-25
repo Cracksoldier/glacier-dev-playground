@@ -206,11 +206,14 @@ describe("ImportDialog", () => {
       type: "application/json",
     });
 
+    const readSpy = vi.spyOn(FileReader.prototype, "readAsText");
     const input = screen.getByLabelText(/import from a file/i);
     await user.upload(input, file);
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       /exceeds the 5 MB import size limit/i,
     );
+    expect(readSpy).not.toHaveBeenCalled();
+    readSpy.mockRestore();
   });
 });

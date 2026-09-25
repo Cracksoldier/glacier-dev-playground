@@ -25,6 +25,17 @@ export interface TsCompilerClient {
   dispose(): void;
 }
 
+const WORKER_FAILED_MESSAGE =
+  "The TypeScript/JavaScript compiler stopped unexpectedly. Edit the script or press Run to retry.";
+
+function workerFailure(): TsCompileResult {
+  return {
+    diagnostics: [{ message: WORKER_FAILED_MESSAGE, category: "error" }],
+    emittedJs: null,
+    lineMap: null,
+  };
+}
+
 function defaultCreateWorker(): WorkerLike {
   return new Worker(new URL("./tsCompiler.worker.ts", import.meta.url), {
     type: "module",
@@ -46,6 +57,16 @@ export function createTsCompilerClient(
   function ensureWorker(): WorkerLike {
     if (worker) return worker;
     const created = createWorker();
+    // See `scssCompilerClient.ts`: a failed/crashed worker never answers
+    // again, so settle every waiting compile with a blocking diagnostic and
+    // let the next compile() spawn a fresh worker.
+    created.onerror = () => {
+      created.terminate();
+      if (worker === created) worker = null;
+      const waiting = [...pending.values()];
+      pending.clear();
+      for (const resolve of waiting) resolve(workerFailure());
+    };
     created.onmessage = (event) => {
       if (!isTsCompileResponse(event.data)) return;
       const resolve = pending.get(event.data.buildId);
@@ -65,14 +86,19 @@ export function createTsCompilerClient(
     compile(source, scriptLanguage, executionMode, buildId) {
       return new Promise((resolve) => {
         pending.set(buildId, resolve);
-        ensureWorker().postMessage({
-          protocol: TS_WORKER_PROTOCOL,
-          version: TS_WORKER_VERSION,
-          buildId,
-          source,
-          scriptLanguage,
-          executionMode,
-        });
+        try {
+          ensureWorker().postMessage({
+            protocol: TS_WORKER_PROTOCOL,
+            version: TS_WORKER_VERSION,
+            buildId,
+            source,
+            scriptLanguage,
+            executionMode,
+          });
+        } catch {
+          pending.delete(buildId);
+          resolve(workerFailure());
+        }
       });
     },
     dispose() {

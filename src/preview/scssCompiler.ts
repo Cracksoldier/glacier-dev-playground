@@ -57,8 +57,10 @@ export function toScssCompileError(rawError: unknown): ScssCompileError {
  * naturally with a Sass compile error, with no special-casing needed.
  */
 export async function compileScss(source: string): Promise<ScssCompileResult> {
-  const sass = await import("sass");
   try {
+    // Inside the try so a failed lazy load of Dart Sass is reported as a
+    // compile failure rather than an unhandled rejection in the worker.
+    const sass = await import("sass");
     const result = await sass.compileStringAsync(source, {
       style: "expanded",
     });

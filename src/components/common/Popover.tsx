@@ -6,8 +6,7 @@ export interface PopoverProps {
   isOpen: boolean;
   onClose: () => void;
   anchorRef: RefObject<HTMLElement | null>;
-  role?: "menu" | "group";
-  "aria-label"?: string;
+  "aria-label": string;
   children: ReactNode;
   className?: string;
 }
@@ -15,12 +14,16 @@ export interface PopoverProps {
 /**
  * A controlled popover anchored below `anchorRef`. Traps focus, closes on
  * outside click or Escape, and returns focus to the anchor on close.
+ *
+ * Follows the disclosure pattern: the content is a labelled `group` of
+ * ordinary controls, and the trigger exposes only `aria-expanded`. It is
+ * deliberately not `role="menu"`, which would promise `menuitem` children
+ * and arrow-key navigation these popovers don't have.
  */
 function Popover({
   isOpen,
   onClose,
   anchorRef,
-  role,
   "aria-label": ariaLabel,
   children,
   className,
@@ -59,11 +62,10 @@ function Popover({
   if (!isOpen) return null;
 
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions: role is always a caller-supplied interactive ARIA role ("menu" or "group"); biome can't see through the prop variable statically.
-    // biome-ignore lint/a11y/useAriaPropsSupportedByRole: aria-label is valid for both "menu" and "group", the only roles this component accepts.
+    // biome-ignore lint/a11y/useSemanticElements: <fieldset> groups form controls under a legend; this is a generic disclosure panel (e.g. a list of project actions), so a labelled role="group" div is the accurate semantics.
     <div
       ref={popoverRef}
-      role={role}
+      role="group"
       aria-label={ariaLabel}
       className={className ? `${styles.popover} ${className}` : styles.popover}
       onKeyDown={handleTabTrap}

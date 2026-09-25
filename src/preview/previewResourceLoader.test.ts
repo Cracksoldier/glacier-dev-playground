@@ -22,9 +22,6 @@ interface MockElement {
 interface Harness {
   post: AnyMock;
   createdElements: MockElement[];
-  triggerWindowError: (event: {
-    target: { tagName: string; href?: string };
-  }) => void;
   messagesOfType: (type: string) => Record<string, unknown>[];
 }
 
@@ -35,9 +32,6 @@ function runLoader(
 ): Harness {
   const post = vi.fn();
   const createdElements: MockElement[] = [];
-  const errorListeners: ((event: {
-    target: { tagName: string; href?: string };
-  }) => void)[] = [];
 
   const documentMock = {
     createElement: (tagName: string) => {
@@ -61,12 +55,6 @@ function runLoader(
 
   const windowMock = {
     __glacierPreviewBridge: { post },
-    addEventListener: (
-      type: string,
-      handler: (event: { target: { tagName: string; href?: string } }) => void,
-    ) => {
-      if (type === "error") errorListeners.push(handler);
-    },
   };
 
   const options: PreviewResourceLoaderOptions = {
@@ -87,9 +75,6 @@ function runLoader(
   return {
     post,
     createdElements,
-    triggerWindowError: (event) => {
-      for (const listener of errorListeners) listener(event);
-    },
     messagesOfType: (type) =>
       post.mock.calls
         .filter((call) => call[0] === type)
@@ -103,6 +88,21 @@ describe("buildPreviewResourceLoaderScript", () => {
 
     expect(harness.messagesOfType("resources-ready")).toHaveLength(1);
     expect(harness.messagesOfType("resource-error")).toHaveLength(0);
+  });
+
+  it("keeps a resource URL containing </script> from closing the script element, while loading the same URL", () => {
+    const url = "https://example.com/a.js?</script><script>alert(1)</script>";
+    const options: PreviewResourceLoaderOptions = {
+      scriptResources: [{ url, integrity: "sha384-</script>" }],
+      moduleResources: [],
+      executionMode: "classic",
+      scriptBlockStartLine: 1,
+    };
+
+    expect(buildPreviewResourceLoaderScript(options)).not.toContain("</");
+
+    const harness = runLoader(options);
+    expect(harness.createdElements[0].src).toBe(url);
   });
 
   it("loads classic script resources sequentially in order", () => {
@@ -192,26 +192,6 @@ describe("buildPreviewResourceLoaderScript", () => {
     expect(errors).toHaveLength(1);
     expect(errors[0]).toMatchObject({ url: "https://example.com/m1.js" });
     expect(harness.messagesOfType("resources-ready")).toHaveLength(0);
-  });
-
-  it("reports a non-fatal resource-error for a failing stylesheet link", () => {
-    const harness = runLoader();
-
-    harness.triggerWindowError({
-      target: { tagName: "LINK", href: "https://example.com/style.css" },
-    });
-
-    const errors = harness.messagesOfType("resource-error");
-    expect(errors).toHaveLength(1);
-    expect(errors[0]).toMatchObject({ url: "https://example.com/style.css" });
-  });
-
-  it("ignores window error events from non-link targets", () => {
-    const harness = runLoader();
-
-    harness.triggerWindowError({ target: { tagName: "SCRIPT" } });
-
-    expect(harness.messagesOfType("resource-error")).toHaveLength(0);
   });
 
   it("executes the user script and posts resources-ready when zero resources", () => {

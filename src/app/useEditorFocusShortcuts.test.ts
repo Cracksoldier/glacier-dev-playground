@@ -34,12 +34,30 @@ describe("useEditorFocusShortcuts", () => {
       ),
     );
 
-    dispatchKeydown({ key: "1", altKey: true });
+    dispatchKeydown({ key: "1", code: "Digit1", altKey: true });
 
     expect(htmlFocus).toHaveBeenCalledTimes(1);
     expect(cssFocus).not.toHaveBeenCalled();
     expect(jsFocus).not.toHaveBeenCalled();
     expect(previewFocus).not.toHaveBeenCalled();
+  });
+
+  it("matches the physical key, so Alt+1 works when the layout produces a different character", () => {
+    const htmlFocus = vi.fn();
+    renderHook(() =>
+      useEditorFocusShortcuts(
+        makeRef(htmlFocus),
+        makeRef(vi.fn()),
+        makeRef(vi.fn()),
+        makePreviewRef(vi.fn()),
+      ),
+    );
+
+    // macOS Option+1 produces "¡"; AZERTY's unshifted digit-1 key is "&".
+    dispatchKeydown({ key: "¡", code: "Digit1", altKey: true });
+    dispatchKeydown({ key: "&", code: "Digit1", altKey: true });
+
+    expect(htmlFocus).toHaveBeenCalledTimes(2);
   });
 
   it("focuses the CSS editor on Alt+2", () => {
@@ -56,7 +74,7 @@ describe("useEditorFocusShortcuts", () => {
       ),
     );
 
-    dispatchKeydown({ key: "2", altKey: true });
+    dispatchKeydown({ key: "2", code: "Digit2", altKey: true });
 
     expect(cssFocus).toHaveBeenCalledTimes(1);
     expect(htmlFocus).not.toHaveBeenCalled();
@@ -78,7 +96,7 @@ describe("useEditorFocusShortcuts", () => {
       ),
     );
 
-    dispatchKeydown({ key: "3", altKey: true });
+    dispatchKeydown({ key: "3", code: "Digit3", altKey: true });
 
     expect(jsFocus).toHaveBeenCalledTimes(1);
     expect(htmlFocus).not.toHaveBeenCalled();
@@ -100,7 +118,7 @@ describe("useEditorFocusShortcuts", () => {
       ),
     );
 
-    dispatchKeydown({ key: "4", altKey: true });
+    dispatchKeydown({ key: "4", code: "Digit4", altKey: true });
 
     expect(previewFocus).toHaveBeenCalledTimes(1);
     expect(htmlFocus).not.toHaveBeenCalled();
@@ -119,7 +137,11 @@ describe("useEditorFocusShortcuts", () => {
       ),
     );
 
-    const event = new KeyboardEvent("keydown", { key: "1", altKey: true });
+    const event = new KeyboardEvent("keydown", {
+      key: "1",
+      code: "Digit1",
+      altKey: true,
+    });
     const preventDefaultSpy = vi.spyOn(event, "preventDefault");
     window.dispatchEvent(event);
 
@@ -137,7 +159,7 @@ describe("useEditorFocusShortcuts", () => {
       ),
     );
 
-    dispatchKeydown({ key: "1", altKey: true, shiftKey: true });
+    dispatchKeydown({ key: "1", code: "Digit1", altKey: true, shiftKey: true });
 
     expect(htmlFocus).not.toHaveBeenCalled();
   });
@@ -153,7 +175,7 @@ describe("useEditorFocusShortcuts", () => {
       ),
     );
 
-    dispatchKeydown({ key: "1", altKey: true, ctrlKey: true });
+    dispatchKeydown({ key: "1", code: "Digit1", altKey: true, ctrlKey: true });
 
     expect(htmlFocus).not.toHaveBeenCalled();
   });
@@ -169,7 +191,7 @@ describe("useEditorFocusShortcuts", () => {
       ),
     );
 
-    dispatchKeydown({ key: "5", altKey: true });
+    dispatchKeydown({ key: "5", code: "Digit5", altKey: true });
 
     expect(htmlFocus).not.toHaveBeenCalled();
   });
@@ -187,7 +209,7 @@ describe("useEditorFocusShortcuts", () => {
       ),
     );
 
-    dispatchKeydown({ key: "1", altKey: true });
+    dispatchKeydown({ key: "1", code: "Digit1", altKey: true });
 
     expect(setActiveTab).toHaveBeenCalledWith("html");
     // Focus is deferred until the newly selected tab panel is rendered.
@@ -209,7 +231,7 @@ describe("useEditorFocusShortcuts", () => {
       ),
     );
 
-    dispatchKeydown({ key: "4", altKey: true });
+    dispatchKeydown({ key: "4", code: "Digit4", altKey: true });
 
     expect(setActiveTab).toHaveBeenCalledWith("preview");
     await new Promise(requestAnimationFrame);
@@ -229,7 +251,7 @@ describe("useEditorFocusShortcuts", () => {
       ),
     );
 
-    dispatchKeydown({ key: "1", altKey: true });
+    dispatchKeydown({ key: "1", code: "Digit1", altKey: true });
 
     expect(htmlFocus).toHaveBeenCalledTimes(1);
     expect(setActiveTab).not.toHaveBeenCalled();
@@ -247,7 +269,7 @@ describe("useEditorFocusShortcuts", () => {
     );
 
     unmount();
-    dispatchKeydown({ key: "1", altKey: true });
+    dispatchKeydown({ key: "1", code: "Digit1", altKey: true });
 
     expect(htmlFocus).not.toHaveBeenCalled();
   });

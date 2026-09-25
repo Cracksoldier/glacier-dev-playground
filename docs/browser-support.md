@@ -35,12 +35,12 @@ Firefox and WebKit run exactly one spec, scoped by `testMatch` in `playwright.co
 
 - **`grantPermissions(["clipboard-read", "clipboard-write"])` throws on Firefox and WebKit.** Those permission names are Chromium-specific. Every other spec grants them in `beforeEach`; the critical journey instead drives the editors with `page.keyboard.insertText`, which is safe from CodeMirror's `closeBrackets` extension for the same reason paste is — its input handler ignores inserts longer than two characters.
 - **Firefox ignores the preview iframe's `allow` permission policy.** Clipboard read is still blocked there, but via the frame's opaque origin rather than the policy attribute. The assertion on the `allow` attribute therefore stays in the Chromium-only `e2e/preview.spec.ts`.
-- **WebKit's first IndexedDB open after a navigation is slow** enough to make the transient "Saved" status text a race. Persistence is asserted behaviorally instead: reload, then check that content survived.
+- **WebKit's first IndexedDB open after a navigation is slow.** The critical journey therefore waits for the "Saved" status with a generous timeout before reloading — "Saved" only appears once the latest edit is written, since a pending save reads "Saving…" — and then asserts behaviorally that the content survived.
 - **`file://` plus blob downloads is the least portable combination available**, particularly for WebKit on Linux. Re-opening a downloaded export over `file://` stays Chromium-only; the cross-browser journey asserts the downloaded file's *contents* instead.
 
 ### Local WebKit limitation
 
-Playwright's WebKit build links against Ubuntu system libraries (`libicu74`, `libxml2`, `libflite1`). On a non-Debian host — including the Arch/CachyOS machine this project is developed on — the browser installs but fails to launch. WebKit coverage is therefore produced by CI (`ubuntu-latest` with `npx playwright install --with-deps`), not locally. Chromium and Firefox run locally without issue.
+On Linux, Playwright's WebKit build links against Ubuntu system libraries (`libicu74`, `libxml2`, `libflite1`). On a non-Debian distribution — including the Arch/CachyOS machine this project is developed on — the browser installs but fails to launch, so WebKit coverage there comes from CI (`ubuntu-latest` with `npx playwright install --with-deps`). On macOS, Windows, and Debian-family Linux, WebKit runs locally like the other browsers. Chromium and Firefox run locally everywhere.
 
 ## Manual verification
 

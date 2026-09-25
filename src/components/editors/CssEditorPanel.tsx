@@ -45,12 +45,9 @@ function CssEditorPanel({
   // CSS while "compiled" is selected, fall back to "source" rather than
   // showing a stale/empty compiled view with no toggle to leave it from.
   const effectiveView = isScss ? view : "source";
-  // buildLanguageExtensions("css", ...) is identical regardless of variant
-  // (no dedicated brace-syntax SCSS package exists), so this never needs to
-  // change for a live editor instance.
   const languageExtensions = useMemo(
-    () => buildLanguageExtensions("css", {}),
-    [],
+    () => buildLanguageExtensions("css", { stylesheetLanguage }),
+    [stylesheetLanguage],
   );
 
   return (
