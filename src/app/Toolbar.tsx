@@ -1,4 +1,4 @@
-import { lazy, Suspense, useId, useRef, useState } from "react";
+import { lazy, Suspense, useId, useState } from "react";
 import GlacierMark from "../components/common/GlacierMark";
 import {
   AutoRunIcon,
@@ -20,13 +20,13 @@ import {
 } from "../components/common/icons";
 import KeyboardHelpDialog from "../components/common/KeyboardHelpDialog";
 import NewProjectDialog from "../components/projects/NewProjectDialog";
-import ProjectSwitcherPopover from "../components/projects/ProjectSwitcherPopover";
+import ProjectSwitcherDialog from "../components/projects/ProjectSwitcherDialog";
 import ResetProjectDialog from "../components/projects/ResetProjectDialog";
 import type { SaveStatus } from "../models/saveStatus";
 import type { EditorPreferences } from "../preferences/editorPreferences";
 import type { WorkspaceLayout } from "../preferences/workspaceLayoutPreferences";
 import { useProjectStore } from "../store/ProjectStoreContext";
-import EditorPreferencesPopover from "./EditorPreferencesPopover";
+import EditorPreferencesDialog from "./EditorPreferencesDialog";
 import styles from "./Toolbar.module.css";
 
 // Code-split: the spec names the import/export dialogs and the resource
@@ -77,8 +77,6 @@ function Toolbar({
 }: ToolbarProps) {
   const disabledHintId = useId();
   const { activeProject, saveStatus, actions } = useProjectStore();
-  const switchButtonRef = useRef<HTMLButtonElement>(null);
-  const editorPreferencesButtonRef = useRef<HTMLButtonElement>(null);
   const [isSwitcherOpen, setSwitcherOpen] = useState(false);
   const [isNewProjectOpen, setNewProjectOpen] = useState(false);
   const [isResetOpen, setResetOpen] = useState(false);
@@ -103,13 +101,11 @@ function Toolbar({
       <p className={styles.projectTitle}>{activeProject.title}</p>
       <div className={styles.actions}>
         <button
-          ref={switchButtonRef}
           type="button"
           className={styles.button}
           aria-label="Switch project"
-          aria-expanded={isSwitcherOpen}
           title="Switch project"
-          onClick={() => setSwitcherOpen((open) => !open)}
+          onClick={() => setSwitcherOpen(true)}
         >
           <ProjectSwitcherIcon />
         </button>
@@ -197,13 +193,11 @@ function Toolbar({
           <ResetIcon />
         </button>
         <button
-          ref={editorPreferencesButtonRef}
           type="button"
           className={styles.button}
           aria-label="Editor preferences"
-          aria-expanded={isEditorPreferencesOpen}
           title="Editor preferences"
-          onClick={() => setEditorPreferencesOpen((open) => !open)}
+          onClick={() => setEditorPreferencesOpen(true)}
         >
           <EditorPreferencesIcon />
         </button>
@@ -234,10 +228,9 @@ function Toolbar({
         {isSaveStatusError ? <WarningIcon /> : <SaveStatusIcon />}
         {SAVE_STATUS_LABEL[saveStatus]}
       </div>
-      <ProjectSwitcherPopover
+      <ProjectSwitcherDialog
         isOpen={isSwitcherOpen}
         onClose={() => setSwitcherOpen(false)}
-        anchorRef={switchButtonRef}
       />
       <NewProjectDialog
         isOpen={isNewProjectOpen}
@@ -273,10 +266,9 @@ function Toolbar({
           />
         </Suspense>
       )}
-      <EditorPreferencesPopover
+      <EditorPreferencesDialog
         isOpen={isEditorPreferencesOpen}
         onClose={() => setEditorPreferencesOpen(false)}
-        anchorRef={editorPreferencesButtonRef}
         preferences={editorPreferences}
         onUpdatePreferences={onUpdateEditorPreferences}
       />

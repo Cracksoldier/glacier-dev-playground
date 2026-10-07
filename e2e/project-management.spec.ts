@@ -39,7 +39,7 @@ test("restores the last active project, not just the most recently created one, 
 
   await page.getByRole("button", { name: "Switch project" }).click();
   await page
-    .getByRole("group", { name: "Projects" })
+    .getByRole("dialog", { name: "Projects" })
     .getByRole("button", { name: "Basic HTML Example", exact: true })
     .click();
   await expect(activeProjectTitle(page)).toHaveText("Basic HTML Example");
@@ -56,16 +56,19 @@ test("renames, duplicates, and deletes projects through the switcher", async ({
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Switch project" }).click();
-  const menu = page.getByRole("group", { name: "Projects" });
+  const switcher = page.getByRole("dialog", { name: "Projects" });
 
-  await menu
+  await switcher
     .getByRole("button", { name: "Duplicate Basic HTML Example" })
     .click();
   await expect(
-    menu.getByRole("button", { name: "Basic HTML Example Copy", exact: true }),
+    switcher.getByRole("button", {
+      name: "Basic HTML Example Copy",
+      exact: true,
+    }),
   ).toBeVisible();
 
-  await menu
+  await switcher
     .getByRole("button", { name: "Rename Basic HTML Example Copy" })
     .click();
   await page
@@ -73,10 +76,10 @@ test("renames, duplicates, and deletes projects through the switcher", async ({
     .fill("Renamed Copy");
   await page.keyboard.press("Enter");
   await expect(
-    menu.getByRole("button", { name: "Renamed Copy", exact: true }),
+    switcher.getByRole("button", { name: "Renamed Copy", exact: true }),
   ).toBeVisible();
 
-  await menu.getByRole("button", { name: "Delete Renamed Copy" }).click();
+  await switcher.getByRole("button", { name: "Delete Renamed Copy" }).click();
   await page.getByRole("button", { name: "Delete", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Renamed Copy", exact: true }),

@@ -84,18 +84,15 @@ describe("Toolbar", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Saved");
   });
 
-  it("opens the project switcher popover from the toolbar button", async () => {
+  it("opens the project switcher dialog from the toolbar button", async () => {
     const user = userEvent.setup();
     renderToolbar();
 
-    const trigger = screen.getByRole("button", { name: "Switch project" });
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
-    await user.click(trigger);
+    await user.click(screen.getByRole("button", { name: "Switch project" }));
 
-    expect(screen.getByRole("group", { name: "Projects" })).toBeInTheDocument();
-    // Disclosure pattern: no aria-haspopup, since the popover is not a menu.
-    expect(trigger).toHaveAttribute("aria-expanded", "true");
-    expect(trigger).not.toHaveAttribute("aria-haspopup");
+    expect(
+      screen.getByRole("dialog", { name: "Projects" }),
+    ).toBeInTheDocument();
   });
 
   it("opens the new project dialog from the toolbar button", async () => {
@@ -120,7 +117,7 @@ describe("Toolbar", () => {
     ).toBeInTheDocument();
   });
 
-  it("opens the editor preferences popover from the toolbar button", async () => {
+  it("opens the editor preferences dialog from the toolbar button", async () => {
     const user = userEvent.setup();
     renderToolbar();
 
@@ -129,7 +126,7 @@ describe("Toolbar", () => {
     );
 
     expect(
-      screen.getByRole("group", { name: "Editor preferences" }),
+      screen.getByRole("dialog", { name: "Editor preferences" }),
     ).toBeInTheDocument();
   });
 

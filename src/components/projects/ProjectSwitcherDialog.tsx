@@ -1,6 +1,5 @@
 import {
   type KeyboardEvent as ReactKeyboardEvent,
-  type RefObject,
   useEffect,
   useId,
   useRef,
@@ -9,13 +8,12 @@ import {
 import type { PlaygroundProject, ProjectId } from "../../models/project";
 import { useProjectStore } from "../../store/ProjectStoreContext";
 import ConfirmDialog from "../common/ConfirmDialog";
-import Popover from "../common/Popover";
-import styles from "./ProjectSwitcherPopover.module.css";
+import Dialog from "../common/Dialog";
+import styles from "./ProjectSwitcherDialog.module.css";
 
-export interface ProjectSwitcherPopoverProps {
+export interface ProjectSwitcherDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  anchorRef: RefObject<HTMLElement | null>;
 }
 
 interface RenameRowProps {
@@ -73,11 +71,12 @@ function RenameRow({
   );
 }
 
-function ProjectSwitcherPopover({
+function ProjectSwitcherDialog({
   isOpen,
   onClose,
-  anchorRef,
-}: ProjectSwitcherPopoverProps) {
+}: ProjectSwitcherDialogProps) {
+  const titleId = useId();
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const { projects, activeProject, actions } = useProjectStore();
   const [renamingId, setRenamingId] = useState<ProjectId | null>(null);
   const [renameValue, setRenameValue] = useState("");
@@ -106,13 +105,10 @@ function ProjectSwitcherPopover({
 
   return (
     <>
-      <Popover
-        isOpen={isOpen}
-        onClose={onClose}
-        anchorRef={anchorRef}
-        aria-label="Projects"
-        className={styles.popover}
-      >
+      <Dialog isOpen={isOpen} onClose={onClose} titleId={titleId}>
+        <h2 id={titleId} className={styles.title}>
+          Projects
+        </h2>
         <ul className={styles.list}>
           {projects.map((project) => {
             const isActive = project.id === activeProject.id;
@@ -174,7 +170,17 @@ function ProjectSwitcherPopover({
             );
           })}
         </ul>
-      </Popover>
+        <div className={styles.actions}>
+          <button
+            ref={closeButtonRef}
+            type="button"
+            className={styles.closeButton}
+            onClick={onClose}
+          >
+            Close
+          </button>
+        </div>
+      </Dialog>
       {pendingDeleteProject && (
         <ConfirmDialog
           isOpen={true}
@@ -185,6 +191,9 @@ function ProjectSwitcherPopover({
           onConfirm={() => {
             actions.deleteProject(pendingDeleteProject.id);
             setPendingDeleteId(null);
+            // The Delete button the confirm would restore focus to is
+            // removed with its row, so keep focus inside the switcher.
+            closeButtonRef.current?.focus();
           }}
           onCancel={() => setPendingDeleteId(null)}
         />
@@ -193,4 +202,4 @@ function ProjectSwitcherPopover({
   );
 }
 
-export default ProjectSwitcherPopover;
+export default ProjectSwitcherDialog;
