@@ -75,10 +75,18 @@
   "73": "architecture.md",
   "74": "Architecture",
   "75": "Browser support",
+  "76": "shellPreferences.ts",
   "77": "browser-support.md",
   "78": "performance.spec.ts",
+  "79": "PreviewFrame.tsx",
+  "80": "ImportDialog.tsx",
   "81": "critical-journey.spec.ts",
+  "82": "PreviewPanel.consoleWiring.test.tsx",
   "83": "PlaygroundProject",
+  "84": "TsDiagnostic",
   "85": "useEditorFocusShortcuts.ts",
-  "87": "ResourcePresetsSection.tsx"
+  "86": "relativeUrlWarning.ts",
+  "87": "ResourcePresetsSection.tsx",
+  "88": "Debouncer",
+  "89": "ResourceManagerDialog.test.tsx"
 }
