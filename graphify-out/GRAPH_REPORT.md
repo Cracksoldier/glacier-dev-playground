@@ -1,16 +1,16 @@
 # Graph Report - glacier-dev-playground  (2026-10-07)
 
 ## Corpus Check
-- 254 files · ~119,345 words
+- 254 files · ~119,466 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1228 nodes · 2373 edges · 85 communities (68 shown, 17 thin omitted)
+- 1230 nodes · 2375 edges · 98 communities (80 shown, 18 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 37 edges (avg confidence: 0.72)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f0068543`
+- Built from commit: `77567dc8`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -79,14 +79,27 @@
 - architecture.md
 - Architecture
 - Browser support
+- projectReducer.ts
 - browser-support.md
 - performance.spec.ts
 - PreviewFrame.tsx
+- scssCompilerClient.ts
 - PreviewPanel.consoleWiring.test.tsx
 - PlaygroundProject
 - TsDiagnostic
+- tsCompiler.ts
 - relativeUrlWarning.ts
+- useAutosave.ts
 - Debouncer
+- tsCompilerClient.ts
+- ProjectSwitcherDialog.tsx
+- scssWorkerProtocol.ts
+- ExportDialog.test.tsx
+- ImportDialog.tsx
+- zipExport.test.ts
+- NewProjectDialog.tsx
+- decodeOutputLineToSourceLine
+- WarningIcon
 
 ## God Nodes (most connected - your core abstractions)
 1. `useProjectStore()` - 50 edges
@@ -120,7 +133,7 @@
 - **Graphify Full-Build Pipeline (Steps 0-9)** — claude_skills_graphify_skill_step0_github_clone, claude_skills_graphify_skill_step1_ensure_installed, claude_skills_graphify_skill_step2_detect_files, claude_skills_graphify_skill_step3_extract, claude_skills_graphify_skill_step4_build_cluster_analyze, claude_skills_graphify_skill_step5_label_communities, claude_skills_graphify_skill_step6_obsidian_html, claude_skills_graphify_skill_step9_manifest_cost_cleanup [EXTRACTED 1.00]
 - **GitHub Actions CI/CD Pipeline (PR validation + main deploy)** — github_workflows_ci_validate_job, github_workflows_ci_e2e_job, github_workflows_deploy_build_job, github_workflows_deploy_deploy_job [EXTRACTED 1.00]
 
-## Communities (85 total, 17 thin omitted)
+## Communities (98 total, 18 thin omitted)
 
 ### Community 0 - "useProjectHydration.test.ts"
 Cohesion: 0.23
@@ -131,8 +144,8 @@ Cohesion: 0.18
 Nodes (12): Candidate-and-promotion preview architecture, Milestone 5 - Secure Preview Runtime and Build Coordinator, Milestone 6 - Console Bridge and Runtime Diagnostics, PreviewMessage protocol (milestones M6), Milestone 7 - SCSS Compilation Worker, Milestone 8 - TypeScript Compilation Worker and Execution Modes, Milestone 9 - External Resources and Trusted Execution, PreviewMessage protocol (specification v2) (+4 more)
 
 ### Community 2 - "useProjectStore"
-Cohesion: 0.16
-Nodes (10): escapeClosingSequence(), buildDocumentSegments(), buildPreviewDocument(), computePreviewLineOffsets(), DocumentSegment, PreviewLineOffsets, PreviewLineRange, resourceDescriptor() (+2 more)
+Cohesion: 0.18
+Nodes (9): escapeClosingSequence(), buildDocumentSegments(), buildPreviewDocument(), computePreviewLineOffsets(), DocumentSegment, PreviewLineRange, resourceDescriptor(), stylesheetLinkSegment() (+1 more)
 
 ### Community 4 - "dependencies"
 Cohesion: 0.04
@@ -155,16 +168,16 @@ Cohesion: 0.08
 Nodes (24): source, assist, actions, enabled, files, ignoreUnknown, formatter, enabled (+16 more)
 
 ### Community 9 - "Toolbar.tsx"
-Cohesion: 0.06
-Nodes (44): ExportDialog, ImportDialog, ResourceManagerDialog, SAVE_STATUS_LABEL, RenameOnMount(), Toolbar(), ToolbarProps, WORKSPACE_LAYOUT_OPTIONS (+36 more)
+Cohesion: 0.12
+Nodes (24): ExportDialog, ImportDialog, ResourceManagerDialog, SAVE_STATUS_LABEL, WORKSPACE_LAYOUT_OPTIONS, GlacierMark(), GlacierMarkProps, AutoRunIcon() (+16 more)
 
 ### Community 10 - "previewMessage.ts"
 Cohesion: 0.06
-Nodes (44): panel(), ConsoleEntriesAction, ConsoleEntriesState, ConsoleEntry, ConsoleEntryInput, createInitialState(), reducer(), useConsoleEntries() (+36 more)
+Nodes (41): panel(), ConsoleEntriesAction, ConsoleEntriesState, ConsoleEntry, ConsoleEntryInput, createInitialState(), reducer(), useConsoleEntries() (+33 more)
 
 ### Community 11 - "ExternalResource"
-Cohesion: 0.21
-Nodes (10): CROSS_ORIGIN_OPTIONS, RESOURCE_TYPE_OPTIONS, ResourceFormProps, ResourceFormValues, EXISTING, ExternalResource, ExternalResourceType, ResourceCrossOrigin (+2 more)
+Cohesion: 0.19
+Nodes (11): CROSS_ORIGIN_OPTIONS, RESOURCE_TYPE_OPTIONS, ResourceFormProps, ResourceFormValues, EXISTING, ExternalResource, ExternalResourceType, ResourceCrossOrigin (+3 more)
 
 ### Community 12 - "/graphify Command"
 Cohesion: 0.18
@@ -175,20 +188,20 @@ Cohesion: 0.12
 Nodes (17): --wiki export, Node ID format rule, Extraction subagent prompt spec, Honesty Rules, Part A - Structural (AST) extraction, Part B - Semantic extraction (subagents), Part C - Merge AST + semantic, Step 3 - Extract entities and relationships (+9 more)
 
 ### Community 14 - "tsWorkerProtocol.ts"
-Cohesion: 0.07
-Nodes (20): ActionStatus, ClipboardActionStatus, ExportDialog(), ExportDialogProps, CompileForExportDependencies, CompileForExportResult, compileProjectSourceForExport(), compileScript() (+12 more)
+Cohesion: 0.09
+Nodes (19): ActionStatus, ClipboardActionStatus, ExportDialog(), ExportDialogProps, CompileForExportDependencies, CompileForExportResult, compileProjectSourceForExport(), compileScript() (+11 more)
 
 ### Community 15 - "importValidation.ts"
-Cohesion: 0.12
-Nodes (21): invalid(), parseImportedProjectJson(), isPlainObject(), PROJECT_MIGRATIONS, ProjectMigrationStep, ProjectRecoveryResult, recoverProjectRecord(), validateProjectRecordShape() (+13 more)
+Cohesion: 0.19
+Nodes (16): isPlainObject(), PROJECT_MIGRATIONS, ProjectMigrationStep, ProjectRecoveryResult, recoverProjectRecord(), validateProjectRecordShape(), CROSS_ORIGINS, EXECUTION_MODES (+8 more)
 
 ### Community 16 - "tsCompiler.ts"
-Cohesion: 0.10
-Nodes (22): base64Value(), decodeOutputLineToSourceLine(), decodeVlq(), transpileWithMap(), compileScript(), convertTsDiagnostic(), findClassicModeViolations(), hasExportModifier() (+14 more)
+Cohesion: 0.21
+Nodes (10): getLibSourceFile(), libSourceFileCache, TS_LIB_SOURCES, buildRemoteModuleDeclarationText(), classifyModuleSpecifier(), createModuleResolver(), isRemoteModuleFileName(), ModuleResolver (+2 more)
 
 ### Community 17 - "CodeMirrorEditor.tsx"
-Cohesion: 0.06
-Nodes (37): scssCompileMock, scssDisposeMock, triggerBlobDownloadMock, tsCompileMock, tsDisposeMock, beginBuildMock, buildDocumentMock, compileMock (+29 more)
+Cohesion: 0.16
+Nodes (15): beginBuildMock, buildDocumentMock, compileMock, disposeMock, fireLoad(), isStaleMock, makeProject(), makeResource() (+7 more)
 
 ### Community 18 - "Clone GitHub repo(s)"
 Cohesion: 0.67
@@ -203,40 +216,40 @@ Cohesion: 0.17
 Nodes (12): Document assembly, External resources, Imported data, Known limitations, Limitations of external resources, Messages from the preview, Secrets, Security model (+4 more)
 
 ### Community 35 - "editorPreferences.ts"
-Cohesion: 0.16
-Nodes (15): ResetProjectDialog(), ResetProjectDialogProps, Step, TemplatePickerProps, buildProject(), createBasicHtmlProject(), createEmptyProject(), createJavaScriptInteractionProject() (+7 more)
+Cohesion: 0.17
+Nodes (14): ResetProjectDialogProps, Step, TemplatePickerProps, nowIso(), buildProject(), createBasicHtmlProject(), createEmptyProject(), createJavaScriptInteractionProject() (+6 more)
 
 ### Community 36 - "projectRepository.ts"
-Cohesion: 0.19
-Nodes (8): source(), buildPreviewBridgeScript(), AnyMock, ConsoleMock, Harness, message(), runBridge(), WindowMock
+Cohesion: 0.10
+Nodes (21): formatPrimitive(), SerializedValueView(), SerializedValueViewProps, source(), buildPreviewBridgeScript(), AnyMock, ConsoleMock, Harness (+13 more)
 
 ### Community 39 - "ProjectStoreContext.tsx"
-Cohesion: 0.24
-Nodes (14): FormState, ResourceManagerDialog(), ResourceManagerDialogProps, TYPE_LABEL, ResourceId, moveResource(), nextOrderForType(), orderForSubmittedResource() (+6 more)
+Cohesion: 0.26
+Nodes (13): FormState, ResourceManagerDialog(), ResourceManagerDialogProps, TYPE_LABEL, ResourceId, moveResource(), nextOrderForType(), orderForSubmittedResource() (+5 more)
 
 ### Community 41 - "PreviewFrame.tsx"
 Cohesion: 0.07
-Nodes (45): EditorPreferencesDialog(), EditorPreferencesDialogProps, useEditorPreferences(), UseEditorPreferencesResult, CodeMirrorEditor(), CodeMirrorEditorDiagnostic, CodeMirrorEditorDiagnosticError, CodeMirrorEditorHandle (+37 more)
+Nodes (47): EditorPreferencesDialog(), EditorPreferencesDialogProps, useEditorPreferences(), UseEditorPreferencesResult, CodeMirrorEditor(), CodeMirrorEditorDiagnostic, CodeMirrorEditorDiagnosticError, CodeMirrorEditorHandle (+39 more)
 
 ### Community 42 - "ResetProjectDialog.tsx"
 Cohesion: 0.33
 Nodes (6): Copy HTML, Download HTML, Download JSON, Download ZIP, Export and import, Import
 
 ### Community 43 - "buildCoordinator.ts"
-Cohesion: 0.19
-Nodes (10): ImportedProjectDraft, CompilationId, createCompilationId(), createExecutionId(), ExecutionId, ProjectSettings, ProjectSource, PreviewBuild (+2 more)
+Cohesion: 0.23
+Nodes (6): CompilationId, createCompilationId(), createExecutionId(), ExecutionId, PreviewBuild, PreviewBuildCoordinator
 
 ### Community 44 - "PreviewFrame.test.tsx"
-Cohesion: 0.19
-Nodes (7): SaveStatus, ProjectStoreContext, ProjectStoreContextValue, UseAutosaveResult, useBeforeUnloadWarning(), PersistenceNotice, useSaveShortcut()
+Cohesion: 0.17
+Nodes (12): ImportedProjectDraft, invalid(), parseImportedProjectJson(), ProjectSettings, ProjectSource, ResourceUrlValidationResult, validateResourceUrl(), ProjectStoreActions (+4 more)
 
 ### Community 45 - "scssWorkerProtocol.ts"
 Cohesion: 0.25
 Nodes (8): 1. Automated gate, 2. Cross-browser journey, 3. Bundle review, 4. Repository hygiene, 5. Documentation, 6. Deploy, Manual verification, Release checklist
 
 ### Community 47 - "templates.ts"
-Cohesion: 0.15
-Nodes (12): createRecoveringRepository(), createRepository(), LoadResult, ProjectRepository, ProjectSnapshot, ProjectStoreAction, FakeRepository, HydrationStatus (+4 more)
+Cohesion: 0.19
+Nodes (8): createRecoveringRepository(), createRepository(), LoadResult, ProjectRepository, FakeRepository, FakeRepository, useHarness(), useProjectHydration()
 
 ### Community 48 - "PreviewPanel.tsx"
 Cohesion: 0.20
@@ -267,20 +280,20 @@ Cohesion: 0.25
 Nodes (8): src/persistence IndexedDB architecture, src/store project store architecture, Milestone 0 - Repository Foundation and Delivery Pipeline, Milestone 1 - Glacier Design System and Application Shell, Milestone 2 - Domain Model, Project Store, and Templates, Milestone 3 - IndexedDB Persistence and Project Management, Milestone 4 - CodeMirror Editor Subsystem, IndexedDB persistence requirements
 
 ### Community 57 - "ConfirmDialog.tsx"
-Cohesion: 0.13
-Nodes (11): Harness(), StatefulHarness(), NewProjectDialog(), NewProjectDialogProps, ActiveProjectTitle(), ActiveProjectTitle(), Harness(), ActiveTitleProbe() (+3 more)
+Cohesion: 0.14
+Nodes (11): RenameOnMount(), Toolbar(), Harness(), StatefulHarness(), ActiveProjectTitle(), ResetProjectDialog(), Harness(), ActiveTitleProbe() (+3 more)
 
 ### Community 58 - "Milestone 10 - Import and Export"
 Cohesion: 0.29
 Nodes (7): Milestone 10 - Import and Export, Milestone 11 - Responsive UX and Accessibility Completion, Milestone 12 - Security, Performance, Compatibility, and Release, Version 1 acceptance criteria, Accessibility requirements (WCAG 2.2 AA), GitHub Pages deployment requirements, Import and export requirements
 
 ### Community 60 - "PlaygroundProject"
-Cohesion: 0.09
-Nodes (18): PersistenceNotice(), ConfirmDialog(), ConfirmDialogProps, Dialog(), DialogProps, KeyboardHelpDialog(), KeyboardHelpDialogProps, SHORTCUTS (+10 more)
+Cohesion: 0.17
+Nodes (7): Dialog(), DialogProps, KeyboardHelpDialog(), KeyboardHelpDialogProps, SHORTCUTS, useFocusTrap(), ClipboardFallbackDialogProps
 
 ### Community 62 - "standaloneHtmlDocument.ts"
-Cohesion: 0.15
-Nodes (13): renderConsoleBody(), renderConsolePanel(), Harness(), renderHarness(), Harness(), renderHarness(), Harness(), renderHarness() (+5 more)
+Cohesion: 0.31
+Nodes (8): UseConsoleEntriesResult, FullWindowIcon(), PreviewRunHandle, PreviewPanelProps, AddRelativeImageOnMount(), createConsoleEntriesStub(), MakeUntrustedWithScriptResourceOnMount(), renderPreviewPanel()
 
 ### Community 63 - "PlaygroundProject data model"
 Cohesion: 0.40
@@ -295,16 +308,16 @@ Cohesion: 0.40
 Nodes (5): CI e2e job (Playwright), CI validate job (check/test/build/verify-base-path), Deploy build job (check/test/build), Deploy to GitHub Pages job, README deployment instructions
 
 ### Community 68 - "useAutosave.ts"
-Cohesion: 0.19
-Nodes (14): nowIso(), cloneProject(), createInitialProjectStoreState(), createStarterProject(), projectReducer(), regenerateResourceIds(), replaceWithSnapshot(), initialState() (+6 more)
+Cohesion: 0.21
+Nodes (6): createInitialProjectStoreState(), initialState(), getActiveProject(), getActiveProjectResources(), isProjectStoreDirty(), ProjectStoreProvider()
 
 ### Community 69 - "project.ts"
 Cohesion: 0.06
-Nodes (34): AppFooter(), AppShellContent(), ARRANGEMENTS, EDITOR_PANEL_IDS, EDITOR_SIZES, layoutStorageId(), OUTER_PANEL_IDS, TabPanel() (+26 more)
+Nodes (35): AppFooter(), AppShellContent(), ARRANGEMENTS, EDITOR_PANEL_IDS, EDITOR_SIZES, layoutStorageId(), OUTER_PANEL_IDS, TabPanel() (+27 more)
 
 ### Community 71 - "previewResourceLoader.ts"
 Cohesion: 0.24
-Nodes (7): UseConsoleEntriesResult, FullWindowIcon(), PreviewRunHandle, PreviewPanel(), PreviewPanelProps, PreviewPresentation, requiresTrustApproval()
+Nodes (13): ToolbarProps, toArrangement(), useWorkspaceLayout(), UseWorkspaceLayoutResult, WorkspaceArrangement, DEFAULT_WORKSPACE_LAYOUT_PREFERENCES, isWorkspaceLayout(), isWorkspaceLayoutPreferences() (+5 more)
 
 ### Community 73 - "architecture.md"
 Cohesion: 0.40
@@ -318,29 +331,77 @@ Nodes (7): Architecture, Build and preview data flow, Bundle composition, Module
 Cohesion: 0.29
 Nodes (7): Browser support, Cross-browser test strategy, Documented, unavoidable differences, Local WebKit limitation, Manual verification, Required capabilities, Supported matrix
 
+### Community 76 - "projectReducer.ts"
+Cohesion: 0.25
+Nodes (10): normalizeProjectTitle(), cloneProject(), createStarterProject(), projectReducer(), ProjectStoreAction, ProjectStoreState, regenerateResourceIds(), replaceWithSnapshot() (+2 more)
+
 ### Community 77 - "browser-support.md"
 Cohesion: 0.23
 Nodes (4): Acceptance criteria evidence, Summary of manual items, localStorage, Storage
 
 ### Community 79 - "PreviewFrame.tsx"
-Cohesion: 0.33
-Nodes (6): createPreviewIframe(), PendingCandidate, PreviewFrame(), createDebouncer(), createPreviewBuildCoordinator(), createScssCompilerClient()
+Cohesion: 0.29
+Nodes (8): createPreviewIframe(), PendingCandidate, PreviewFrame(), requiresTrustApproval(), createDebouncer(), createPreviewBuildCoordinator(), createScssCompilerClient(), createTsCompilerClient()
+
+### Community 80 - "scssCompilerClient.ts"
+Cohesion: 0.21
+Nodes (4): compileScss(), ScssCompileResult, toScssCompileError(), ScssCompileResponse
 
 ### Community 82 - "PreviewPanel.consoleWiring.test.tsx"
 Cohesion: 0.25
 Nodes (6): ResolvedPreviewBuild, PreviewFrameMockProps, { previewFrameProps }, renderPreviewPanel(), resolvedBuild, resolvedSource
 
 ### Community 83 - "PlaygroundProject"
-Cohesion: 0.25
-Nodes (9): PlaygroundProject, ProjectId, openDatabase(), createIndexedDbProjectRepository(), createUnavailableProjectRepository(), StorageUnavailableError, GlacierDBSchema, MetaRecord (+1 more)
+Cohesion: 0.17
+Nodes (10): PlaygroundProject, ProjectId, ProjectTemplate, openDatabase(), createIndexedDbProjectRepository(), createUnavailableProjectRepository(), ProjectSnapshot, StorageUnavailableError (+2 more)
 
 ### Community 84 - "TsDiagnostic"
-Cohesion: 0.53
-Nodes (4): useTsCompileStatus(), UseTsCompileStatusResult, ScriptOutcome, TsDiagnostic
+Cohesion: 0.70
+Nodes (3): useTsCompileStatus(), UseTsCompileStatusResult, TsDiagnostic
+
+### Community 85 - "tsCompiler.ts"
+Cohesion: 0.24
+Nodes (8): compileScript(), convertTsDiagnostic(), findClassicModeViolations(), hasExportModifier(), ROOT_FILE_NAME_BY_LANGUAGE, createTsCompilerHost(), scriptKindForRootFileName(), TsCompilerHostResult
 
 ### Community 86 - "relativeUrlWarning.ts"
-Cohesion: 0.53
-Nodes (3): extractUrls(), hasRelativeAssetUrls(), isNonPortable()
+Cohesion: 0.43
+Nodes (4): PreviewPanel(), extractUrls(), hasRelativeAssetUrls(), isNonPortable()
+
+### Community 87 - "useAutosave.ts"
+Cohesion: 0.29
+Nodes (5): SaveStatus, useHarness(), useAutosave(), UseAutosaveResult, useBeforeUnloadWarning()
+
+### Community 90 - "ProjectSwitcherDialog.tsx"
+Cohesion: 0.24
+Nodes (6): PersistenceNotice(), ConfirmDialog(), ConfirmDialogProps, ProjectSwitcherDialog(), ProjectSwitcherDialogProps, RenameRowProps
+
+### Community 91 - "scssWorkerProtocol.ts"
+Cohesion: 0.38
+Nodes (7): hasBaseShape(), isPlainObject(), isScssCompileError(), isScssCompileRequest(), isScssCompileResponse(), ScssCompileRequest, ScssWorkerMessageBase
+
+### Community 92 - "ExportDialog.test.tsx"
+Cohesion: 0.29
+Nodes (5): scssCompileMock, scssDisposeMock, triggerBlobDownloadMock, tsCompileMock, tsDisposeMock
+
+### Community 93 - "ImportDialog.tsx"
+Cohesion: 0.29
+Nodes (5): ImportDialog(), ImportDialogProps, ImportMode, Step, ImportValidationResult
+
+### Community 94 - "zipExport.test.ts"
+Cohesion: 0.29
+Nodes (5): scssCompileMock, scssDisposeMock, triggerBlobDownloadMock, tsCompileMock, tsDisposeMock
+
+### Community 95 - "NewProjectDialog.tsx"
+Cohesion: 0.40
+Nodes (3): NewProjectDialog(), NewProjectDialogProps, ActiveProjectTitle()
+
+### Community 96 - "decodeOutputLineToSourceLine"
+Cohesion: 0.60
+Nodes (4): base64Value(), decodeOutputLineToSourceLine(), decodeVlq(), transpileWithMap()
+
+### Community 97 - "WarningIcon"
+Cohesion: 0.50
+Nodes (3): WarningIcon(), SecretsWarning(), SecretsWarningProps
 
 ## Ambiguous Edges - Review These
 - `src/models domain layer` → `index.html application entry point`  [AMBIGUOUS]
@@ -349,19 +410,19 @@ Nodes (3): extractUrls(), hasRelativeAssetUrls(), isNonPortable()
 ## Knowledge Gaps
 - **299 isolated node(s):** `$schema`, `enabled`, `clientKind`, `useIgnoreFile`, `ignoreUnknown` (+294 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **18 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **What is the exact relationship between `src/models domain layer` and `index.html application entry point`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
-- **Why does `useProjectStore()` connect `ConfirmDialog.tsx` to `editorPreferences.ts`, `project.ts`, `previewResourceLoader.ts`, `ProjectStoreContext.tsx`, `Toolbar.tsx`, `previewMessage.ts`, `PreviewFrame.tsx`, `PreviewFrame.test.tsx`, `PlaygroundProject`, `standaloneHtmlDocument.ts`?**
-  _High betweenness centrality (0.037) - this node is a cross-community bridge._
-- **Why does `PlaygroundProject` connect `PlaygroundProject` to `editorPreferences.ts`, `useAutosave.ts`, `previewResourceLoader.ts`, `ExternalResource`, `buildCoordinator.ts`, `PreviewFrame.test.tsx`, `tsWorkerProtocol.ts`, `PreviewFrame.tsx`, `importValidation.ts`, `CodeMirrorEditor.tsx`, `templates.ts`, `PreviewPanel.consoleWiring.test.tsx`, `PlaygroundProject`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
-- **Why does `ExternalResource` connect `ExternalResource` to `useProjectStore`, `useAutosave.ts`, `ProjectStoreContext.tsx`, `previewResourceLoader.ts`, `buildCoordinator.ts`, `PreviewFrame.test.tsx`, `importValidation.ts`, `PreviewFrame.tsx`, `CodeMirrorEditor.tsx`, `PreviewPanel.consoleWiring.test.tsx`, `PreviewPanel.tsx`, `PlaygroundProject`, `previewResourceLoader.ts`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
+- **Why does `PlaygroundProject` connect `PlaygroundProject` to `editorPreferences.ts`, `useAutosave.ts`, `ExternalResource`, `buildCoordinator.ts`, `projectReducer.ts`, `tsWorkerProtocol.ts`, `PreviewFrame.tsx`, `importValidation.ts`, `CodeMirrorEditor.tsx`, `PreviewFrame.test.tsx`, `PreviewPanel.consoleWiring.test.tsx`, `templates.ts`, `ProjectSwitcherDialog.tsx`, `ExportDialog.test.tsx`, `zipExport.test.ts`?**
+  _High betweenness centrality (0.033) - this node is a cross-community bridge._
+- **Why does `useProjectStore()` connect `ConfirmDialog.tsx` to `editorPreferences.ts`, `useAutosave.ts`, `project.ts`, `ProjectStoreContext.tsx`, `Toolbar.tsx`, `previewMessage.ts`, `PreviewFrame.tsx`, `PreviewFrame.test.tsx`, `relativeUrlWarning.ts`, `ProjectSwitcherDialog.tsx`, `ImportDialog.tsx`, `standaloneHtmlDocument.ts`, `NewProjectDialog.tsx`?**
+  _High betweenness centrality (0.032) - this node is a cross-community bridge._
+- **Why does `ExternalResource` connect `ExternalResource` to `useProjectStore`, `useAutosave.ts`, `ProjectStoreContext.tsx`, `buildCoordinator.ts`, `PreviewFrame.test.tsx`, `projectReducer.ts`, `PreviewFrame.tsx`, `PreviewPanel.tsx`, `CodeMirrorEditor.tsx`, `PreviewPanel.consoleWiring.test.tsx`, `PlaygroundProject`, `previewResourceLoader.ts`?**
+  _High betweenness centrality (0.027) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `ProjectStoreProvider()` (e.g. with `createInitialProjectStoreState()` and `projectReducer()`) actually correct?**
   _`ProjectStoreProvider()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `$schema`, `enabled`, `clientKind` to the rest of the system?**
