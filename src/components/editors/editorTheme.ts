@@ -30,16 +30,42 @@ const glacierEditorViewTheme = EditorView.theme(
       {
         backgroundColor: "rgb(79 216 242 / 25%)",
       },
+    // The line-number gutter is its own tinted column with a divider, so the
+    // numbers never read as part of the code.
     ".cm-gutters": {
-      backgroundColor: "transparent",
+      // `--glacier-bg-sunken` at partial alpha, so the panel's frosted
+      // background still shows through.
+      backgroundColor: "rgb(6 10 18 / 45%)",
       color: "var(--glacier-text-muted)",
       border: "none",
+      borderRight: "1px solid var(--glacier-panel-border)",
+    },
+    ".cm-lineNumbers .cm-gutterElement": {
+      minWidth: "2ch",
+      padding: "0 var(--glacier-space-3)",
+    },
+    ".cm-line": {
+      padding: "0 var(--glacier-space-2) 0 var(--glacier-space-3)",
+    },
+    // The global `:focus-visible` ring would be drawn around `.cm-content`,
+    // but the scroller clips all of it except a stray bar against the gutter.
+    // Focus is shown on the gutter divider instead — or, with line numbers
+    // off, as an inset bar on the editor's left edge.
+    ".cm-content:focus-visible": {
+      boxShadow: "none",
+    },
+    "&.cm-focused .cm-gutters": {
+      borderRightColor: "var(--glacier-accent-cyan)",
+    },
+    "&.cm-focused:not(:has(.cm-gutters))": {
+      boxShadow: "inset 2px 0 0 var(--glacier-accent-cyan)",
     },
     ".cm-activeLine": {
       backgroundColor: "rgb(120 170 220 / 6%)",
     },
     ".cm-activeLineGutter": {
       backgroundColor: "rgb(120 170 220 / 10%)",
+      color: "var(--glacier-text-secondary)",
     },
     ".cm-matchingBracket, .cm-nonmatchingBracket": {
       backgroundColor: "rgb(79 216 242 / 20%)",

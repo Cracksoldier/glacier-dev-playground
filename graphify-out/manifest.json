@@ -560,8 +560,8 @@
     "semantic_hash": ""
   },
   "src/components/editors/editorTheme.ts": {
-    "mtime": 1789490349.5642877,
-    "ast_hash": "34e101e576bb1974b59c65ebef917ac5",
+    "mtime": 1791395694.0504944,
+    "ast_hash": "e43bfc5e5319efa5aeb281a861dfa04d",
     "semantic_hash": ""
   },
   "src/components/preview/PreviewFrame.test.tsx": {
@@ -1292,6 +1292,11 @@
   "src/components/common/GlacierMark.test.tsx": {
     "mtime": 1791395282.6935234,
     "ast_hash": "e7afda9a18cd80a24fa53e9da75969b7",
+    "semantic_hash": ""
+  },
+  "e2e/editor-gutter.spec.ts": {
+    "mtime": 1791395709.956725,
+    "ast_hash": "2992b9bf48d6a557c41b53cf815424be",
     "semantic_hash": ""
   }
 }
