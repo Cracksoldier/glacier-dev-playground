@@ -58,10 +58,11 @@ function separatorOrientations() {
 }
 
 describe("AppShell", () => {
-  it("exposes header and main landmarks", () => {
+  it("exposes header, main and footer landmarks", () => {
     render(<AppShell />);
     expect(screen.getByRole("banner")).toBeInTheDocument();
     expect(screen.getByRole("main")).toBeInTheDocument();
+    expect(screen.getByRole("contentinfo")).toBeInTheDocument();
   });
 
   it("still renders when the browser blocks access to localStorage", () => {

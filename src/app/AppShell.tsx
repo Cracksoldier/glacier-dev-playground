@@ -26,6 +26,7 @@ import {
   useProjectStore,
 } from "../store/ProjectStoreContext";
 import { useRunShortcut } from "../store/useRunShortcut";
+import AppFooter from "./AppFooter";
 import styles from "./AppShell.module.css";
 import PersistenceNotice from "./PersistenceNotice";
 import Toolbar from "./Toolbar";
@@ -401,6 +402,7 @@ function AppShellContent() {
         </div>
         <WorkspaceTabs activeTab={activeTab} onSelect={setActiveTab} />
       </main>
+      <AppFooter />
       <div id="dialog-root" />
     </div>
   );

@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "e2e/app-shell.spec.ts": {
-    "mtime": 1790264524.7644365,
-    "ast_hash": "aa7fdb7155944afed34ab0fa325cd503",
+    "mtime": 1791394334.8648698,
+    "ast_hash": "7fcc0c20a85c11bba401ee5894dc246e",
     "semantic_hash": ""
   },
   "e2e/project-management.spec.ts": {
@@ -50,13 +50,13 @@
     "semantic_hash": ""
   },
   "src/app/AppShell.test.tsx": {
-    "mtime": 1790264505.6337578,
-    "ast_hash": "1f614b6f0f3196a2c42ca40f4038bc6b",
+    "mtime": 1791394334.8644726,
+    "ast_hash": "9efbf2dc823b2e7e29fd2e6fe36f3572",
     "semantic_hash": ""
   },
   "src/app/AppShell.tsx": {
-    "mtime": 1790264403.8747854,
-    "ast_hash": "1dbaae591837c528fd8632005783ad7f",
+    "mtime": 1791394334.8638265,
+    "ast_hash": "52bfb10f32a296406cb00afe1ec80dab",
     "semantic_hash": ""
   },
   "src/app/PersistenceNotice.test.tsx": {
@@ -440,8 +440,8 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1790264657.6218097,
-    "ast_hash": "98d798a1ea203e8b570187be53f73c34",
+    "mtime": 1791394334.8653293,
+    "ast_hash": "0cdc82f6e520c8eb55d9bcdcec3b6c99",
     "semantic_hash": ""
   },
   "README.md": {
@@ -1289,19 +1289,14 @@
     "ast_hash": "c0ff512bf5e7ec707a42378460b17b96",
     "semantic_hash": ""
   },
-  "default_layout.png": {
-    "mtime": 1790263743.8874393,
-    "ast_hash": "6c9a818bd1ac4e38c3339b6f084e07c7",
+  "src/app/AppFooter.test.tsx": {
+    "mtime": 1791394325.0832982,
+    "ast_hash": "12162f82693ac5594d5283671b6eb569",
     "semantic_hash": ""
   },
-  "preview_layout.png": {
-    "mtime": 1790263777.2538664,
-    "ast_hash": "2be730af340887cfab50328dc7c40e57",
-    "semantic_hash": ""
-  },
-  "side_layout.png": {
-    "mtime": 1790263914.5797772,
-    "ast_hash": "0e855177ffd6aa801036d788c2e54491",
+  "src/app/AppFooter.tsx": {
+    "mtime": 1791394325.0812984,
+    "ast_hash": "e04f052fb1483ae02ba87ae10f5761b9",
     "semantic_hash": ""
   }
 }

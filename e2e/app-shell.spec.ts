@@ -17,6 +17,23 @@ test("loads the Glacier application shell", async ({ page }) => {
   await expect(page.getByText("DEV PLAYGROUND")).toBeVisible();
 });
 
+test("shows the footer with copyright and repository link", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const footer = page.getByRole("contentinfo");
+  await expect(footer).toBeVisible();
+  await expect(footer).toContainText(
+    `© ${new Date().getFullYear()} Cracksoldier`,
+  );
+  await expect(
+    footer.getByRole("link", { name: "GitHub repository" }),
+  ).toHaveAttribute(
+    "href",
+    "https://github.com/Cracksoldier/glacier-dev-playground",
+  );
+});
+
 test("shows disabled toolbar actions", async ({ page }) => {
   await page.goto("/");
   const settingsButton = page.getByRole("button", {
