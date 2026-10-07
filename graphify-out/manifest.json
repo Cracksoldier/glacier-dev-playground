@@ -110,9 +110,9 @@
     "semantic_hash": ""
   },
   "src/components/common/GlacierMark.tsx": {
-    "mtime": 1786024336.377052,
-    "ast_hash": "a2ee8446adb3ef86b158fe90ebd54808",
-    "semantic_hash": "a2ee8446adb3ef86b158fe90ebd54808"
+    "mtime": 1791395282.6837575,
+    "ast_hash": "dc7335e401d60f5bde6150c3aad60ffe",
+    "semantic_hash": ""
   },
   "src/components/common/ResizeHandle.tsx": {
     "mtime": 1786024156.9469287,
@@ -445,9 +445,9 @@
     "semantic_hash": "dce37659747cfb6b1a0d0376c7822bc5"
   },
   "public/favicon.svg": {
-    "mtime": 1786024100.4643068,
-    "ast_hash": "7632fc616a9df10a2e22a8ca0d03d099",
-    "semantic_hash": "7632fc616a9df10a2e22a8ca0d03d099"
+    "mtime": 1791395282.683965,
+    "ast_hash": "5cd7bb525adcdbb5ead9475240075249",
+    "semantic_hash": ""
   },
   "e2e/console.spec.ts": {
     "mtime": 1790192797.2662146,
@@ -1287,6 +1287,11 @@
   "src/components/projects/ProjectSwitcherDialog.tsx": {
     "mtime": 1791394770.8350139,
     "ast_hash": "02f953d674f51e93e78a03795d46695b",
+    "semantic_hash": ""
+  },
+  "src/components/common/GlacierMark.test.tsx": {
+    "mtime": 1791395282.6935234,
+    "ast_hash": "e7afda9a18cd80a24fa53e9da75969b7",
     "semantic_hash": ""
   }
 }

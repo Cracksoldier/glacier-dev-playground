@@ -1,0 +1,27 @@
+/* Same look as glacier-jwt's header snowflake: ice-cyan with a soft glow and
+   a slow back-and-forth tilt. The glow is scaled down from glacier-jwt's 14px
+   at 40px to suit the 28px toolbar mark. */
+.mark {
+  flex-shrink: 0;
+  color: var(--glacier-accent-cyan);
+  filter: drop-shadow(0 0 10px rgb(79 216 242 / 55%));
+  transform-origin: center;
+  animation: flake-drift 14s ease-in-out infinite;
+}
+
+@keyframes flake-drift {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark {
+    animation: none;
+  }
+}
