@@ -1,16 +1,16 @@
 # Graph Report - glacier-dev-playground  (2026-10-07)
 
 ## Corpus Check
-- 255 files · ~119,704 words
+- 256 files · ~120,052 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1231 nodes · 2377 edges · 83 communities (66 shown, 17 thin omitted)
+- 1232 nodes · 2377 edges · 84 communities (68 shown, 16 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 37 edges (avg confidence: 0.72)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `836cf0b9`
+- Built from commit: `102e597a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -118,7 +118,7 @@
 - **Graphify Full-Build Pipeline (Steps 0-9)** — claude_skills_graphify_skill_step0_github_clone, claude_skills_graphify_skill_step1_ensure_installed, claude_skills_graphify_skill_step2_detect_files, claude_skills_graphify_skill_step3_extract, claude_skills_graphify_skill_step4_build_cluster_analyze, claude_skills_graphify_skill_step5_label_communities, claude_skills_graphify_skill_step6_obsidian_html, claude_skills_graphify_skill_step9_manifest_cost_cleanup [EXTRACTED 1.00]
 - **GitHub Actions CI/CD Pipeline (PR validation + main deploy)** — github_workflows_ci_validate_job, github_workflows_ci_e2e_job, github_workflows_deploy_build_job, github_workflows_deploy_deploy_job [EXTRACTED 1.00]
 
-## Communities (83 total, 17 thin omitted)
+## Communities (84 total, 16 thin omitted)
 
 ### Community 0 - "useProjectHydration.test.ts"
 Cohesion: 0.33
@@ -225,16 +225,16 @@ Cohesion: 0.19
 Nodes (6): CompilationId, createCompilationId(), createExecutionId(), ExecutionId, PreviewBuild, PreviewBuildCoordinator
 
 ### Community 44 - "PreviewFrame.test.tsx"
-Cohesion: 0.20
-Nodes (10): ImportedProjectDraft, ProjectSettings, SaveStatus, ProjectStoreActions, ProjectStoreContext, ProjectStoreContextValue, UseAutosaveResult, useBeforeUnloadWarning() (+2 more)
+Cohesion: 0.21
+Nodes (7): ImportedProjectDraft, ProjectSettings, ProjectStoreActions, ProjectStoreContext, ProjectStoreContextValue, PersistenceNotice, useSaveShortcut()
 
 ### Community 45 - "scssWorkerProtocol.ts"
 Cohesion: 0.25
 Nodes (8): 1. Automated gate, 2. Cross-browser journey, 3. Bundle review, 4. Repository hygiene, 5. Documentation, 6. Deploy, Manual verification, Release checklist
 
 ### Community 47 - "templates.ts"
-Cohesion: 0.12
-Nodes (15): LoadResult, ProjectRepository, ProjectSnapshot, ProjectStoreAction, ActiveTitleProbe(), FIRST_RUN, renderStore(), FakeRepository (+7 more)
+Cohesion: 0.13
+Nodes (13): LoadResult, ProjectRepository, ProjectSnapshot, ProjectStoreAction, ActiveTitleProbe(), FIRST_RUN, renderStore(), FakeRepository (+5 more)
 
 ### Community 48 - "PreviewPanel.tsx"
 Cohesion: 0.17
@@ -293,7 +293,7 @@ Cohesion: 0.40
 Nodes (5): CI e2e job (Playwright), CI validate job (check/test/build/verify-base-path), Deploy build job (check/test/build), Deploy to GitHub Pages job, README deployment instructions
 
 ### Community 68 - "useAutosave.ts"
-Cohesion: 0.20
+Cohesion: 0.27
 Nodes (12): cloneProject(), createInitialProjectStoreState(), createStarterProject(), projectReducer(), ProjectStoreState, regenerateResourceIds(), replaceWithSnapshot(), initialState() (+4 more)
 
 ### Community 69 - "project.ts"
@@ -328,6 +328,10 @@ Nodes (10): ResolvedPreviewBuild, PreviewFrameMockProps, { previewFrameProps }, 
 Cohesion: 0.21
 Nodes (9): createRecoveringRepository(), createRepository(), ProjectId, openDatabase(), createIndexedDbProjectRepository(), createUnavailableProjectRepository(), StorageUnavailableError, GlacierDBSchema (+1 more)
 
+### Community 88 - "Debouncer"
+Cohesion: 0.16
+Nodes (7): SaveStatus, createDebouncer(), Debouncer, useHarness(), useAutosave(), UseAutosaveResult, useBeforeUnloadWarning()
+
 ### Community 90 - "ProjectSwitcherDialog.tsx"
 Cohesion: 0.24
 Nodes (6): PersistenceNotice(), ConfirmDialog(), ConfirmDialogProps, ProjectSwitcherDialog(), ProjectSwitcherDialogProps, RenameRowProps
@@ -339,19 +343,19 @@ Nodes (6): PersistenceNotice(), ConfirmDialog(), ConfirmDialogProps, ProjectSwit
 ## Knowledge Gaps
 - **299 isolated node(s):** `$schema`, `enabled`, `clientKind`, `useIgnoreFile`, `ignoreUnknown` (+294 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **16 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **What is the exact relationship between `src/models domain layer` and `index.html application entry point`?**
   _Edge tagged AMBIGUOUS (relation: conceptually_related_to) - confidence is low._
+- **Why does `ExternalResource` connect `PreviewPanel.tsx` to `useProjectHydration.test.ts`, `useProjectStore`, `useAutosave.ts`, `ProjectStoreContext.tsx`, `buildCoordinator.ts`, `PreviewFrame.test.tsx`, `importValidation.ts`, `CodeMirrorEditor.tsx`, `PreviewPanel.consoleWiring.test.tsx`, `previewResourceLoader.ts`, `standaloneHtmlDocument.ts`?**
+  _High betweenness centrality (0.031) - this node is a cross-community bridge._
 - **Why does `useProjectStore()` connect `ConfirmDialog.tsx` to `editorPreferences.ts`, `project.ts`, `ProjectStoreContext.tsx`, `Toolbar.tsx`, `previewMessage.ts`, `PreviewFrame.tsx`, `PreviewFrame.test.tsx`, `templates.ts`, `ProjectSwitcherDialog.tsx`, `PlaygroundProject`, `standaloneHtmlDocument.ts`?**
   _High betweenness centrality (0.028) - this node is a cross-community bridge._
-- **Why does `ExternalResource` connect `PreviewPanel.tsx` to `useProjectHydration.test.ts`, `useProjectStore`, `useAutosave.ts`, `ProjectStoreContext.tsx`, `buildCoordinator.ts`, `PreviewFrame.test.tsx`, `importValidation.ts`, `CodeMirrorEditor.tsx`, `PreviewPanel.consoleWiring.test.tsx`, `previewResourceLoader.ts`, `standaloneHtmlDocument.ts`?**
-  _High betweenness centrality (0.027) - this node is a cross-community bridge._
 - **Why does `PlaygroundProject` connect `useProjectHydration.test.ts` to `editorPreferences.ts`, `useAutosave.ts`, `buildCoordinator.ts`, `PreviewFrame.test.tsx`, `tsWorkerProtocol.ts`, `importValidation.ts`, `PreviewPanel.tsx`, `CodeMirrorEditor.tsx`, `templates.ts`, `PreviewPanel.consoleWiring.test.tsx`, `PlaygroundProject`, `ProjectSwitcherDialog.tsx`, `standaloneHtmlDocument.ts`?**
-  _High betweenness centrality (0.020) - this node is a cross-community bridge._
+  _High betweenness centrality (0.025) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `ProjectStoreProvider()` (e.g. with `createInitialProjectStoreState()` and `projectReducer()`) actually correct?**
   _`ProjectStoreProvider()` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `$schema`, `enabled`, `clientKind` to the rest of the system?**
