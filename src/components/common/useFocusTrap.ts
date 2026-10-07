@@ -11,8 +11,7 @@ const FOCUSABLE_SELECTOR =
  * Auto-focuses the first focusable descendant of `containerRef` when
  * `isOpen` becomes true, restores focus to whatever was previously focused
  * when it closes, and returns a Tab keydown handler that wraps focus within
- * the container. Shared by `Dialog` and `Popover` so both trap focus
- * identically.
+ * the container. Used by `Dialog`.
  */
 function useFocusTrap<T extends HTMLElement>(
   containerRef: RefObject<T | null>,

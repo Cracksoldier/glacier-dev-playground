@@ -16,7 +16,7 @@ function formatPrimitive(value: string | number | boolean | null): string {
  * bridge script — see `previewBridge.ts`) as an expandable console-style
  * inspector, using native `<details>/<summary>` rather than a hand-rolled
  * tree widget, matching this codebase's convention of avoiding extra
- * dependencies for simple expand/collapse UI (see `Dialog`/`Popover`).
+ * dependencies for simple expand/collapse UI (see `Dialog`).
  */
 function SerializedValueView({ value }: SerializedValueViewProps) {
   switch (value.kind) {

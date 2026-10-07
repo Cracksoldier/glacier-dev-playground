@@ -1,35 +1,57 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useRef } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_EDITOR_PREFERENCES } from "../preferences/editorPreferences";
-import EditorPreferencesPopover from "./EditorPreferencesPopover";
+import EditorPreferencesDialog from "./EditorPreferencesDialog";
 
 function Harness({
-  onUpdatePreferences,
+  onUpdatePreferences = () => {},
+  onClose = () => {},
 }: {
-  onUpdatePreferences: (
+  onUpdatePreferences?: (
     partial: Partial<typeof DEFAULT_EDITOR_PREFERENCES>,
   ) => void;
+  onClose?: () => void;
 }) {
-  const anchorRef = useRef<HTMLButtonElement>(null);
   return (
-    <div>
-      <button ref={anchorRef} type="button">
-        Anchor
-      </button>
-      <EditorPreferencesPopover
-        isOpen={true}
-        onClose={() => {}}
-        anchorRef={anchorRef}
-        preferences={DEFAULT_EDITOR_PREFERENCES}
-        onUpdatePreferences={onUpdatePreferences}
-      />
-    </div>
+    <EditorPreferencesDialog
+      isOpen={true}
+      onClose={onClose}
+      preferences={DEFAULT_EDITOR_PREFERENCES}
+      onUpdatePreferences={onUpdatePreferences}
+    />
   );
 }
 
-describe("EditorPreferencesPopover", () => {
+beforeEach(() => {
+  const root = document.createElement("div");
+  root.id = "dialog-root";
+  document.body.appendChild(root);
+});
+
+afterEach(() => {
+  document.getElementById("dialog-root")?.remove();
+});
+
+describe("EditorPreferencesDialog", () => {
+  it("renders as a modal dialog titled Editor preferences", () => {
+    render(<Harness />);
+
+    expect(
+      screen.getByRole("dialog", { name: "Editor preferences" }),
+    ).toHaveAttribute("aria-modal", "true");
+  });
+
+  it("closes from the Close button", async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    render(<Harness onClose={onClose} />);
+
+    await user.click(screen.getByRole("button", { name: "Close" }));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it("increases font size on the increase button", async () => {
     const user = userEvent.setup();
     const onUpdatePreferences = vi.fn();

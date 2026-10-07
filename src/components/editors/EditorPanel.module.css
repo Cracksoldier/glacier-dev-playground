@@ -13,7 +13,18 @@
   }
 }
 
+/* Every editor header is the same height whether or not it has controls
+   (HTML has none), so the three title bars line up side by side. */
 .header {
+  --editor-header-control-height: 22px;
+  box-sizing: border-box;
+  /* control row + vertical padding + border-bottom */
+  min-height: calc(
+    var(--editor-header-control-height) +
+    2 *
+    var(--glacier-space-2) +
+    1px
+  );
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -59,6 +70,8 @@
   background: var(--glacier-bg-sunken);
   border: 1px solid var(--glacier-panel-border);
   border-radius: var(--glacier-radius-sm);
+  box-sizing: border-box;
+  height: var(--editor-header-control-height);
   padding: 2px var(--glacier-space-1);
 }
 
@@ -69,7 +82,9 @@
 
 .toggleGroup {
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  box-sizing: border-box;
+  height: var(--editor-header-control-height);
   margin: 0;
   padding: 0;
   border: 1px solid var(--glacier-panel-border);

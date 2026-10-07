@@ -15,13 +15,13 @@
     "semantic_hash": ""
   },
   "e2e/app-shell.spec.ts": {
-    "mtime": 1791394334.8648698,
-    "ast_hash": "7fcc0c20a85c11bba401ee5894dc246e",
+    "mtime": 1791394976.1318357,
+    "ast_hash": "e6bb5ef0fd3d5c33f6c8e7c4ed93111c",
     "semantic_hash": ""
   },
   "e2e/project-management.spec.ts": {
-    "mtime": 1790192797.2672145,
-    "ast_hash": "c51402f04e259fb17b85d2c691efa9dc",
+    "mtime": 1791394770.787013,
+    "ast_hash": "ce1268ea1c8b87b90e355aea98c4cdd2",
     "semantic_hash": ""
   },
   "package.json": {
@@ -70,13 +70,13 @@
     "semantic_hash": ""
   },
   "src/app/Toolbar.test.tsx": {
-    "mtime": 1790264434.70232,
-    "ast_hash": "dce7ca764c4415dade14d66c02d46a6f",
+    "mtime": 1791394765.3510418,
+    "ast_hash": "355ba29657b658537e036fc9739bbf71",
     "semantic_hash": ""
   },
   "src/app/Toolbar.tsx": {
-    "mtime": 1790264445.4240484,
-    "ast_hash": "04adda68a11de3c66991dd2877286ccd",
+    "mtime": 1791394734.090012,
+    "ast_hash": "3776aaac8ca64df8f4c05de9854bb06f",
     "semantic_hash": ""
   },
   "src/app/useConsoleVisibility.test.ts": {
@@ -110,18 +110,8 @@
     "semantic_hash": ""
   },
   "src/components/common/GlacierMark.tsx": {
-    "mtime": 1786024336.377052,
-    "ast_hash": "a2ee8446adb3ef86b158fe90ebd54808",
-    "semantic_hash": "a2ee8446adb3ef86b158fe90ebd54808"
-  },
-  "src/components/common/Popover.test.tsx": {
-    "mtime": 1790192797.2696047,
-    "ast_hash": "25c4fab23a26f32823f80068a453f336",
-    "semantic_hash": ""
-  },
-  "src/components/common/Popover.tsx": {
-    "mtime": 1790192797.2696774,
-    "ast_hash": "00cf21fc7830f74f23a87be9a66c77cb",
+    "mtime": 1791395282.6837575,
+    "ast_hash": "dc7335e401d60f5bde6150c3aad60ffe",
     "semantic_hash": ""
   },
   "src/components/common/ResizeHandle.tsx": {
@@ -147,16 +137,6 @@
   "src/components/projects/NewProjectDialog.tsx": {
     "mtime": 1789850707.2716203,
     "ast_hash": "6024648d21c36d3b0f1f8f93da9776c3",
-    "semantic_hash": ""
-  },
-  "src/components/projects/ProjectSwitcherPopover.test.tsx": {
-    "mtime": 1790192797.2707179,
-    "ast_hash": "cd66df79ffda58707e7a4201e8f8e6c0",
-    "semantic_hash": ""
-  },
-  "src/components/projects/ProjectSwitcherPopover.tsx": {
-    "mtime": 1790192797.2707179,
-    "ast_hash": "1ff9a107bd17a108ba36f83088d74be8",
     "semantic_hash": ""
   },
   "src/components/projects/ResetProjectDialog.test.tsx": {
@@ -440,8 +420,8 @@
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1791394334.8653293,
-    "ast_hash": "0cdc82f6e520c8eb55d9bcdcec3b6c99",
+    "mtime": 1791394734.090743,
+    "ast_hash": "2715f49d50a93164e51c37d8d0eee465",
     "semantic_hash": ""
   },
   "README.md": {
@@ -465,9 +445,9 @@
     "semantic_hash": "dce37659747cfb6b1a0d0376c7822bc5"
   },
   "public/favicon.svg": {
-    "mtime": 1786024100.4643068,
-    "ast_hash": "7632fc616a9df10a2e22a8ca0d03d099",
-    "semantic_hash": "7632fc616a9df10a2e22a8ca0d03d099"
+    "mtime": 1791395282.683965,
+    "ast_hash": "5cd7bb525adcdbb5ead9475240075249",
+    "semantic_hash": ""
   },
   "e2e/console.spec.ts": {
     "mtime": 1790192797.2662146,
@@ -477,16 +457,6 @@
   "e2e/preview.spec.ts": {
     "mtime": 1790101534.0955954,
     "ast_hash": "e504876a9f4cbed6dcdcc356ef5ce2c1",
-    "semantic_hash": ""
-  },
-  "src/app/EditorPreferencesPopover.test.tsx": {
-    "mtime": 1789490659.3126793,
-    "ast_hash": "3f5f3cf404f3ec54d122c86c6de873c7",
-    "semantic_hash": ""
-  },
-  "src/app/EditorPreferencesPopover.tsx": {
-    "mtime": 1790192797.268408,
-    "ast_hash": "1570a33e0d9b608d84e4aa70967623dc",
     "semantic_hash": ""
   },
   "src/app/useConsoleEntries.test.ts": {
@@ -530,8 +500,8 @@
     "semantic_hash": ""
   },
   "src/components/console/SerializedValueView.tsx": {
-    "mtime": 1789744855.114302,
-    "ast_hash": "61e7589e4e3a7d55c158822c829139bf",
+    "mtime": 1791394740.1405585,
+    "ast_hash": "c8a8a7351e8b4602fca9a65aea8dfe25",
     "semantic_hash": ""
   },
   "src/components/editors/CodeMirrorEditor.test.tsx": {
@@ -755,13 +725,13 @@
     "semantic_hash": ""
   },
   "src/components/common/KeyboardHelpDialog.tsx": {
-    "mtime": 1789851058.2201316,
-    "ast_hash": "f3c9617fd4da519a49d80dbdf04ebec4",
+    "mtime": 1791394734.0904677,
+    "ast_hash": "1f81193633066718cb57d8856b822982",
     "semantic_hash": ""
   },
   "src/components/common/useFocusTrap.ts": {
-    "mtime": 1789851058.2221317,
-    "ast_hash": "b3da17c89fc5cfc2dedfa243f619a70f",
+    "mtime": 1791394734.0905685,
+    "ast_hash": "c24f32e1d24db7f8eba4d16ed55cf32a",
     "semantic_hash": ""
   },
   "src/components/editors/editorDiagnostics.test.ts": {
@@ -1297,6 +1267,31 @@
   "src/app/AppFooter.tsx": {
     "mtime": 1791394325.0812984,
     "ast_hash": "e04f052fb1483ae02ba87ae10f5761b9",
+    "semantic_hash": ""
+  },
+  "src/app/EditorPreferencesDialog.test.tsx": {
+    "mtime": 1791394765.3509686,
+    "ast_hash": "f4648e3c833dfcf138c2c866ab26e000",
+    "semantic_hash": ""
+  },
+  "src/app/EditorPreferencesDialog.tsx": {
+    "mtime": 1791394770.790013,
+    "ast_hash": "a6fd46a994d99a585bfd69576564625d",
+    "semantic_hash": ""
+  },
+  "src/components/projects/ProjectSwitcherDialog.test.tsx": {
+    "mtime": 1791394765.3507361,
+    "ast_hash": "a0b66dc21a19801706658ba87c23b4e0",
+    "semantic_hash": ""
+  },
+  "src/components/projects/ProjectSwitcherDialog.tsx": {
+    "mtime": 1791394770.8350139,
+    "ast_hash": "02f953d674f51e93e78a03795d46695b",
+    "semantic_hash": ""
+  },
+  "src/components/common/GlacierMark.test.tsx": {
+    "mtime": 1791395282.6935234,
+    "ast_hash": "e7afda9a18cd80a24fa53e9da75969b7",
     "semantic_hash": ""
   }
 }

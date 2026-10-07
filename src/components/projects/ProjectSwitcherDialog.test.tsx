@@ -1,39 +1,22 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useRef } from "react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   ProjectStoreProvider,
   useProjectStore,
 } from "../../store/ProjectStoreContext";
-import ProjectSwitcherPopover from "./ProjectSwitcherPopover";
-
-function Harness({ isOpen }: { isOpen: boolean }) {
-  const anchorRef = useRef<HTMLButtonElement>(null);
-  return (
-    <>
-      <button type="button" ref={anchorRef}>
-        Switch project
-      </button>
-      <ProjectSwitcherPopover
-        isOpen={isOpen}
-        onClose={() => {}}
-        anchorRef={anchorRef}
-      />
-    </>
-  );
-}
+import ProjectSwitcherDialog from "./ProjectSwitcherDialog";
 
 function ActiveProjectTitle() {
   const { activeProject } = useProjectStore();
   return <p data-testid="active-title">{activeProject.title}</p>;
 }
 
-function renderPopover(isOpen = true) {
+function renderDialog(isOpen = true, onClose: () => void = () => {}) {
   return render(
     <ProjectStoreProvider>
       <ActiveProjectTitle />
-      <Harness isOpen={isOpen} />
+      <ProjectSwitcherDialog isOpen={isOpen} onClose={onClose} />
     </ProjectStoreProvider>,
   );
 }
@@ -48,17 +31,48 @@ afterEach(() => {
   document.getElementById("dialog-root")?.remove();
 });
 
-describe("ProjectSwitcherPopover", () => {
+describe("ProjectSwitcherDialog", () => {
   it("renders nothing when closed", () => {
-    renderPopover(false);
+    renderDialog(false);
 
     expect(
-      screen.queryByRole("group", { name: "Projects" }),
+      screen.queryByRole("dialog", { name: "Projects" }),
     ).not.toBeInTheDocument();
   });
 
+  it("renders as a modal dialog titled Projects", () => {
+    renderDialog(true);
+
+    expect(screen.getByRole("dialog", { name: "Projects" })).toHaveAttribute(
+      "aria-modal",
+      "true",
+    );
+  });
+
+  it("closes from the Close button", async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    renderDialog(true, onClose);
+
+    await user.click(screen.getByRole("button", { name: "Close" }));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("closes after switching to another project", async () => {
+    const user = userEvent.setup();
+    const onClose = vi.fn();
+    renderDialog(true, onClose);
+
+    await user.click(
+      screen.getByRole("button", { name: "Basic HTML Example" }),
+    );
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it("lists the active project marked as current", () => {
-    renderPopover(true);
+    renderDialog(true);
 
     const activeTitle = screen.getByTestId("active-title").textContent;
     expect(activeTitle).toBeTruthy();
@@ -70,7 +84,7 @@ describe("ProjectSwitcherPopover", () => {
 
   it("switches the active project when a row is clicked", async () => {
     const user = userEvent.setup();
-    renderPopover(true);
+    renderDialog(true);
 
     await user.click(
       screen.getByRole("button", { name: "Duplicate Basic HTML Example" }),
@@ -90,7 +104,7 @@ describe("ProjectSwitcherPopover", () => {
 
   it("duplicates a project", async () => {
     const user = userEvent.setup();
-    renderPopover(true);
+    renderDialog(true);
 
     await user.click(
       screen.getByRole("button", { name: "Duplicate Basic HTML Example" }),
@@ -103,7 +117,7 @@ describe("ProjectSwitcherPopover", () => {
 
   it("renames a project via the inline field", async () => {
     const user = userEvent.setup();
-    renderPopover(true);
+    renderDialog(true);
 
     await user.click(
       screen.getByRole("button", { name: "Rename Basic HTML Example" }),
@@ -118,9 +132,10 @@ describe("ProjectSwitcherPopover", () => {
     );
   });
 
-  it("reverts an inline rename on Escape", async () => {
+  it("reverts an inline rename on Escape without closing the dialog", async () => {
     const user = userEvent.setup();
-    renderPopover(true);
+    const onClose = vi.fn();
+    renderDialog(true, onClose);
 
     await user.click(
       screen.getByRole("button", { name: "Rename Basic HTML Example" }),
@@ -133,11 +148,12 @@ describe("ProjectSwitcherPopover", () => {
     expect(
       screen.getByRole("button", { name: "Basic HTML Example" }),
     ).toBeInTheDocument();
+    expect(onClose).not.toHaveBeenCalled();
   });
 
   it("deletes a project after confirming", async () => {
     const user = userEvent.setup();
-    renderPopover(true);
+    renderDialog(true);
 
     await user.click(
       screen.getByRole("button", { name: "Duplicate Basic HTML Example" }),
@@ -150,5 +166,8 @@ describe("ProjectSwitcherPopover", () => {
     expect(
       screen.queryByRole("button", { name: "Basic HTML Example Copy" }),
     ).not.toBeInTheDocument();
+    // The deleted row's Delete button is gone, so focus must stay inside the
+    // switcher rather than falling back to the document body.
+    expect(screen.getByRole("button", { name: "Close" })).toHaveFocus();
   });
 });

@@ -14,7 +14,7 @@ const SHORTCUTS: { keys: string[]; description: string }[] = [
   { keys: ["Alt", "2"], description: "Focus the Stylesheet editor" },
   { keys: ["Alt", "3"], description: "Focus the Script editor" },
   { keys: ["Alt", "4"], description: "Focus the preview" },
-  { keys: ["Escape"], description: "Close the open dialog or popover" },
+  { keys: ["Escape"], description: "Close the open dialog" },
   {
     keys: ["← / →"],
     description: "Resize panels, when a separator is focused",

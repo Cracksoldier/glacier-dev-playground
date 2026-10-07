@@ -34,6 +34,41 @@ test("shows the footer with copyright and repository link", async ({
   );
 });
 
+test("editor title bars all have the same height", async ({ page }) => {
+  await page.goto("/");
+
+  async function headerHeights() {
+    const heights: number[] = [];
+    for (const name of ["HTML", "Stylesheet", "Script"]) {
+      const header = page
+        .getByRole("region", { name })
+        .locator(":scope > :first-child");
+      const box = await header.boundingBox();
+      if (!box) throw new Error(`Expected the ${name} header to be visible`);
+      heights.push(box.height);
+    }
+    return heights;
+  }
+
+  function expectEqual(heights: number[]) {
+    const [first, ...rest] = heights;
+    for (const height of rest) {
+      expect(Math.abs(height - (first ?? 0))).toBeLessThanOrEqual(0.5);
+    }
+  }
+
+  expectEqual(await headerHeights());
+
+  // SCSS adds the Source/Compiled toggle to the Stylesheet header.
+  await page
+    .getByRole("combobox", { name: "Stylesheet language" })
+    .selectOption("scss");
+  await expect(
+    page.getByRole("button", { name: "Compiled", exact: true }),
+  ).toBeVisible();
+  expectEqual(await headerHeights());
+});
+
 test("shows disabled toolbar actions", async ({ page }) => {
   await page.goto("/");
   const settingsButton = page.getByRole("button", {
